@@ -1,0 +1,17 @@
+/* src/globals.css */
+header .logo img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+/* resets and color variables */
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: Arial, sans-serif; }
+:root {
+  --bg-light: #fbeedd;
+  --accent: #ffcad4;
+  --accent-hover: #f7b2c0;
+  --text: #333;
+}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }

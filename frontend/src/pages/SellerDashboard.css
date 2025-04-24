@@ -1,0 +1,62 @@
+.seller-dashboard {
+    max-width: 480px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: sans-serif;
+  }
+  
+  .seller-dashboard h1 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  
+  .seller-dashboard form {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .seller-dashboard label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+  }
+  
+  .seller-dashboard input[type="text"],
+  .seller-dashboard input[type="number"],
+  .seller-dashboard input[type="file"] {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+  }
+  
+  .seller-dashboard .hint {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .seller-dashboard button {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .seller-dashboard button:hover {
+    background: #0069d9;
+  }
+  
+  .seller-dashboard .message {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
+  }
+  

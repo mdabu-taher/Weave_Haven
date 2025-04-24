@@ -1,0 +1,31 @@
+/* src/styles/layout.css */
+
+/* header (fixed) */
+header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: var(--bg-light);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    border-bottom: 1px solid #ddd;
+    z-index: 1000;
+  }
+  
+  /* … your logo/search/nav/sidebar/hero/product grid rules … */
+  
+  /* only images inside your product cards get 100% width */
+  .product-card img {
+    width: 100%;
+    height: auto;
+  }
+  
+/* Force header logo to a fixed, small size */
+header .header-logo img {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: contain !important;
+  }
+  
+  

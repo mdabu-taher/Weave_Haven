@@ -1,0 +1,27 @@
+@import './globals.css';
+@import './styles/layout.css';
+/* index.css */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap: 1rem;
+  }
+  .filter-panel {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+  }
+  .product-card {
+    border: 1px solid #ddd; padding: 0.5rem; border-radius: 4px; text-align: center;
+  }
+  .loader { text-align: center; padding: 2rem; }
+  /* only images _inside your product cards_ get 100% width */
+.product-card img {
+  width: 100%;
+  height: auto;
+}
+
+/* logo images stay small */
+header .logo img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
