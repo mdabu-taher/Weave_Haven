@@ -1,7 +1,10 @@
 import React from 'react';
+import { useCart } from '../context/CartContext';
 import '../styles/ProductsList.css';
 
 function ProductsList() {
+  const { addToCart } = useCart();
+
   const sampleProducts = [
     { id: 1, name: 'Elegant Dress', price: '$49.99' },
     { id: 2, name: 'Stylish Watch', price: '$89.99' },
@@ -17,7 +20,7 @@ function ProductsList() {
           <div className="product-card" key={product.id}>
             <h3>{product.name}</h3>
             <p>{product.price}</p>
-            <button>Add to Cart</button>
+            <button onClick={() => addToCart(product)}>Add to Cart</button>
           </div>
         ))}
       </div>

@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar'; // <-- import Navbar here
+
+import { CartProvider } from './context/CartContext'; // <-- Import Cart Context
+import Navbar from './components/Navbar';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -17,22 +20,32 @@ import Cart from './pages/Cart';
 function App() {
   return (
     <BrowserRouter>
-      <Navbar /> {/* <-- Show Navbar always */}
-      <Routes>
-        {/* Pages */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/create-profile" element={<CreateProfile />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/delete-account" element={<DeleteAccount />} />
-        <Route path="/products" element={<ProductsList />} />
-        <Route path="/cart" element={<Cart />} />
-      </Routes>
+      <CartProvider> {/* Wrap everything so all pages can access cart */}
+        <Navbar />
+        <Routes>
+          {/* Home */}
+          <Route path="/" element={<Home />} />
+
+          {/* Authentication */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+          {/* Profile Management */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/create-profile" element={<CreateProfile />} />
+          <Route path="/update-profile" element={<UpdateProfile />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
+
+          {/* Products and Cart */}
+          <Route path="/products" element={<ProductsList />} />
+          <Route path="/cart" element={<Cart />} />
+
+          {/* You can add 404 Not Found page later */}
+        </Routes>
+      </CartProvider>
     </BrowserRouter>
   );
 }
