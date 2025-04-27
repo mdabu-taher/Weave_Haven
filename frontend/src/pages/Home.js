@@ -7,9 +7,7 @@ import FeaturedProducts from '../components/FeaturedProducts';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    category: '', sizes: [], colors: [], minPrice: '', maxPrice: ''
-  });
+  const [filters] = useState({ category: '', minPrice: '', maxPrice: '' });
   const [products, setProducts] = useState(null);
   const [error, setError] = useState('');
 
