@@ -1,6 +1,7 @@
 // backend/src/controllers/productController.js
 import Product from '../models/Product.js';
 
+// Create a new product (with optional file upload)
 export async function createProduct(req, res) {
   try {
     const { name, price, category, sizes, colors, material } = req.body;
@@ -8,6 +9,7 @@ export async function createProduct(req, res) {
 
     const product = await Product.create({
       name,
+      description: req.body.description || '',  // include description if used
       price: Number(price),
       category,
       sizes: sizes ? sizes.split(',') : [],
@@ -23,6 +25,7 @@ export async function createProduct(req, res) {
   }
 }
 
+// Get distinct categories
 export async function getCategories(req, res) {
   try {
     const cats = await Product.distinct('category');
@@ -33,6 +36,7 @@ export async function getCategories(req, res) {
   }
 }
 
+// Get distinct sizes
 export async function getSizes(req, res) {
   try {
     const allSizes = await Product.distinct('sizes');
@@ -43,6 +47,7 @@ export async function getSizes(req, res) {
   }
 }
 
+// Get distinct colors
 export async function getColors(req, res) {
   try {
     const allColors = await Product.distinct('colors');
@@ -53,6 +58,7 @@ export async function getColors(req, res) {
   }
 }
 
+// Get products with optional filtering
 export async function getProducts(req, res) {
   try {
     const { category, sizes, colors, minPrice, maxPrice } = req.query;
