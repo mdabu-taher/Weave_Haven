@@ -1,43 +1,37 @@
-// frontend/src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
-import Home           from './pages/Home';
-import Login          from './pages/Login';
-import Signup         from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';  // ← newly added
-import ResetPassword  from './pages/ResetPassword';   // ← newly added
-
-// import other pages as you build them:
-// import ProductsList   from './pages/ProductsList';
-// import ProductDetails from './pages/ProductDetails';
-// import Cart           from './pages/Cart';
-// import Checkout       from './pages/Checkout';
-// import NotFound       from './pages/NotFound';
+import Navbar from './components/Navbar'; // <-- import Navbar here
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import Profile from './pages/Profile';
+import CreateProfile from './pages/CreateProfile';
+import UpdateProfile from './pages/UpdateProfile';
+import ChangePassword from './pages/ChangePassword';
+import DeleteAccount from './pages/DeleteAccount';
+import ProductsList from './pages/ProductsList';
+import Cart from './pages/Cart';
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar /> {/* <-- Show Navbar always */}
       <Routes>
-        {/* Home page */}
+        {/* Pages */}
         <Route path="/" element={<Home />} />
-
-        {/* Authentication */}
-        <Route path="/login"           element={<Login />} />
-        <Route path="/signup"          element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-        {/* Product pages */}
-        {/* <Route path="/products"       element={<ProductsList />} /> */}
-        {/* <Route path="/product/:id"    element={<ProductDetails />} /> */}
-
-        {/* Cart & Checkout */}
-        {/* <Route path="/cart"           element={<Cart />} /> */}
-        {/* <Route path="/checkout"       element={<Checkout />} /> */}
-
-        {/* Fallback for 404 */}
-        {/* <Route path="*"               element={<NotFound />} /> */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/create-profile" element={<CreateProfile />} />
+        <Route path="/update-profile" element={<UpdateProfile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
+        <Route path="/products" element={<ProductsList />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </BrowserRouter>
   );

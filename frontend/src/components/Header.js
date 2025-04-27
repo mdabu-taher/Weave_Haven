@@ -1,6 +1,7 @@
 // src/components/Header.js
 import React from 'react';
 import '../styles/Header.css'; // we'll write this next
+import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
@@ -17,6 +18,7 @@ export default function Header() {
         <a href="/">Home</a>
         <a href="/cart">Cart</a>
         <a href="/login">Login</a>
+        <Link to="/profile">Profile</Link>
       </nav>
     </header>
   );

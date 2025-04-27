@@ -1,10 +1,13 @@
 import React from 'react';
+import '../styles/Cart.css';
 
-export default function Cart() {
+function Cart() {
   return (
-    <div>
-      <h2>Your Cart</h2>
-      <p>Cart page content goes here.</p>
+    <div className="cart-container">
+      <h2>Your Shopping Cart</h2>
+      <p>Your cart is currently empty.</p>
     </div>
   );
 }
+
+export default Cart;

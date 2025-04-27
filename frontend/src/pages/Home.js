@@ -1,41 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { getProducts } from '../api';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import Hero from '../components/Hero';
-import FeaturedProducts from '../components/FeaturedProducts';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Home.css';
 
-export default function Home() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [filters] = useState({ category: '', minPrice: '', maxPrice: '' });
-  const [products, setProducts] = useState(null);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    setProducts(null);
-    setError('');
-    getProducts(filters)
-      .then(setProducts)
-      .catch(() => setError('Failed to load products'));
-  }, [filters]);
-
+function Home() {
   return (
-    <>
-      <Header onToggle={() => setSidebarOpen(o => !o)} />
-      <Sidebar open={sidebarOpen} />
-      <main
-        style={{
-          marginTop: '80px',
-          marginLeft: sidebarOpen ? '250px' : 0,
-          padding: '0 1rem',
-          transition: 'margin 0.3s'
-        }}
-      >
-        <Hero />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {!products && !error && <p>Loading…</p>}
-        {products && <FeaturedProducts />}
-      </main>
-    </>
+    <div className="home-container">
+      <h1>Welcome to Weave Haven</h1>
+      <p>Your one-stop shop for beautiful fashion and accessories!</p>
+
+      <div className="home-buttons">
+        <Link to="/create-profile">
+          <button className="home-button">Create Account</button>
+        </Link>
+
+        <Link to="/login">
+          <button className="home-button">Login</button>
+        </Link>
+
+        <Link to="/products">
+          <button className="home-button">Explore Products</button>
+        </Link>
+      </div>
+    </div>
   );
 }
+
+export default Home;
