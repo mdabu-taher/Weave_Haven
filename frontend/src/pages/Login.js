@@ -1,88 +1,76 @@
 import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate }            from 'react-router-dom';
+import { AuthContext }                  from '../context/AuthContext';
+import '../styles/Login.css';
 
 export default function Login() {
-  // This is exactly where useContext should live
-  const { login }               = useContext(AuthContext);
+  const { login }   = useContext(AuthContext);
+  const navigate    = useNavigate();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
-  const navigate                = useNavigate();
 
-  const validate = () => {
-    if (!email) {
-      setError('Email is required');
-      return false;
-    }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      setError('Enter a valid email address');
-      return false;
-    }
-    if (!password) {
-      setError('Password is required');
-      return false;
-    }
+  const handleSubmit = async e => {
+    e.preventDefault();
     setError('');
-    return true;
+    try {
+      await login(email, password);
+      navigate('/');
+    } catch {
+      setError('Invalid email or password');
+    }
   };
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!validate()) return;
-
-    setLoading(true);
-    try {
-      await login(email, password);  // login comes from context
-      navigate('/'); // redirect on success
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      <h2>Login</h2>
+    <div className="login-page">
+      <header className="site-header">
+        <div className="logo">
+          <img src="Picture1.png" alt="Weave Haven Logo" />
+          <span>Weave Haven</span>
+        </div>
+        <nav className="nav-links">
+          <Link to="/">Home</Link>
+          <Link to="/cart">Cart</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+      </header>
 
-      {error && <p className="error">{error}</p>}
-
-      <div className="form-group">
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          disabled={loading}
-          required
-        />
+      <div className="login-container">
+        <div className="login-card">
+          <h1>Log In</h1>
+          {error && <div className="error">{error}</div>}
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+            <button type="submit">Log In</button>
+          </form>
+          <div className="links">
+            <Link to="/forgot-password">Forgot password?</Link>
+            <span className="divider">|</span>
+            <Link to="/signup">Sign up</Link>
+          </div>
+        </div>
       </div>
-
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          disabled={loading}
-          required
-        />
-      </div>
-
-      <button type="submit" disabled={loading}>
-        {loading ? 'Logging in…' : 'Log In'}
-      </button>
-
-      <div className="auth-links">
-        <Link to="/forgot-password">Forgot password?</Link>
-        <span> | </span>
-        <Link to="/signup">Sign up</Link>
-      </div>
-    </form>
+    </div>
   );
 }
