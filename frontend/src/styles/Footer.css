@@ -1,0 +1,79 @@
+/* ───────── layout shell ───────── */
+.footer {
+    border-top: 1px solid #eee;
+    background: #fff;
+    font-size: 0.95rem;
+    color: #111;
+  }
+  
+  /* ───── top 4-column grid ───── */
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2rem 3rem;
+    padding: 3rem 4rem 2rem;
+  }
+  
+  .footer-col h4 {
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+  
+  .footer-col a {
+    display: block;
+    margin: 0.35rem 0;
+    text-decoration: none;
+    color: #111;
+  }
+  
+  .footer-col a:hover,
+  .footer .cta-link {
+    color: crimson;
+    font-weight: 600;
+  }
+  
+  /* ───── bottom bar ───── */
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    padding: 2rem 4rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .footer-logo {
+    height: 48px;
+    width: auto;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-left .region {
+    margin-bottom: 0.75rem;
+  }
+  
+  .footer-social a {
+    font-size: 1.25rem;
+    margin-left: 1rem;
+    color: #111;
+  }
+  
+  .footer-social a:hover {
+    color: crimson;
+  }
+  
+  /* ───── mobile stack ───── */
+  @media (max-width: 600px) {
+    .footer-grid {
+      padding: 2.5rem 1.5rem 1.5rem;
+    }
+    .footer-bottom {
+      padding: 2rem 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .footer-social a {
+      margin-left: 0.75rem;
+    }
+  }

@@ -3,23 +3,22 @@ import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
 
-function RegisterModal({ onClose, onSwitch }) {
+export default function RegisterModal({ onClose, onSwitch }) {
   const [form, setForm] = useState({
     fullName: '',
     username: '',
     email: '',
     mobile: '',
+    gender: '',
     password: '',
-    confirmPassword: '',
-    gender: ''
+    confirmPassword: ''
   });
-  const [error, setError]     = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Password complexity validator
   const validatePassword = pwd =>
     /[a-z]/.test(pwd) &&
     /[A-Z]/.test(pwd) &&
@@ -29,46 +28,26 @@ function RegisterModal({ onClose, onSwitch }) {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    setSuccess('');
-
-    // 1) Gender required
-    if (!form.gender) {
-      return setError('Please select your gender');
-    }
-
-    // 2) Passwords match + complexity
-    if (form.password !== form.confirmPassword) {
-      return setError('Passwords do not match');
-    }
+    if (!form.gender) return setError('Please select your gender');
+    if (form.password !== form.confirmPassword) return setError('Passwords do not match');
     if (!validatePassword(form.password)) {
-      return setError(
-        'Password must include upper, lower, number and be at least 8 characters'
-      );
+      return setError('Password must include upper, lower, number and be at least 8 characters');
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         '/api/auth/register',
         {
           fullName: form.fullName,
           username: form.username,
           email: form.email,
           mobile: form.mobile,
-          password: form.password,
-          gender: form.gender
+          gender: form.gender,
+          password: form.password
         },
         { withCredentials: true }
       );
-
-      // 3) Show success message (backend also sent confirmation email)
-      setSuccess(
-        `Thanks for registering, ${res.data.fullName}!  
-         Please check your email (${res.data.email}) for a confirmation link.`
-      );
-
-      // 4) Optionally close after a delay:
-      // setTimeout(onClose, 4000);
-
+      setSuccessMsg('Registration successful! Please check your email to confirm.');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
@@ -78,9 +57,8 @@ function RegisterModal({ onClose, onSwitch }) {
     <div className="modal-overlay">
       <div className="modal">
         <h2>Register to Weave Haven</h2>
-
-        {success && <div className="success">{success}</div>}
-        {error   && <div className="error">{error}</div>}
+        {error && <div className="error">{error}</div>}
+        {successMsg && <div className="success">{successMsg}</div>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -113,7 +91,6 @@ function RegisterModal({ onClose, onSwitch }) {
             required
           />
 
-          {/* Gender */}
           <div className="gender-group">
             <label>
               <input
@@ -167,5 +144,3 @@ function RegisterModal({ onClose, onSwitch }) {
     </div>
   );
 }
-
-export default RegisterModal;

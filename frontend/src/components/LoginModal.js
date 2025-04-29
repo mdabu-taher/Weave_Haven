@@ -3,27 +3,21 @@ import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
 
-function LoginModal({ onClose, onSwitch }) {
-  const [form, setForm]     = useState({ identifier: '', password: '' });
-  const [error, setError]   = useState('');
-  const [success, setSuccess] = useState('');
+export default function LoginModal({ onClose, onSwitch, onSuccess }) {
+  const [form, setForm] = useState({ identifier: '', password: '' });
+  const [error, setError] = useState('');
 
-  const handleChange = e => {
+  const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    setSuccess('');
-
     try {
-      await axios.post('/api/auth/login', form, { withCredentials: true });
-      setSuccess('Login successful! Redirecting...');
-      // short delay then reload
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      const res = await axios.post('/api/auth/login', form, { withCredentials: true });
+      // return user profile data
+      const profile = await axios.get('/api/auth/profile', { withCredentials: true });
+      onSuccess(profile.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -33,9 +27,7 @@ function LoginModal({ onClose, onSwitch }) {
     <div className="modal-overlay">
       <div className="modal">
         <h2>Login to Weave Haven</h2>
-
-        {success && <div className="success">{success}</div>}
-        {error   && <div className="error">{error}</div>}
+        {error && <div className="error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -46,6 +38,7 @@ function LoginModal({ onClose, onSwitch }) {
             onChange={handleChange}
             required
           />
+
           <input
             type="password"
             name="password"
@@ -79,5 +72,3 @@ function LoginModal({ onClose, onSwitch }) {
     </div>
   );
 }
-
-export default LoginModal;

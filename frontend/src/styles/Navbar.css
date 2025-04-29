@@ -21,9 +21,10 @@
 }
 
 .navbar-logo .brand-logo { /* <img> inside the link */
-  height: 100px;            /* tweak as needed */
+  height: 120px;            /* tweak as needed */
   width: 100px;
   padding: 5px;
+  padding-top: 7px;
 }
 
 /* ───────── Center (menu links) ───────── */
