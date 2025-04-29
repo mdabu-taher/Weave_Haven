@@ -1,11 +1,12 @@
 // src/pages/ForgotPassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
-<<<<<<< HEAD
+
 import "../styles/Signup.css";     
 =======
 import '../styles/Modal.css'; // reuse your modal styles
 >>>>>>> 4031c1f (Fix auth routes: identifier login + email confirm + reset email text)
+
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');

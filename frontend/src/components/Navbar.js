@@ -1,10 +1,12 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { FaSearch, FaUser, FaHeart, FaShoppingBag } from "react-icons/fa";
-import axios from "axios";
-import logo from "../assets/LOGO.png";          // ← NEW import
-import "../styles/Navbar.css";
+// src/components/Navbar.js
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
+import axios from 'axios';
+import LoginModal from './LoginModal';
+import RegisterModal from './RegisterModal';
+import '../styles/Navbar.css';
 
 function Navbar() {
   const navigate = useNavigate();
