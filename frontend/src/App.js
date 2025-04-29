@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import AddProduct from './pages/AddProduct';
+import AllProducts from './pages/AllProducts';
 import { CartProvider } from "./context/CartContext";
 
 import Navbar from "./components/Navbar";
@@ -29,7 +30,8 @@ function App() {
         <Routes>
           {/* Home */}
           <Route path="/" element={<Home />} />
-
+          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/all-products" element={<AllProducts />} />
           {/* Authentication */}
    
           <Route path="/forgot-password" element={<ForgotPassword />} />

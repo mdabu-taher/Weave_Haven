@@ -1,34 +1,46 @@
-// backend/src/routes/product.js
 import express from 'express';
 import multer from 'multer';
-import {
-  createProduct,
-  getCategories,
-  getSizes,
-  getColors,
-  getProducts,
-} from '../controllers/productController.js';
+import Product from '../models/Product.js';
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 
-// Configure Multer to save uploads in /uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename:    (req, file, cb) => cb(null, Date.now() + '-' + file.originalname),
+// ✅ Upload product (already working)
+router.post('/', upload.single('image'), async (req, res) => {
+  try {
+    const {
+      name, description, price, category,
+      sizes, colors, material
+    } = req.body;
+
+    const product = new Product({
+      name,
+      description,
+      price,
+      category,
+      sizes: JSON.parse(sizes),
+      colors: JSON.parse(colors),
+      material,
+      image: req.file.filename
+    });
+
+    await product.save();
+    res.status(201).json({ message: 'Product uploaded successfully', product });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to upload product' });
+  }
 });
-const upload = multer({ storage });
 
-// ————— CRUD routes —————
-
-// 1) Create a new product (with image upload)
-router.post('/', upload.single('image'), createProduct);
-
-// 2) Read filters
-router.get('/categories', getCategories);
-router.get('/sizes',      getSizes);
-router.get('/colors',     getColors);
-
-// 3) Read product list
-router.get('/',           getProducts);
+// ✅ New route: Get all uploaded products
+router.get('/', async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch products' });
+  }
+});
 
 export default router;

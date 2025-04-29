@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import logo from "../assets/LOGO.png";   // adjust name if you rename the file
+
 
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
@@ -34,17 +36,18 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <div className="navbar-left">
-          <Link to="/" className="navbar-logo">Weave Haven</Link>
-        </div>
-
+      <div className="navbar-left">
+        <Link to="/" className="navbar-logo">
+          <img src={logo} alt="Weave Haven" className="brand-logo" />
+        </Link>
+      </div>
         <div className="navbar-center">
           <Link to="/men">Men</Link>
           <Link to="/women">Women</Link>
           <Link to="/kids">Kids</Link>
           <Link to="/teens">Teens</Link>
           <Link to="/newborn">Newborn</Link>
-          <Link to="/new-arrivals">New Arrivals</Link>
+          <Link to="/all-products">New Arrivals</Link>
           <Link to="/sale">Sale</Link>
         </div>
 
@@ -53,7 +56,7 @@ export default function Navbar() {
           {/* ALWAYS open login/register, never go to /profile directly */}
           <FaUser className="nav-icon auth-icon" onClick={openLogin} />
 
-          <FaHeart className="nav-icon" />
+          <FaHeart className="nav-icon heart-icon" />
 
           <Link to="/cart" className="cart-icon-wrapper">
             <FaShoppingBag className="nav-icon" />
