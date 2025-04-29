@@ -39,3 +39,6 @@ export function authorize(...allowedRoles) {
     next();
   };
 }
+
+// Default export so routes can import `protect` directly
+export default protect;

@@ -1,52 +1,47 @@
-// frontend/src/pages/ForgotPassword.js
+// src/pages/ForgotPassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Signup.css';  // reuse your auth-form styles
+import '../styles/Modal.css'; // reuse your modal styles
 
 export default function ForgotPassword() {
-  const [email, setEmail]     = useState('');
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError]     = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setError('');
     setMessage('');
-    setLoading(true);
-
+    setError('');
     try {
       const res = await axios.post('/api/auth/forgot-password', { email });
       setMessage(res.data.message);
     } catch (err) {
-      setError(err.response?.data?.message || 'Request failed');
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || 'Error sending reset link');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      <h2>Forgot Password</h2>
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>Forgot Password</h2>
+        {message && <div className="success">{message}</div>}
+        {error   && <div className="error">{error}</div>}
 
-      {message && <p className="success">{message}</p>}
-      {error   && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Enter your account email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <button type="submit">Send Reset Link</button>
+        </form>
 
-      <div className="form-group">
-        <label htmlFor="email">Enter your account email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          disabled={loading}
-          required
-        />
+        <p className="close" onClick={() => (window.location = '/')}>
+          Close
+        </p>
       </div>
-
-      <button type="submit" disabled={loading}>
-        {loading ? 'Sending…' : 'Send Reset Link'}
-      </button>
-    </form>
+    </div>
   );
 }

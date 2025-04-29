@@ -1,60 +1,75 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
-import './Signup.css';  // for .auth-form, .success, .error
+import '../styles/Modal.css'; // or any stylesheet you like
 
 export default function ResetPassword() {
   const { token } = useParams();
-  const [password, setPassword] = useState('');
-  const [message, setMessage]   = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({ password: '', confirmPassword: '' });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    setMessage('');
-    setLoading(true);
+    setSuccess('');
+
+    if (form.password !== form.confirmPassword) {
+      return setError('Passwords do not match');
+    }
 
     try {
       const res = await axios.post(
         `/api/auth/reset-password/${token}`,
-        { password }
+        { password: form.password }
       );
-      setMessage(res.data.message);
+      setSuccess(res.data.message);
+      // after a moment, redirect to login or home
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Reset failed');
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || 'Failed to reset password');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      <h2>Reset Password</h2>
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>Reset Your Password</h2>
+        {error   && <div className="error">{error}</div>}
+        {success && <div className="success">{success}</div>}
 
-      {message && <p className="success">{message}</p>}
-      {error   && <p className="error">{error}</p>}
+        {!success && (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="password"
+              name="password"
+              placeholder="New Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm New Password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+            <button type="submit">Set New Password</button>
+          </form>
+        )}
 
-      <div className="form-group">
-        <label htmlFor="password">New Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          disabled={loading}
-          required
-        />
+        <p className="close" onClick={() => navigate('/')}>
+          Close
+        </p>
       </div>
-
-      <button type="submit" disabled={loading}>
-        {loading ? 'Updating…' : 'Update Password'}
-      </button>
-
-      <p>
-        <Link to="/login">Back to Login</Link>
-      </p>
-    </form>
+    </div>
   );
 }

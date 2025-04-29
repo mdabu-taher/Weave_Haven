@@ -4,14 +4,12 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import User from '../models/User.js';
-import { protect } from '../middleware/auth.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
 const router = express.Router();
 
-// Create SMTP transporter
+// SMTP transporter
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
@@ -21,172 +19,171 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
+const sendMail = opts => transporter.sendMail({ from: process.env.SMTP_FROM, ...opts });
 
-const sendMail = (mailOptions) =>
-  transporter.sendMail({
-    from: process.env.SMTP_FROM,
-    ...mailOptions,
-  });
-
-// ─── Register + Welcome Email ─────────────────────────────────────────────────
+// ─── Register + Welcome Email ──────────────────────────────────────────────
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-
+  const { fullName, username, email, mobile, password, gender } = req.body;
   try {
+    // 1) Hash
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const user = new User({ username, email, passwordHash });
+    // 2) Create & save
+    const user = new User({
+      fullName,
+      username,
+      email,
+      phone: mobile,
+      gender,
+      passwordHash,
+    });
     const savedUser = await user.save();
 
-    sendMail({
+    // 3) Welcome email
+    await sendMail({
       to: savedUser.email,
-      subject: `Welcome to Weave Haven, ${savedUser.username}!`,
-      text: `Hi ${savedUser.username},\n\nThanks for signing up at Weave Haven!`,
-    }).catch(err => console.error('⚠️ Welcome email failed:', err));
+      subject: `Welcome to Weave Haven, ${savedUser.fullName}!`,
+      text:
+        `Hi ${savedUser.fullName},\n\n` +
+        `Thank you for joining the Weave Haven community–we’re excited to have you.\n\n` +
+        `Please confirm your email by clicking the link below:\n` +
+        `${process.env.FRONTEND_URL}/confirm-email/${savedUser.generateEmailConfirmToken()}\n\n` +
+        `If you didn't sign up, just ignore this.\n\n` +
+        `Best regards,\nTeam Weave Haven`
+    });
+    await savedUser.save(); // persist confirmToken & expiry
 
+    // 4) Respond
     res.status(201).json({
       id: savedUser._id,
+      fullName: savedUser.fullName,
       username: savedUser.username,
       email: savedUser.email,
+      phone: savedUser.phone,
     });
-
   } catch (err) {
     if (err.code === 11000) {
       const field = Object.keys(err.keyValue)[0];
-      return res.status(409).json({ message: `${field.charAt(0).toUpperCase() + field.slice(1)} already in use` });
+      return res
+        .status(409)
+        .json({ message: `${field.charAt(0).toUpperCase()+field.slice(1)} already in use` });
     }
     res.status(400).json({ message: err.message });
   }
 });
 
-// ─── Create Full Profile ─────────────────────────────────────────────────────
-router.post('/create-profile', async (req, res) => {
-  const { firstName, middleName, lastName, username, email, phone, address, password, confirmPassword } = req.body;
-
+// ─── Email confirmation endpoint ────────────────────────────────────────────
+router.get('/confirm-email/:token', async (req, res) => {
   try {
-    if (!firstName || !lastName || !username || !email || !phone || !address || !password || !confirmPassword) {
-      return res.status(400).json({ message: 'All required fields must be filled' });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: 'Passwords do not match' });
-    }
-
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Username or Email already taken' });
-    }
-
-    const fullName = `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
-
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      fullName,
-      username,
-      email,
-      phone,
-      address,
-      passwordHash
+    const user = await User.findOne({
+      confirmToken: req.params.token,
+      confirmTokenExpiry: { $gt: Date.now() }
     });
-
-    await newUser.save();
-
-    res.status(201).json({ message: 'Profile created successfully!' });
-
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+    user.isConfirmed = true;
+    user.confirmToken = undefined;
+    user.confirmTokenExpiry = undefined;
+    await user.save();
+    res.json({ message: 'Email confirmed! You can now log in.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ─── Login and Set Token ───────────────────────────────────────────────────────
+// ─── Login (by email, username or phone) ───────────────────────────────────
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
+  const { identifier, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [
+        { email: identifier },
+        { username: identifier },
+        { phone: identifier }
+      ]
+    });
     if (!user) return res.status(404).json({ message: 'User not found' });
-
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
+    // issue JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d'
     });
-
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV==='production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24*60*60*1000
     });
-
-    res.status(200).json({
+    res.json({
       id: user._id,
+      fullName: user.fullName,
       username: user.username,
       email: user.email,
+      phone: user.phone
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ─── Logout ────────────────────────────────────────────────────────────────────
+// ─── Logout ────────────────────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV==='production',
     sameSite: 'strict',
   });
-  res.status(200).json({ message: 'Logged out successfully' });
+  res.json({ message: 'Logged out successfully' });
 });
 
-// ─── Forgot Password ───────────────────────────────────────────────────────────
+// ─── Forgot Password ────────────────────────────────────────────────────────
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const token = crypto.randomBytes(20).toString('hex');
-    user.resetToken = token;
-    user.resetTokenExpiry = Date.now() + 3600_000;
+    // generate reset token
+    const token = user.generatePasswordResetToken();
     await user.save();
 
+    // send email
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
     await sendMail({
       to: user.email,
       subject: 'Weave Haven Password Reset',
-      text: `Hi ${user.username},\n\nReset your password here:\n\n${resetUrl}`,
+      text:
+        `Hi ${user.username},\n\n` +
+        `Reset your password here:\n${resetUrl}\n\n` +
+        `Expires in 1 hour.\n\n` +
+        `Best regards,\nTeam Weave Haven`
     });
 
     res.json({ message: 'Password reset link sent to your email' });
   } catch (err) {
-    res.status(500).json({ message: 'Error processing password reset' });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// ─── Reset Password ────────────────────────────────────────────────────────────
+// ─── Reset Password ─────────────────────────────────────────────────────────
 router.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
-
   try {
     const user = await User.findOne({
       resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() },
+      resetTokenExpiry: { $gt: Date.now() }
     });
-
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.passwordHash = await bcrypt.hash(password, salt);
-
+    // hash new password
+    user.passwordHash = await bcrypt.hash(password, await bcrypt.genSalt(10));
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
     await user.save();
@@ -197,98 +194,42 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── Get User Profile ──────────────────────────────────────────────────────────
-router.get('/profile', protect, async (req, res) => {
-  try {
-    res.json({
-      id: req.user._id,
-      fullName: req.user.fullName,
-      username: req.user.username,
-      email: req.user.email,
-      phone: req.user.phone,
-      address: req.user.address,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// ─── Protect middleware ─────────────────────────────────────────────────────
+import { protect } from '../middleware/auth.js';
+
+// ─── Profile routes ────────────────────────────────────────────────────────
+router.get('/profile', protect, (req, res) => {
+  const { _id, fullName, username, email, phone, address } = req.user;
+  res.json({ id: _id, fullName, username, email, phone, address });
 });
 
-// ─── Update User Profile ───────────────────────────────────────────────────────
 router.put('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    user.fullName = req.body.fullName || user.fullName;
-    user.username = req.body.username || user.username;
-    user.email = req.body.email || user.email;
-    user.phone = req.body.phone || user.phone;
-    user.address = req.body.address || user.address;
-
-    if (req.body.oldPassword && req.body.newPassword) {
-      const isMatch = await bcrypt.compare(req.body.oldPassword, user.passwordHash);
-      if (!isMatch) {
-        return res.status(400).json({ message: 'Old password is incorrect' });
-      }
-      const salt = await bcrypt.genSalt(10);
-      user.passwordHash = await bcrypt.hash(req.body.newPassword, salt);
-    }
-
-    const updatedUser = await user.save();
-
-    res.json({
-      id: updatedUser._id,
-      fullName: updatedUser.fullName,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      phone: updatedUser.phone,
-      address: updatedUser.address,
+    ['fullName','username','email','phone','address'].forEach(field => {
+      if (req.body[field]) user[field] = req.body[field];
     });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// ─── Change Password ───────────────────────────────────────────────────────────
-router.put('/change-password', async (req, res) => {
-  const { usernameOrEmail, oldPassword, newPassword } = req.body;
-
-  try {
-    const user = await User.findOne({ $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }] });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Old password is incorrect' });
+    if (req.body.oldPassword && req.body.newPassword) {
+      const ok = await bcrypt.compare(req.body.oldPassword, user.passwordHash);
+      if (!ok) return res.status(400).json({ message: 'Old password incorrect' });
+      user.passwordHash = await bcrypt.hash(req.body.newPassword, await bcrypt.genSalt(10));
     }
-
-    const salt = await bcrypt.genSalt(10);
-    user.passwordHash = await bcrypt.hash(newPassword, salt);
-    await user.save();
-
-    res.json({ message: 'Password changed successfully' });
+    const u = await user.save();
+    const { _id, fullName, username, email, phone, address } = u;
+    res.json({ id: _id, fullName, username, email, phone, address });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ─── Delete Account ────────────────────────────────────────────────────────────
+// ─── Delete Account ─────────────────────────────────────────────────────────
 router.delete('/delete-account', protect, async (req, res) => {
-  const { password } = req.body;
-
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Incorrect password' });
-    }
-
-    await User.deleteOne({ _id: req.user._id });
-
-    res.clearCookie('token');
-    res.json({ message: 'Account deleted successfully' });
+    const ok = await bcrypt.compare(req.body.password, user.passwordHash);
+    if (!ok) return res.status(400).json({ message: 'Incorrect password' });
+    await User.deleteOne({ _id: user._id });
+    res.clearCookie('token').json({ message: 'Account deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
