@@ -5,7 +5,7 @@ import Product from '../models/Product.js';
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-// ✅ Upload product (already working)
+// ✅ Upload product
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     const {
@@ -32,7 +32,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// ✅ New route: Get all uploaded products
+// ✅ Get all products
 router.get('/', async (req, res) => {
   try {
     const products = await Product.find();
@@ -40,6 +40,21 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to fetch products' });
+  }
+});
+
+// ✅ Search products by query string
+router.get('/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ message: 'Query missing' });
+
+  try {
+    const regex = new RegExp(q, 'i'); // case-insensitive match
+    const results = await Product.find({ name: regex });
+    res.json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Search failed' });
   }
 });
 

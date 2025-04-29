@@ -3,13 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AddProduct from './pages/AddProduct';
 import AllProducts from './pages/AllProducts';
 import { CartProvider } from "./context/CartContext";
-
+import FavoritesPage from './pages/FavoritesPage';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";          // ← NEW
 import About from "./components/About"; 
 /* pages */
 import Home from "./pages/Home";
-
+import SearchResultsPage from './pages/SearchResultsPage';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
@@ -33,10 +33,10 @@ function App() {
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/all-products" element={<AllProducts />} />
           {/* Authentication */}
-   
+          <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-
+          <Route path="/search" element={<SearchResultsPage />} />
           {/* Profile Management */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-profile" element={<CreateProfile />} />

@@ -1,11 +1,11 @@
-/* ───────── Navbar shell ───────── */
+/* ───────── Navbar Shell ───────── */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
   height: 100px;
-  background: #f9d5d3; /* soft pink background */
+  background: #f9d5d3; /* soft pastel pink */
   border-bottom: 1px solid #eee;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
@@ -51,13 +51,13 @@
   color: #d7263d;
 }
 
-/* ───────── Right (icons / badge / logout) ───────── */
+/* ───────── Right (icons + search + cart) ───────── */
 .navbar-right {
   flex: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 25px;
+  gap: 20px;
 }
 
 .nav-icon {
@@ -90,7 +90,24 @@
   border-radius: 50%;
 }
 
-/* Logout Button */
+/* ───────── Search Input ───────── */
+.search-input {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid crimson;
+  border-radius: 6px;
+  outline: none;
+  transition: border 0.2s;
+  margin-left: 10px;
+  width: 180px;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 2px #fdd6da;
+  border-color: crimson;
+}
+
+/* ───────── Logout Button ───────── */
 .logout-btn {
   background: none;
   border: 1px solid crimson;
@@ -108,7 +125,7 @@
   color: #fff;
 }
 
-/* ───────── Small-screen tweaks ───────── */
+/* ───────── Responsive Tweaks ───────── */
 @media (max-width: 768px) {
   .navbar-center {
     gap: 18px;
@@ -116,11 +133,15 @@
   }
 
   .navbar-right {
-    gap: 18px;
+    gap: 14px;
   }
 
   .navbar-logo .brand-logo {
     height: 60px;
     width: auto;
+  }
+
+  .search-input {
+    width: 120px;
   }
 }
