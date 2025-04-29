@@ -2,7 +2,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-
+import "../styles/Signup.css";     
 export default function Signup() {
   const { register } = useContext(AuthContext);
   const [username, setUsername] = useState('');

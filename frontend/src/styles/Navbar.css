@@ -1,24 +1,32 @@
+/* ───────── Navbar shell ───────── */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 40px;
-  background: white;
+  padding: 0 40px;          /* vertical padding handled by height */
+  height: 100px;
+  background: #fff;
   border-bottom: 1px solid #eee;
-  height: 70px;
 }
 
+/* ───────── Left  (logo) ───────── */
 .navbar-left {
   flex: 1;
 }
 
 .navbar-logo {
-  font-size: 28px;
-  font-weight: bold;
-  color: crimson;
+  display: flex;           /* keeps the img vertically centred */
+  align-items: center;
   text-decoration: none;
 }
 
+.navbar-logo .brand-logo { /* <img> inside the link */
+  height: 100px;            /* tweak as needed */
+  width: 100px;
+  padding: 5px;
+}
+
+/* ───────── Center (menu links) ───────── */
 .navbar-center {
   flex: 2;
   display: flex;
@@ -27,16 +35,17 @@
 }
 
 .navbar-center a {
-  text-decoration: none;
-  color: black;
-  font-weight: 600;
+  color: #000;
   font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .navbar-center a:hover {
   color: crimson;
 }
 
+/* ───────── Right (icons / badge / logout) ───────── */
 .navbar-right {
   flex: 1;
   display: flex;
@@ -48,7 +57,11 @@
 .nav-icon {
   font-size: 20px;
   cursor: pointer;
-  color: black;
+  color: #000;
+}
+
+.heart-icon {
+  color: crimson;           /* any red you prefer */
 }
 
 .cart-icon-wrapper {
@@ -59,17 +72,32 @@
   position: absolute;
   top: -8px;
   right: -10px;
-  background: crimson;
-  color: white;
-  border-radius: 50%;
-  font-size: 12px;
   padding: 2px 6px;
+  font-size: 12px;
+  color: #fff;
+  background: crimson;
+  border-radius: 50%;
 }
 
 .logout-btn {
   background: none;
   border: none;
   color: crimson;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
+}
+
+/* ───────── Small-screen tweak (optional) ───────── */
+@media (max-width: 768px) {
+  .navbar-center {
+    gap: 18px;
+    font-size: 14px;
+  }
+  .navbar-right {
+    gap: 14px;
+  }
+  .navbar-logo .brand-logo {
+    height: 50px;
+    width: 50px;
+  }
 }

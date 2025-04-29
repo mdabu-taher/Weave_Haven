@@ -1,7 +1,7 @@
 // frontend/src/pages/ForgotPassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Signup.css';  // reuse your auth-form styles
+import "../styles/Signup.css";     
 
 export default function ForgotPassword() {
   const [email, setEmail]     = useState('');

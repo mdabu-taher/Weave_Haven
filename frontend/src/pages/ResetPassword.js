@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import './Signup.css';  // for .auth-form, .success, .error
+import "../styles/Signup.css";     
 
 export default function ResetPassword() {
   const { token } = useParams();
