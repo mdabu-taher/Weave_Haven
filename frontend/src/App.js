@@ -50,7 +50,12 @@ function App() {
 
           {/* Info */}
           <Route path="/about" element={<About />} />   {/* ← NEW */}
-
+          <Route path="/new-arrivals" element={<AllProducts />} />
+<Route path="/women" element={<AllProducts />} />
+<Route path="/men" element={<AllProducts />} />
+<Route path="/kids" element={<AllProducts />} />
+<Route path="/teens" element={<AllProducts />} />
+<Route path="/newborn" element={<AllProducts />} />n
           {/* TODO: add 404 route */}
         </Routes>
 
