@@ -1,69 +1,101 @@
-/* Header.css */
+/* === HEADER CONTAINER === */
 .site-header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 80px;
-    background: var(--bg-light);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;   /* push children to ends */
-    padding: 0 1rem;
-    border-bottom: 1px solid #ddd;
-    z-index: 1000;
-  }
-  
-  /* Logo area */
-  .header-logo {
-    display: flex;
-    align-items: center;
-  }
-  .header-logo img {
-    width: 48px;     /* fixed small size */
-    height: 48px;
-    object-fit: contain;
-    margin-right: 0.5rem;
-  }
-  .header-logo span {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: var(--text);
-  }
-  
-  /* Search area */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: #fff5f7; /* soft pink */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #ddd;
+  z-index: 1000;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* === LOGO AREA === */
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-right: 0.5rem;
+}
+
+.header-logo span {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #222;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* === SEARCH BOX === */
+.header-search {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 2rem;
+}
+
+.header-search input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.header-search button {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  background: #d7263d; /* crimson */
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.header-search button:hover {
+  background: #c51d33;
+}
+
+/* === NAVIGATION LINKS === */
+.header-nav a {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.96rem;
+  transition: color 0.3s ease;
+}
+
+.header-nav a:hover {
+  color: #d7263d;
+  text-decoration: underline;
+}
+
+/* === MOBILE STACK === */
+@media (max-width: 768px) {
   .header-search {
-    display: flex;
-    align-items: center;
-    flex: 1;             /* take up remaining space */
-    max-width: 400px;    /* optional cap */
-    margin: 0 2rem;      /* space from logo/nav */
+    display: none; /* hide search on small devices */
   }
-  .header-search input {
-    flex: 1;             /* fill the search container */
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-right: none;
-    border-radius: 4px 0 0 4px;
-  }
-  .header-search button {
-    padding: 0.6rem 1rem;
-    border: 1px solid #ccc;
-    border-left: none;
-    border-radius: 0 4px 4px 0;
-    background: var(--accent);
-    cursor: pointer;
-  }
-  .header-search button:hover {
-    background: var(--accent-hover);
-  }
-  
-  /* Nav links */
+
   .header-nav a {
-    margin-left: 1rem;
-    text-decoration: none;
-    color: var(--text);
-    font-weight: 500;
+    margin-left: 0.75rem;
+    font-size: 0.9rem;
   }
-  .header-nav a:hover {
-    text-decoration: underline;
+
+  .site-header {
+    padding: 0 1rem;
   }
-  
+}

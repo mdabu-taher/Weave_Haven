@@ -1,38 +1,137 @@
-.home-container {
-  text-align: center;
-  margin-top: 100px;
-  padding: 20px;
+/* === HEADER === */
+header {
+  background-color: #fff5f7;
+  padding: 12px 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.home-container h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.home-container p {
-  font-size: 1.2rem;
-  color: #777;
-  margin-bottom: 30px;
-}
-
-.home-buttons {
+/* === NAVIGATION === */
+.nav-links {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
-.home-button {
-  padding: 12px 24px;
+.nav-links a {
+  color: #2c2c2c;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: #ffd7e2;
+  color: #d7263d;
+}
+
+/* === HERO SECTION === */
+.hero {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #111;
+  padding: 2rem;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.hero {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #111;
+  padding: 2rem;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* Optional dark overlay to make text more readable */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.3); /* white-transparent overlay */
+  z-index: 0;
+}
+
+.hero h1,
+.hero p {
+  z-index: 1;
+  position: relative;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.2rem;
+}
+
+
+/* === FOOTER === */
+footer {
+  background-color: #f9f9f9;
+  padding: 40px 50px;
+  font-size: 15px;
+  color: #444;
+  border-top: 1px solid #ddd;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+}
+
+.footer-grid h4 {
+  margin-bottom: 12px;
   font-size: 16px;
-  border: none;
-  background-color: #f28ab2;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  color: #1a1a1a;
+  font-weight: bold;
 }
 
-.home-button:hover {
-  background-color: #e27099;
+.footer-grid ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-grid li {
+  margin-bottom: 8px;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-grid li:hover {
+  color: #d7263d;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 20px;
+  font-size: 13px;
+  color: #888;
+  border-top: 1px solid #ddd;
+  margin-top: 25px;
 }

@@ -3,28 +3,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;          /* vertical padding handled by height */
+  padding: 0 40px;
   height: 100px;
-  background: #fff;
+  background: #f9d5d3; /* soft pink background */
   border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ───────── Left  (logo) ───────── */
+/* ───────── Left (logo) ───────── */
 .navbar-left {
   flex: 1;
 }
 
 .navbar-logo {
-  display: flex;           /* keeps the img vertically centred */
+  display: flex;
   align-items: center;
   text-decoration: none;
 }
 
-.navbar-logo .brand-logo { /* <img> inside the link */
-  height: 120px;            /* tweak as needed */
-  width: 100px;
+.navbar-logo .brand-logo {
+  height: 100px;
+  width: auto;
   padding: 5px;
-  padding-top: 7px;
+  object-fit: contain;
 }
 
 /* ───────── Center (menu links) ───────── */
@@ -32,18 +33,22 @@
   flex: 2;
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 35px;
 }
 
 .navbar-center a {
-  color: #000;
+  color: #333;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .navbar-center a:hover {
-  color: crimson;
+  background: #ffe0e6;
+  color: #d7263d;
 }
 
 /* ───────── Right (icons / badge / logout) ───────── */
@@ -52,17 +57,22 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .nav-icon {
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
-  color: #000;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.nav-icon:hover {
+  color: #d7263d;
 }
 
 .heart-icon {
-  color: crimson;           /* any red you prefer */
+  color: crimson;
 }
 
 .cart-icon-wrapper {
@@ -75,30 +85,42 @@
   right: -10px;
   padding: 2px 6px;
   font-size: 12px;
-  color: #fff;
   background: crimson;
+  color: #fff;
   border-radius: 50%;
 }
 
+/* Logout Button */
 .logout-btn {
   background: none;
-  border: none;
+  border: 1px solid crimson;
+  padding: 5px 12px;
+  border-radius: 6px;
   color: crimson;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ───────── Small-screen tweak (optional) ───────── */
+.logout-btn:hover {
+  background: crimson;
+  color: #fff;
+}
+
+/* ───────── Small-screen tweaks ───────── */
 @media (max-width: 768px) {
   .navbar-center {
     gap: 18px;
     font-size: 14px;
   }
+
   .navbar-right {
-    gap: 14px;
+    gap: 18px;
   }
+
   .navbar-logo .brand-logo {
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: auto;
   }
 }
