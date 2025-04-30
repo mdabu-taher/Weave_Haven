@@ -18,7 +18,8 @@ function Footer() {
       {/* ───────── Top grid ───────── */}
       <div className="footer-grid">
         <div className="footer-col">
-          <h4>About Weave Haven</h4>
+          <h4>Company Information</h4>
+          <Link to="/about-us">About Us</Link>
           <Link to="/sustainability-ethics">Sustainability & Ethics</Link>
           <Link to="/brand-origin">Brand Origin Story</Link>
           <Link to="/mission-vision">Mission & Vision</Link>
