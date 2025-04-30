@@ -18,39 +18,38 @@ function Footer() {
       {/* ───────── Top grid ───────── */}
       <div className="footer-grid">
         <div className="footer-col">
-          <h4>Shop</h4>
-          <Link to="/women">Men</Link>
-          <Link to="/men">Women</Link>
-          <Link to="/teens">Teens</Link>
-          <Link to="/kids">Kids</Link>
-          <Link to="/newborn">Newborn</Link>
-          <Link to="/newarrivals">New Arrivals</Link>
-          <Link to="/sale">Sale</Link>
-
+          <h4>About Weave Haven</h4>
+          <Link to="/sustainability-ethics">Sustainability & Ethics</Link>
+          <Link to="/brand-origin">Brand Origin Story</Link>
+          <Link to="/mission-vision">Mission & Vision</Link>
+          <Link to="/product-focus">Product Focus</Link>
+          <Link to="/customer-promise">Customer Promise</Link>
+          <Link to="/career">Career</Link>
         </div>
 
         <div className="footer-col">
-          <h4>Company information</h4>
-          <Link to="/careers">Career at Weave Haven</Link>
-          <Link to="/about">About the group</Link>
-          <Link to="/sustainability">Sustainability</Link>
-          <Link to="/press">Press</Link>
-          <Link to="/investors">Investor relations</Link>
-          <Link to="/governance">Corporate governance</Link>
+          <h4>Terms and Conditions</h4>
+          <Link to="/useof-site">Use of Site</Link>
+          <Link to="/product-availability&pricing">Product Availability & Pricing</Link>
+          <Link to="/orders-payments">Orders & Payments</Link>
+          <Link to="/shipping-delivery">Shipping & Delivery</Link>
+          <Link to="/returns-exchanges">Returns & Exchanges</Link>
+          <Link to="/privacy-data">Privacy & Data</Link>
+          <Link to="/intellectual-property">Intellectual Property</Link>
         </div>
 
         <div className="footer-col">
-          <h4>Help</h4>
-          <Link to="/support">Customer service</Link>
-          <Link to="/stores">Our stores</Link>
-          <Link to="/terms">Terms & Privacy</Link>
-          <Link to="/contact">Contact us</Link>
-          <Link to="/gift-card">Gift card</Link>
-          <Link to="/safe-shopping">Safe shopping</Link>
+          <h4>Customer Service</h4>
+          <Link to="/contact-information">Contact Information</Link>
+          <Link to="/faqs">FAQs</Link>
+          <Link to="/order-support">Order Support</Link>
+          <Link to="/shipping-returns">Shipping & Returns</Link>
+          <Link to="/size-guide">Size Guide</Link>
+          <Link to="/satisfaction-guarantee">Satisfaction Guarantee</Link>
         </div>
 
         <div className="footer-col">
-          <h4>Join now</h4>
+          <h4>Join Now</h4>
           <p>Become a member and take advantage of fantastic offers!</p>
           <Link to="/membership" className="cta-link">
             Read more

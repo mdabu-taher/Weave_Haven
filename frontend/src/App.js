@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import AddProduct from './pages/AddProduct';
 import AllProducts from './pages/AllProducts';
 import FavoritesPage from './pages/FavoritesPage';

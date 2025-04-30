@@ -3,12 +3,15 @@ import { useCart } from '../context/CartContext';
 import '../styles/Cart.css';
 
 function Cart() {
-  const { cartItems, addToCart, decreaseQuantity, removeFromCart, clearCart } = useCart();
-
-  const totalPrice = cartItems.reduce((total, item) => {
-    const priceNumber = parseFloat(item.price.replace('$', '')); // remove $ and convert to number
-    return total + (priceNumber * item.quantity);
-  }, 0);
+  const {
+    cartItems,
+    addToCart,
+    decreaseQuantity,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    subtotal,
+  } = useCart();
 
   return (
     <div className="cart-container">
@@ -18,18 +21,49 @@ function Cart() {
         <p>Your cart is currently empty.</p>
       ) : (
         <>
-          <ul>
+          <ul className="cart-list">
             {cartItems.map(item => (
-              <li key={item.id} style={{ marginBottom: '15px' }}>
-                {item.name} - {item.price} × {item.quantity}
-                <div style={{ marginTop: '5px' }}>
-                  <button onClick={() => decreaseQuantity(item.id)} style={{ marginRight: '5px' }}>
-                    -
-                  </button>
-                  <button onClick={() => addToCart(item)}>
-                    +
-                  </button>
-                  <button onClick={() => removeFromCart(item.id)} style={{ marginLeft: '10px', color: 'red' }}>
+              <li key={item.id} className="cart-item">
+                <div className="item-info">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="item-image"
+                  />
+                  <span className="item-name">{item.name}</span>
+                </div>
+
+                <div className="item-details">
+                  <span className="item-price">
+                    ${item.price.toFixed(2)}
+                  </span>
+                  <div className="quantity-controls">
+                    <button
+                      onClick={() => decreaseQuantity(item.id)}
+                      className="qty-btn"
+                    >
+                      –
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={e =>
+                        updateQuantity(item.id, Number(e.target.value))
+                      }
+                      className="qty-input"
+                    />
+                    <button
+                      onClick={() => addToCart(item)}
+                      className="qty-btn"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="remove-btn"
+                  >
                     Remove
                   </button>
                 </div>
@@ -37,11 +71,19 @@ function Cart() {
             ))}
           </ul>
 
-          <h3 style={{ marginTop: '30px' }}>Total: ${totalPrice.toFixed(2)}</h3>
-
-          <button onClick={clearCart} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white', padding: '10px 20px' }}>
-            Clear Cart
-          </button>
+          <div className="cart-summary">
+            <h3 className="subtotal">
+              Subtotal: ${subtotal.toFixed(2)}
+            </h3>
+            <div className="cart-actions">
+              <button onClick={clearCart} className="clear-btn">
+                Clear Cart
+              </button>
+              {/* <button className="checkout-btn">
+                Proceed to Checkout
+              </button> */}
+            </div>
+          </div>
         </>
       )}
     </div>

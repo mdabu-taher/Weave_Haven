@@ -1,38 +1,47 @@
-import React, { createContext, useState } from 'react';
-import axios from 'axios';
+// src/context/AuthContext.js
+import React, { createContext, useState, useEffect } from 'react';
+import api, {
+  fetchProfile as apiFetchProfile,
+  login as apiLogin,
+  register as apiRegister,
+  logout as apiLogout,
+} from '../api';
 
-// 1) Create the context object
 export const AuthContext = createContext();
 
-// 2) Create & export the Provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // Login function
+  // On mount, load the profile if token is present
+  useEffect(() => {
+    (async () => {
+      const profile = await apiFetchProfile();
+      if (profile) setUser(profile);
+    })();
+  }, []);
+
+  // Login via our api helper
   const login = async (email, password) => {
-    const res = await axios.post('/api/auth/login', { email, password });
-    setUser(res.data);
-    return res.data;
+    const loggedInUser = await apiLogin({ email, password });
+    setUser(loggedInUser);
+    return loggedInUser;
   };
 
-  // Register function
+  // Register via our api helper
   const register = async (username, email, password) => {
-    const res = await axios.post('/api/auth/register', { username, email, password });
-    setUser(res.data);
-    return res.data;
+    const newUser = await apiRegister({ username, email, password });
+    setUser(newUser);
+    return newUser;
   };
 
-  // Logout (optional)
-  const logout = () => {
+  // Logout via our api helper
+  const logout = async () => {
+    await apiLogout();
     setUser(null);
-    // e.g. remove token from storage/cookie
   };
-
-  // Value passed to consuming components
-  const value = { user, login, register, logout };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
