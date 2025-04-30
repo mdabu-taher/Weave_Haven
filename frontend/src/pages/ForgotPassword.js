@@ -1,8 +1,6 @@
 // src/pages/ForgotPassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
-
-import "../styles/Signup.css";    
 import '../styles/Modal.css'; // reuse your modal styles
 
 
