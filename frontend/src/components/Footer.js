@@ -19,12 +19,14 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-col">
           <h4>Shop</h4>
-          <Link to="/women">Ladies</Link>
-          <Link to="/men">Men</Link>
-          <Link to="/kids">Children</Link>
-          <Link to="/home-decor">Home</Link>
-          <Link to="/beauty">Beauty</Link>
-          <Link to="/magazine">Magazine</Link>
+          <Link to="/women">Men</Link>
+          <Link to="/men">Women</Link>
+          <Link to="/teens">Teens</Link>
+          <Link to="/kids">Kids</Link>
+          <Link to="/newborn">Newborn</Link>
+          <Link to="/newarrivals">New Arrivals</Link>
+          <Link to="/sale">Sale</Link>
+
         </div>
 
         <div className="footer-col">
@@ -40,7 +42,6 @@ function Footer() {
         <div className="footer-col">
           <h4>Help</h4>
           <Link to="/support">Customer service</Link>
-          <Link to="/profile">My account</Link>
           <Link to="/stores">Our stores</Link>
           <Link to="/terms">Terms & Privacy</Link>
           <Link to="/contact">Contact us</Link>

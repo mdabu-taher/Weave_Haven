@@ -1,25 +1,29 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import AddProduct from './pages/AddProduct';
 import AllProducts from './pages/AllProducts';
-import { CartProvider } from "./context/CartContext";
 import FavoritesPage from './pages/FavoritesPage';
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";          // ← NEW
-import About from "./components/About"; 
-/* pages */
-import Home from "./pages/Home";
 import SearchResultsPage from './pages/SearchResultsPage';
 import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
-import CreateProfile from "./pages/CreateProfile";
 import UpdateProfile from "./pages/UpdateProfile";
-
-import DeleteAccount from "./pages/DeleteAccount";
 import ProductsList from "./pages/ProductsList";
 import Cart from "./pages/Cart";
 
+import Home from "./pages/Home";
+import About from "./components/About";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+import { CartProvider } from "./context/CartContext";
+
+// NEW account menu pages
+import AccountPage from './pages/AccountPages';
+import OrderHistoryPage from './pages/OrderHistoryPage';
+import MembershipPage from './pages/MembershipPage';
+import BonusPage from './pages/BonusPage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   return (
@@ -28,38 +32,40 @@ function App() {
         <Navbar />
 
         <Routes>
-          {/* Home */}
+          {/* Core Pages */}
           <Route path="/" element={<Home />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/all-products" element={<AllProducts />} />
-          {/* Authentication */}
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/search" element={<SearchResultsPage />} />
-          {/* Profile Management */}
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/create-profile" element={<CreateProfile />} />
-          <Route path="/update-profile" element={<UpdateProfile />} />
-
-          <Route path="/delete-account" element={<DeleteAccount />} />
-
-          {/* Products and Cart */}
           <Route path="/products" element={<ProductsList />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
 
           {/* Info */}
-          <Route path="/about" element={<About />} />   {/* ← NEW */}
+          <Route path="/about" element={<About />} />
           <Route path="/new-arrivals" element={<AllProducts />} />
-<Route path="/women" element={<AllProducts />} />
-<Route path="/men" element={<AllProducts />} />
-<Route path="/kids" element={<AllProducts />} />
-<Route path="/teens" element={<AllProducts />} />
-<Route path="/newborn" element={<AllProducts />} />n
-          {/* TODO: add 404 route */}
+          <Route path="/women" element={<AllProducts />} />
+          <Route path="/men" element={<AllProducts />} />
+          <Route path="/kids" element={<AllProducts />} />
+          <Route path="/teens" element={<AllProducts />} />
+          <Route path="/newborn" element={<AllProducts />} />
+
+          {/* Search + Auth */}
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* Profile Management */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/update-profile" element={<UpdateProfile />} />
+
+          {/* 🧾 Account Menu Routes */}
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/orders" element={<OrderHistoryPage />} />
+          <Route path="/membership" element={<MembershipPage />} />
+          <Route path="/bonus" element={<BonusPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
 
-        <Footer />   {/* ← rendered on every page */}
+        <Footer />
       </CartProvider>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-/* ───────── Navbar Shell ───────── */
+/* ───────── Navbar shell ───────── */
 .navbar {
   display: flex;
   align-items: center;
@@ -51,13 +51,13 @@
   color: #d7263d;
 }
 
-/* ───────── Right (icons + search + cart) ───────── */
+/* ───────── Right (icons / search / cart) ───────── */
 .navbar-right {
   flex: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .nav-icon {
@@ -90,42 +90,83 @@
   border-radius: 50%;
 }
 
-/* ───────── Search Input ───────── */
+/* ───────── Search input ───────── */
 .search-input {
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 6px 12px;
   border: 1px solid crimson;
   border-radius: 6px;
   outline: none;
-  transition: border 0.2s;
-  margin-left: 10px;
   width: 180px;
+  font-size: 14px;
 }
 
-.search-input:focus {
-  box-shadow: 0 0 0 2px #fdd6da;
-  border-color: crimson;
+/* ───────── User account dropdown ───────── */
+.account-wrapper {
+  position: relative;
 }
 
-/* ───────── Logout Button ───────── */
+.user-dropdown {
+  position: relative;
+}
+
+.user-dropdown .nav-icon {
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px 0;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.user-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background-color: #f9d5d3;
+  color: #d7263d;
+}
+
+/* ───────── Logout Button (standalone) ───────── */
 .logout-btn {
   background: none;
-  border: 1px solid crimson;
-  padding: 5px 12px;
-  border-radius: 6px;
-  color: crimson;
+  border: none;
   font-weight: 600;
-  font-size: 14px;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease;
+  color: #d7263d;
+  text-align: left;
+  width: 100%;
+  padding: 10px 16px;
 }
 
-.logout-btn:hover {
-  background: crimson;
-  color: #fff;
-}
-
-/* ───────── Responsive Tweaks ───────── */
+/* ───────── Responsive ───────── */
 @media (max-width: 768px) {
   .navbar-center {
     gap: 18px;
@@ -133,7 +174,7 @@
   }
 
   .navbar-right {
-    gap: 14px;
+    gap: 18px;
   }
 
   .navbar-logo .brand-logo {

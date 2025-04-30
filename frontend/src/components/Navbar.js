@@ -16,7 +16,6 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Check login on mount
   useEffect(() => {
     axios.get('/api/auth/profile', { withCredentials: true })
       .then(({ data }) => setUser(data))
@@ -26,9 +25,13 @@ export default function Navbar() {
   const openLogin = () => setModal('login');
 
   const handleLogout = async () => {
-    await axios.post('/api/auth/logout', {}, { withCredentials: true });
-    setUser(null);
-    setModal('login');
+    try {
+      await axios.post('/api/auth/logout', {}, { withCredentials: true });
+      setUser(null);
+      // Don't open login modal again
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
   const handleSearch = (e) => {
@@ -59,7 +62,7 @@ export default function Navbar() {
           <Link to="/sale">Sale</Link>
         </div>
 
-        {/* RIGHT: Icons */}
+        {/* RIGHT: Search + Icons */}
         <div className="navbar-right">
           <FaSearch className="nav-icon" />
           <input
@@ -71,7 +74,24 @@ export default function Navbar() {
             onKeyDown={handleSearch}
           />
 
-          <FaUser className="nav-icon auth-icon" onClick={openLogin} />
+          {/* User dropdown */}
+          <div className="account-wrapper">
+            {user ? (
+              <div className="user-dropdown">
+                <FaUser className="nav-icon" />
+                <div className="dropdown-menu">
+                  <Link to="/account">My account</Link>
+                  <Link to="/orders">Order history</Link>
+                  <Link to="/membership">My membership</Link>
+                  <Link to="/bonus">Bonus overview</Link>
+                  <Link to="/settings">My settings</Link>
+                  <button className="logout-btn" onClick={handleLogout}>Log out</button>
+                </div>
+              </div>
+            ) : (
+              <FaUser className="nav-icon auth-icon" onClick={openLogin} />
+            )}
+          </div>
 
           <Link to="/favorites">
             <FaHeart className="nav-icon heart-icon" />
