@@ -9,7 +9,7 @@ import {
   FaTiktok,
   FaSpotify,
 } from "react-icons/fa";
-import logo from "../assets/LOGO.png";          // reuse your logo
+import logo from "../assets/LOGO.png";
 import "../styles/Footer.css";
 
 function Footer() {
@@ -70,25 +70,25 @@ function Footer() {
         </div>
 
         <div className="footer-social">
-          <a href="https://instagram.com" target="_blank" rel="noreferrer">
+          <a href="https://instagram.com" className="icon instagram" target="_blank" rel="noreferrer">
             <FaInstagram />
           </a>
-          <a href="https://tiktok.com" target="_blank" rel="noreferrer">
+          <a href="https://tiktok.com" className="icon tiktok" target="_blank" rel="noreferrer">
             <FaTiktok />
           </a>
-          <a href="https://spotify.com" target="_blank" rel="noreferrer">
+          <a href="https://spotify.com" className="icon spotify" target="_blank" rel="noreferrer">
             <FaSpotify />
           </a>
-          <a href="https://youtube.com" target="_blank" rel="noreferrer">
+          <a href="https://youtube.com" className="icon youtube" target="_blank" rel="noreferrer">
             <FaYoutube />
           </a>
-          <a href="https://pinterest.com" target="_blank" rel="noreferrer">
+          <a href="https://pinterest.com" className="icon pinterest" target="_blank" rel="noreferrer">
             <FaPinterestP />
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noreferrer">
+          <a href="https://twitter.com" className="icon twitter" target="_blank" rel="noreferrer">
             <FaTwitter />
           </a>
-          <a href="https://facebook.com" target="_blank" rel="noreferrer">
+          <a href="https://facebook.com" className="icon facebook" target="_blank" rel="noreferrer">
             <FaFacebookF />
           </a>
         </div>

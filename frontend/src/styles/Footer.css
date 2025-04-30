@@ -1,98 +1,121 @@
 /* ───────── layout shell ───────── */
 .footer {
-    border-top: 1px solid #eee;
-    background: #f9f9f9;
-    font-size: 0.95rem;
-    color: #222;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  /* ───── top 4-column grid ───── */
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+  font-size: 0.95rem;
+  color: #222;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ───── top 4-column grid ───── */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem 3rem;
+  padding: 3rem 4rem 2rem;
+}
+
+.footer-col h4 {
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: #111;
+  font-size: 1.05rem;
+}
+
+.footer-col a {
+  display: block;
+  margin: 0.5rem 0;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+}
+
+.footer .cta-link {
+  color: crimson;
+  font-weight: 600;
+}
+
+/* ───── Social icons with brand colors ───── */
+.footer-social .icon {
+  color: #333;
+  font-size: 24px;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+.footer-social .icon.instagram:hover {
+  color: #E1306C;
+}
+
+.footer-social .icon.tiktok:hover {
+  color: #69C9D0;
+}
+
+.footer-social .icon.spotify:hover {
+  color: #0ea142;
+}
+
+.footer-social .icon.youtube:hover {
+  color: #FF0000;
+}
+
+.footer-social .icon.pinterest:hover {
+  color: #BD081C;
+}
+
+.footer-social .icon.twitter:hover {
+  color: #1DA1F2;
+}
+
+.footer-social .icon.facebook:hover {
+  color: #1675d3;
+}
+
+/* ───── bottom bar ───── */
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+  padding: 2rem 4rem;
+  border-top: 1px solid #eee;
+  background-color: #f0f0f0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.footer-logo {
+  height: 48px;
+  width: auto;
+  margin-bottom: 1rem;
+}
+
+.footer-left .region {
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* ───── mobile stack ───── */
+@media (max-width: 600px) {
   .footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 2rem 3rem;
-    padding: 3rem 4rem 2rem;
+    padding: 2.5rem 1.5rem 1.5rem;
   }
-  
-  .footer-col h4 {
-    margin-bottom: 1rem;
-    font-weight: 700;
-    color: #111;
-    font-size: 1.05rem;
-  }
-  
-  .footer-col a {
-    display: block;
-    margin: 0.5rem 0;
-    text-decoration: none;
-    color: #444;
-    font-weight: 500;
-    transition: color 0.3s ease, font-weight 0.3s ease;
-  }
-  
-  .footer-col a:hover,
-  .footer .cta-link {
-    color: crimson;
-    font-weight: 600;
-  }
-  
-  /* ───── bottom bar ───── */
+
   .footer-bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 2rem;
-    padding: 2rem 4rem;
-    border-top: 1px solid #eee;
-    background-color: #f0f0f0;
-    font-size: 0.875rem;
-    color: #666;
+    padding: 2rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
   }
-  
-  .footer-logo {
-    height: 48px;
-    width: auto;
-    margin-bottom: 1rem;
+
+  .footer-social {
+    margin-top: 1rem;
   }
-  
-  .footer-left .region {
-    margin-bottom: 0.75rem;
-    font-weight: 500;
-    color: #333;
-  }
-  
+
   .footer-social a {
-    font-size: 1.25rem;
-    margin-left: 1rem;
-    color: #333;
-    transition: color 0.3s ease;
+    margin-left: 0.75rem;
   }
-  
-  .footer-social a:hover {
-    color: crimson;
-  }
-  
-  /* ───── mobile stack ───── */
-  @media (max-width: 600px) {
-    .footer-grid {
-      padding: 2.5rem 1.5rem 1.5rem;
-    }
-  
-    .footer-bottom {
-      padding: 2rem 1.5rem;
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-    }
-  
-    .footer-social {
-      margin-top: 1rem;
-    }
-  
-    .footer-social a {
-      margin-left: 0.75rem;
-    }
-  }
-  
+}
