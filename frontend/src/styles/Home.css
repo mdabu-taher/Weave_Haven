@@ -6,6 +6,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
+
 }
 
 /* === NAVIGATION === */
@@ -32,28 +33,15 @@ header {
 }
 
 /* === HERO SECTION === */
+
 .hero {
-  height: 400px;
+  height: 700px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #111;
-  padding: 2rem;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.hero {
-  height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #111;
+  color: #faf8f8;
   padding: 2rem;
   position: relative;
   background-size: cover;
@@ -67,7 +55,7 @@ header {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.3); /* white-transparent overlay */
+  background: rgba(255, 255, 255, 0); /* white-transparent overlay */
   z-index: 0;
 }
 

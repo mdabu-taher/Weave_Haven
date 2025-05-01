@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/Home.css';
-import bgImage from '../assets/Hero-bg.png'; // adjust path if needed
+import bgImage from '../assets/Hero-bg.webp'; // adjust path if needed
 
 function Home() {
   return (

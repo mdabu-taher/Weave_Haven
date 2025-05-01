@@ -1,3 +1,4 @@
+// frontend/src/pages/Cart.jsx
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import '../styles/Cart.css';
@@ -35,7 +36,7 @@ function Cart() {
 
                 <div className="item-details">
                   <span className="item-price">
-                    ${item.price.toFixed(2)}
+                    ${Number(item.price).toFixed(2)}
                   </span>
                   <div className="quantity-controls">
                     <button
@@ -79,9 +80,6 @@ function Cart() {
               <button onClick={clearCart} className="clear-btn">
                 Clear Cart
               </button>
-              {/* <button className="checkout-btn">
-                Proceed to Checkout
-              </button> */}
             </div>
           </div>
         </>

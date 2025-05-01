@@ -1,6 +1,6 @@
 // frontend/src/pages/AllProducts.jsx
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
@@ -10,14 +10,9 @@ export default function AllProducts() {
   useEffect(() => {
     (async () => {
       try {
-        // 1) Fetch the product list from your backend
         const res = await fetch('http://localhost:5000/api/products');
         const data = await res.json();
 
-        console.log('✅ Loaded products:', data);
-        // Inspect the console: data[i].image should be "/uploads/<filename.ext>"
-
-        // 2) Filter client-side by category if needed
         const filtered =
           categoryFromPath && categoryFromPath !== 'new-arrivals'
             ? data.filter(
@@ -56,19 +51,20 @@ export default function AllProducts() {
         ) : (
           products.map(product => {
             const imgUrl = `http://localhost:5000${product.image}`;
-            console.log('→ Attempting to load image:', imgUrl);
 
             return (
-              <div
+              <Link
                 key={product._id}
+                to={`/product/${product._id}`}
                 style={{
                   border: '1px solid #ccc',
                   borderRadius: 8,
                   width: 220,
-                  padding: 10
+                  padding: 10,
+                  textDecoration: 'none',
+                  color: 'inherit'
                 }}
               >
-                {/* 3) This <img> will now attempt to fetch the URL you logged above */}
                 <img
                   src={imgUrl}
                   alt={product.name}
@@ -82,7 +78,7 @@ export default function AllProducts() {
                 <p>
                   <strong>${product.price}</strong>
                 </p>
-              </div>
+              </Link>
             );
           })
         )}

@@ -1,22 +1,26 @@
-// backend/src/routes/product.js
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import Product from '../models/Product.js';
 
 const router = express.Router();
 
-// Multer setup: save into /uploads at project root, preserving original extension
+// Fix for __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Multer setup: save into /uploads at project root
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Ensure the uploads directory exists at project root
     cb(null, path.join(__dirname, '..', '..', 'uploads'));
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);       // e.g. ".webp" or ".jpg"
-    cb(null, `${Date.now()}${ext}`);                    // e.g. "1682912345678.webp"
+    const ext = path.extname(file.originalname); // e.g. ".webp"
+    cb(null, `${Date.now()}${ext}`);
   }
 });
+
 const upload = multer({ storage });
 
 // Create / Upload product
@@ -32,8 +36,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       material = ''
     } = req.body;
 
-    // Build the URL path including /uploads/ and the extension
-    const imageUrl = `/uploads/${req.file.filename}`;    // "/uploads/1682912345678.webp"
+    const imageUrl = `/uploads/${req.file.filename}`;
 
     const product = new Product({
       name,
@@ -47,6 +50,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     });
 
     await product.save();
+
     res.status(201).json({
       message: 'Product uploaded successfully',
       product
@@ -57,13 +61,14 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// List all or by-category
+// List all or by category
 router.get('/', async (req, res) => {
   try {
     const filter = {};
     if (req.query.category) {
       filter.category = req.query.category;
     }
+
     const products = await Product.find(filter);
     res.json(products);
   } catch (err) {
@@ -78,7 +83,7 @@ router.get('/search', async (req, res) => {
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
-    const regex = new RegExp(q, 'i'); // case-insensitive match
+    const regex = new RegExp(q, 'i'); // case-insensitive search
     const results = await Product.find({ name: regex });
     res.json(results);
   } catch (err) {
@@ -86,5 +91,16 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Search failed' });
   }
 });
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json(product);
+  } catch (err) {
+    console.error('Fetch product by ID error:', err);
+    res.status(500).json({ message: 'Failed to fetch product' });
+  }
+});
+
 
 export default router;

@@ -7,6 +7,7 @@ import SearchResultsPage from './pages/SearchResultsPage';
 import ForgotPassword from "./pages/ForgotPassword";
 import ProductsList from "./pages/ProductsList";
 import Cart from "./pages/Cart";
+import ProductDetail from './pages/ProductDetail'; // or the correct path
 
 import Home from "./pages/Home";
 import About from "./components/About";
@@ -48,6 +49,8 @@ function App() {
           <Route path="/membership" element={<MembershipPage />} />
           <Route path="/bonus" element={<BonusPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          
+          <Route path="/product/:id" element={<ProductDetail />} /> 
         </Routes>
         <Footer />
       </CartProvider>

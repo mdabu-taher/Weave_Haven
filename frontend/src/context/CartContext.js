@@ -1,15 +1,14 @@
+// frontend/src/context/CartContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  // Load cart from LocalStorage initially
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem('cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // Add to Cart (if exists, increase quantity by 1)
   const addToCart = product => {
     setCartItems(prev =>
       prev.some(item => item.id === product.id)
@@ -22,7 +21,6 @@ export function CartProvider({ children }) {
     );
   };
 
-  // Decrease quantity by 1 (removes if quantity hits 0)
   const decreaseQuantity = id => {
     setCartItems(prev =>
       prev
@@ -33,10 +31,8 @@ export function CartProvider({ children }) {
     );
   };
 
-  // **Set** an exact quantity (new helper)  
   const updateQuantity = (id, quantity) => {
     if (quantity <= 0) {
-      // Remove if zero or negative
       setCartItems(prev => prev.filter(item => item.id !== id));
     } else {
       setCartItems(prev =>
@@ -47,21 +43,17 @@ export function CartProvider({ children }) {
     }
   };
 
-  // Remove item completely
   const removeFromCart = id => {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
-  // Clear entire cart
   const clearCart = () => setCartItems([]);
 
-  // Calculate subtotal
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + Number(item.price) * item.quantity,
     0
   );
 
-  // Persist in localStorage
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -83,7 +75,6 @@ export function CartProvider({ children }) {
   );
 }
 
-// Custom hook
 export function useCart() {
   return useContext(CartContext);
 }
