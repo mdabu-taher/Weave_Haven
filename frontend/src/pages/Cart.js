@@ -1,5 +1,7 @@
-import React from 'react';
+// frontend/src/pages/Cart.js
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Cart.css';
 
 function Cart() {
@@ -13,6 +15,20 @@ function Cart() {
     subtotal,
   } = useCart();
 
+  const [selectedIds, setSelectedIds] = useState([]);
+  const navigate = useNavigate();
+
+  const handleSelect = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const selectedItems = cartItems.filter(item => selectedIds.includes(item.id));
+  const selectedSubtotal = selectedItems.reduce(
+    (sum, item) => sum + item.price * item.quantity, 0
+  );
+
   return (
     <div className="cart-container">
       <h2>Your Shopping Cart</h2>
@@ -24,17 +40,23 @@ function Cart() {
           <ul className="cart-list">
             {cartItems.map(item => (
               <li key={item.id} className="cart-item">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(item.id)}
+                  onChange={() => handleSelect(item.id)}
+                />
+
                 <div className="item-info">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="item-image"
-                  />
+                  <img src={item.image} alt={item.name} className="item-image" />
                   <div className="item-text">
                     <span className="item-name">{item.name}</span>
+
                     {item.size && (
-                      <p className="item-detail"><strong>Size:</strong> {item.size}</p>
+                      <p className="item-detail">
+                        <strong>Size:</strong> {item.size}
+                      </p>
                     )}
+
                     {item.color && (
                       <div className="item-detail">
                         <strong>Color:</strong>
@@ -57,36 +79,22 @@ function Cart() {
 
                 <div className="item-details">
                   <span className="item-price">
-                      ${(item.price * item.quantity).toFixed(2)}
+                    ${(item.price * item.quantity).toFixed(2)}
                   </span>
 
                   <div className="quantity-controls">
-                    <button
-                      onClick={() => decreaseQuantity(item.id)}
-                      className="qty-btn"
-                    >
-                      –
-                    </button>
+                    <button onClick={() => decreaseQuantity(item.id)} className="qty-btn">–</button>
                     <input
                       type="number"
                       min="1"
                       value={item.quantity}
-                      onChange={e =>
-                        updateQuantity(item.id, Number(e.target.value))
-                      }
+                      onChange={e => updateQuantity(item.id, Number(e.target.value))}
                       className="qty-input"
                     />
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="qty-btn"
-                    >
-                      +
-                    </button>
+                    <button onClick={() => addToCart(item)} className="qty-btn">+</button>
                   </div>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="remove-btn"
-                  >
+
+                  <button onClick={() => removeFromCart(item.id)} className="remove-btn">
                     Remove
                   </button>
                 </div>
@@ -95,12 +103,16 @@ function Cart() {
           </ul>
 
           <div className="cart-summary">
-            <h3 className="subtotal">
-              Subtotal: ${subtotal.toFixed(2)}
-            </h3>
+            <h3>Full Cart Total: ${subtotal.toFixed(2)}</h3>
+            <h3>Selected Items Total: ${selectedSubtotal.toFixed(2)}</h3>
             <div className="cart-actions">
-              <button onClick={clearCart} className="clear-btn">
-                Clear Cart
+              <button onClick={clearCart} className="clear-btn">Clear Cart</button>
+              <button
+                disabled={selectedItems.length === 0}
+                onClick={() => navigate('/checkout', { state: { selectedItems } })}
+                className="checkout-btn"
+              >
+                Proceed to Payment
               </button>
             </div>
           </div>

@@ -1,0 +1,102 @@
+/* Payment.css */
+.payment-container,
+.payment-success-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-container h2,
+.payment-success-container h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.payment-radio {
+  margin-bottom: 12px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.payment-radio img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.card-form input {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+}
+
+.payment-summary {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-top: 1rem;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.payment-summary p {
+  margin: 6px 0;
+}
+
+.payment-error {
+  color: crimson;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.payment-btn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.payment-btn:hover {
+  background-color: #222;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .payment-container,
+  .payment-success-container {
+    padding: 20px;
+  }
+
+  .card-form input,
+  .payment-btn {
+    font-size: 14px;
+  }
+}
