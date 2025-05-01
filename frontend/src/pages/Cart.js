@@ -1,4 +1,3 @@
-// frontend/src/pages/Cart.jsx
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import '../styles/Cart.css';
@@ -31,13 +30,36 @@ function Cart() {
                     alt={item.name}
                     className="item-image"
                   />
-                  <span className="item-name">{item.name}</span>
+                  <div className="item-text">
+                    <span className="item-name">{item.name}</span>
+                    {item.size && (
+                      <p className="item-detail"><strong>Size:</strong> {item.size}</p>
+                    )}
+                    {item.color && (
+                      <div className="item-detail">
+                        <strong>Color:</strong>
+                        <span
+                          className="color-box"
+                          style={{
+                            backgroundColor: item.color,
+                            display: 'inline-block',
+                            width: 20,
+                            height: 20,
+                            border: '1px solid #000',
+                            marginLeft: 8,
+                            verticalAlign: 'middle'
+                          }}
+                        ></span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="item-details">
                   <span className="item-price">
-                    ${Number(item.price).toFixed(2)}
+                      ${(item.price * item.quantity).toFixed(2)}
                   </span>
+
                   <div className="quantity-controls">
                     <button
                       onClick={() => decreaseQuantity(item.id)}

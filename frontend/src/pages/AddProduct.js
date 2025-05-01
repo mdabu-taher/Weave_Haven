@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import '../styles/AddProduct.css';
+
+const allSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+const allColors = [
+  '#ffffff', '#000000', '#808080', '#c0c0c0', '#ff0000',
+  '#ffa500', '#ffff00', '#008000', '#00ffff', '#0000ff',
+  '#800080', '#ffc0cb', '#a52a2a', '#008080', '#4b0082'
+];
 
 function AddProduct() {
   const [formData, setFormData] = useState({
@@ -6,8 +14,8 @@ function AddProduct() {
     description: '',
     price: '',
     category: '',
-    sizes: '',
-    colors: '',
+    sizes: [],
+    colors: [],
     material: '',
     image: null,
   });
@@ -21,24 +29,35 @@ function AddProduct() {
     setFormData(prev => ({ ...prev, image: e.target.files[0] }));
   };
 
+  const toggleSize = (size) => {
+    setFormData(prev => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter(s => s !== size)
+        : [...prev.sizes, size]
+    }));
+  };
+
+  const toggleColor = (color) => {
+    setFormData(prev => ({
+      ...prev,
+      colors: prev.colors.includes(color)
+        ? prev.colors.filter(c => c !== color)
+        : [...prev.colors, color]
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const form = new FormData();
-    Object.entries(formData).forEach(([key, val]) => {
-      if (key === 'sizes' || key === 'colors') {
-        // split comma list into JSON array
-        const arr = val
-          .split(',')
-          .map(v => v.trim())
-          .filter(v => v);
-        form.append(key, JSON.stringify(arr));
-      } else if (key === 'image') {
-        form.append('image', val);
-      } else {
-        form.append(key, val);
-      }
-    });
+    form.append('name', formData.name);
+    form.append('description', formData.description);
+    form.append('price', formData.price);
+    form.append('category', formData.category);
+    form.append('material', formData.material);
+    form.append('sizes', JSON.stringify(formData.sizes));
+    form.append('colors', JSON.stringify(formData.colors));
+    form.append('image', formData.image);
 
     const response = await fetch('http://localhost:5000/api/products', {
       method: 'POST',
@@ -47,56 +66,26 @@ function AddProduct() {
 
     const result = await response.json();
     alert(result.message || 'Product uploaded!');
-    // Optionally reset form:
-    // setFormData({ name:'',description:'',price:'',category:'',sizes:'',colors:'',material:'',image:null });
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: 600, margin: 'auto' }}>
+    <div className="add-product">
       <h2>Add New Product</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Name<br/>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+        <label>Name<br/>
+          <input name="name" value={formData.name} onChange={handleChange} required />
         </label>
-        <br /><br />
 
-        <label>
-          Description<br/>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
+        <label>Description<br/>
+          <textarea name="description" value={formData.description} onChange={handleChange} required />
         </label>
-        <br /><br />
 
-        <label>
-          Price<br/>
-          <input
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleChange}
-            required
-          />
+        <label>Price<br/>
+          <input name="price" type="number" value={formData.price} onChange={handleChange} required />
         </label>
-        <br /><br />
 
-        <label>
-          Category<br/>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-          >
+        <label>Category<br/>
+          <select name="category" value={formData.category} onChange={handleChange} required>
             <option value="">Select category</option>
             <option value="men">Men</option>
             <option value="women">Women</option>
@@ -107,54 +96,45 @@ function AddProduct() {
             <option value="sale">Sale</option>
           </select>
         </label>
-        <br /><br />
 
-        <label>
-          Sizes (comma separated)<br/>
-          <input
-            name="sizes"
-            value={formData.sizes}
-            onChange={handleChange}
-            placeholder="e.g. S, M, L"
-          />
+        <div className="size-picker">
+          <label>Available Sizes</label>
+          <div className="size-grid">
+            {allSizes.map(size => (
+              <button type="button"
+                key={size}
+                className={formData.sizes.includes(size) ? 'selected' : ''}
+                onClick={() => toggleSize(size)}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="color-picker">
+          <label>Available Colors</label>
+          <div className="color-grid">
+            {allColors.map(color => (
+              <div
+                key={color}
+                className={`color-box ${formData.colors.includes(color) ? 'selected' : ''}`}
+                style={{ backgroundColor: color }}
+                onClick={() => toggleColor(color)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <label>Material<br/>
+          <input name="material" value={formData.material} onChange={handleChange} />
         </label>
-        <br /><br />
 
-        <label>
-          Colors (comma separated)<br/>
-          <input
-            name="colors"
-            value={formData.colors}
-            onChange={handleChange}
-            placeholder="e.g. red, blue, black"
-          />
+        <label>Image<br/>
+          <input type="file" accept="image/*" onChange={handleFileChange} required />
         </label>
-        <br /><br />
 
-        <label>
-          Material<br/>
-          <input
-            name="material"
-            value={formData.material}
-            onChange={handleChange}
-          />
-        </label>
-        <br /><br />
-
-        <label>
-          Image<br/>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-          />
-        </label>
-        <br /><br />
-
-        <button type="submit" style={{ padding: '10px 20px' }}>
-          Upload Product
-        </button>
+        <button type="submit" className="submit-btn">Upload Product</button>
       </form>
     </div>
   );

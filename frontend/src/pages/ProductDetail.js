@@ -17,11 +17,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/products/${id}`)
-      .then(res => {
-        setProduct(res.data);
-        setSelectedSize(res.data.sizes?.[0] || '');
-        setSelectedColor(res.data.colors?.[0] || '');
-      })
+      .then(res => setProduct(res.data))
       .catch(err => console.error('Failed to load product:', err));
   }, [id]);
 
@@ -31,6 +27,11 @@ export default function ProductDetail() {
   const inWishlist = wishlistItems.some(item => item.id === product._id);
 
   const handleCartToggle = () => {
+    if (!selectedSize || !selectedColor) {
+      alert('Please choose your size and color before adding to cart.');
+      return;
+    }
+
     const payload = {
       id: product._id,
       name: product.name,
@@ -39,6 +40,7 @@ export default function ProductDetail() {
       size: selectedSize,
       color: selectedColor
     };
+
     inCart ? removeFromCart(product._id) : addToCart(payload);
   };
 
@@ -53,93 +55,68 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="product-detail-container" style={{ display: 'flex', padding: '2rem', gap: '2rem' }}>
+    <div className="product-detail-container">
       <img
         src={`http://localhost:5000${product.image}`}
         alt={product.name}
-        style={{ width: 400, height: 400, objectFit: 'cover', borderRadius: '10px' }}
+        className="product-image"
       />
 
-      <div style={{ maxWidth: 500 }}>
+      <div className="product-details">
         <h2>{product.name}</h2>
         <p><strong>Price:</strong> ${product.price}</p>
         <p><strong>Material:</strong> {product.material}</p>
         <p>{product.description}</p>
 
         {/* Choose Size */}
-        <div style={{ marginTop: '1rem' }}>
+        <div className="size-selector">
           <label><strong>Choose Size:</strong></label>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-            {(product.sizes ?? []).length === 0 ? (
-              <span style={{ fontStyle: 'italic' }}>No sizes available</span>
-            ) : (
-              product.sizes.map(size => (
+          <div className="size-options">
+            {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(size => {
+              const isAvailable = product.sizes?.includes(size);
+              return (
                 <button
                   key={size}
-                  onClick={() => setSelectedSize(size)}
-                  style={{
-                    padding: '5px 12px',
-                    border: '1px solid #ccc',
-                    borderRadius: 4,
-                    background: size === selectedSize ? '#000' : '#fff',
-                    color: size === selectedSize ? '#fff' : '#000'
-                  }}
+                  onClick={() => isAvailable && setSelectedSize(size)}
+                  className={`size-btn ${size === selectedSize ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}`}
+                  disabled={!isAvailable}
                 >
                   {size}
                 </button>
-              ))
-            )}
+              );
+            })}
           </div>
         </div>
 
         {/* Choose Color */}
-        <div style={{ marginTop: '1rem' }}>
+        <div className="color-selector">
           <label><strong>Choose Color:</strong></label>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-            {(product.colors ?? []).length === 0 ? (
-              <span style={{ fontStyle: 'italic' }}>No colors available</span>
-            ) : (
-              product.colors.map(color => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  style={{
-                    padding: '5px 12px',
-                    border: '1px solid #ccc',
-                    borderRadius: 4,
-                    background: color === selectedColor ? color : '#fff',
-                    color: color === selectedColor ? '#fff' : '#000'
-                  }}
-                >
-                  {color}
-                </button>
-              ))
-            )}
+          <div className="color-options">
+            {(product.colors ?? []).map(color => (
+              <div
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                className={`color-swatch ${color === selectedColor ? 'selected' : ''}`}
+                style={{ backgroundColor: color }}
+              ></div>
+            ))}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+        <div className="action-buttons">
           <button
-            style={{ background: inCart ? 'white' : 'black', color: inCart ? 'black' : 'white', padding: '10px 16px', borderRadius: 6, border: '1px solid black' }}
+            className={`cart-btn ${inCart ? 'outlined' : 'filled'}`}
             onClick={handleCartToggle}
           >
-            <FaShoppingBag style={{ marginRight: 6 }} />
-            {inCart ? 'Remove from Cart' : 'Add to Cart'}
+            <FaShoppingBag /> {inCart ? 'Remove from Cart' : 'Add to Cart'}
           </button>
 
           <button
-            style={{
-              background: inWishlist ? 'crimson' : 'white',
-              color: inWishlist ? 'white' : 'crimson',
-              padding: '10px 16px',
-              borderRadius: 6,
-              border: '1px solid crimson'
-            }}
+            className={`wishlist-btn ${inWishlist ? 'filled' : 'outlined'}`}
             onClick={handleWishlistToggle}
           >
-            <FaHeart style={{ marginRight: 6 }} />
-            {inWishlist ? 'Wishlisted' : 'Wishlist'}
+            <FaHeart /> {inWishlist ? 'Wishlisted' : 'Wishlist'}
           </button>
         </div>
       </div>

@@ -145,3 +145,13 @@
     align-items: flex-end;
   }
 }
+.item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-detail {
+  font-size: 14px;
+  color: #444;
+}
