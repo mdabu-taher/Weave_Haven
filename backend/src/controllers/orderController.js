@@ -16,19 +16,24 @@ export async function createOrder(req, res) {
       itemsPrice,
       shippingPrice,
       taxPrice,
-      totalPrice
+      totalPrice,
+      paymentResult // <- Optional from frontend mock (id, status, email, update_time)
     } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
-      return res.status(400).json({ message: 'No order items' });
+      return res.status(400).json({ message: 'No order items provided' });
     }
 
-    // Optionally check stock levels
+    // Optional: Validate stock if you're tracking it
     for (let item of orderItems) {
-      const prod = await Product.findById(item.product);
-      if (prod.countInStock < item.qty) {
-        return res.status(400).json({ message: `Not enough stock for ${prod.name}` });
+      const product = await Product.findById(item.product);
+      if (!product) {
+        return res.status(404).json({ message: `Product not found: ${item.product}` });
       }
+      // Uncomment if using inventory:
+      // if (product.countInStock < item.qty) {
+      //   return res.status(400).json({ message: `Not enough stock for ${product.name}` });
+      // }
     }
 
     const order = new Order({
@@ -36,16 +41,18 @@ export async function createOrder(req, res) {
       orderItems,
       shippingAddress,
       paymentMethod,
+      paymentResult,
       itemsPrice,
       shippingPrice,
       taxPrice,
-      totalPrice
+      totalPrice,
+      paidAt: new Date()
     });
 
     const createdOrder = await order.save();
     res.status(201).json(createdOrder);
   } catch (err) {
-    console.error(err);
+    console.error('Order creation error:', err);
     res.status(500).json({ message: 'Server error creating order' });
   }
 }
