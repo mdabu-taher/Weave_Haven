@@ -14,6 +14,8 @@ const orderSchema = new mongoose.Schema({
         ref: 'Product',
         required: true
       },
+      name: String,  // ✅ Add this
+      image: String, // ✅ And this
       qty: {
         type: Number,
         required: true,

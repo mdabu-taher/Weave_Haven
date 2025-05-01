@@ -17,28 +17,33 @@ export async function createOrder(req, res) {
       shippingPrice,
       taxPrice,
       totalPrice,
-      paymentResult // <- Optional from frontend mock (id, status, email, update_time)
+      paymentResult
     } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'No order items provided' });
     }
 
-    // Optional: Validate stock if you're tracking it
-    for (let item of orderItems) {
-      const product = await Product.findById(item.product);
-      if (!product) {
-        return res.status(404).json({ message: `Product not found: ${item.product}` });
-      }
-      // Uncomment if using inventory:
-      // if (product.countInStock < item.qty) {
-      //   return res.status(400).json({ message: `Not enough stock for ${product.name}` });
-      // }
-    }
+    const detailedItems = await Promise.all(
+      orderItems.map(async (item) => {
+        const product = await Product.findById(item.product);
+        if (!product) {
+          throw new Error(`Product not found: ${item.product}`);
+        }
+
+        return {
+          product: item.product,
+          qty: item.qty,
+          price: item.price,
+          name: product.name,
+          image: product.image // ✅ include image from product model
+        };
+      })
+    );
 
     const order = new Order({
       user: req.user.id,
-      orderItems,
+      orderItems: detailedItems,
       shippingAddress,
       paymentMethod,
       paymentResult,
