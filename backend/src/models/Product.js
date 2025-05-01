@@ -6,22 +6,28 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-
   price: {
     type: Number,
     required: true
   },
-
   category: {
     type: String,
     required: true
   },
-
   description: {
     type: String,
     default: ''
   },
-
+  material: {
+    type: String,
+    default: ''
+  },
+  sizes: {
+    type: [String] // No default
+  },
+  colors: {
+    type: [String] // No default
+  },
   image: {
     type: String,
     default: ''
@@ -30,6 +36,5 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Define and export the model
 const Product = mongoose.model('Product', productSchema);
 export default Product;
