@@ -1,15 +1,19 @@
-// frontend/src/pages/ProductDetail.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import '../styles/ProductDetail.css';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, removeFromCart } = useCart();
+  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const isWishlisted = wishlistItems.some(item => item.id === id);
+  const isInCart = cartItems.some(item => item.id === id);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/products/${id}`)
@@ -19,14 +23,27 @@ export default function ProductDetail() {
 
   if (!product) return <p>Loading product details...</p>;
 
-  const handleAddToCart = () => {
-    console.log('Add to Cart clicked');
-    addToCart({
-      id: product._id,
-      name: product.name,
-      price: Number(product.price),
-      image: `http://localhost:5000${product.image}`,
-    });
+  const productData = {
+    id: product._id,
+    name: product.name,
+    price: Number(product.price),
+    image: `http://localhost:5000${product.image}`,
+  };
+
+  const handleToggleCart = () => {
+    if (isInCart) {
+      removeFromCart(product._id);
+    } else {
+      addToCart(productData);
+    }
+  };
+
+  const handleToggleWishlist = () => {
+    if (isWishlisted) {
+      removeFromWishlist(product._id);
+    } else {
+      addToWishlist(productData);
+    }
   };
 
   return (
@@ -44,16 +61,19 @@ export default function ProductDetail() {
 
         <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
           <button
-            style={{ background: 'black', color: 'white', padding: '10px 16px', borderRadius: 6 }}
-            onClick={handleAddToCart}
+            className={isInCart ? 'cart-filled' : 'cart-outlined'}
+            onClick={handleToggleCart}
           >
             <FaShoppingBag style={{ marginRight: 6 }} />
-            Add to Cart
+            {isInCart ? 'Remove from Cart' : 'Add to Cart'}
           </button>
 
-          <button style={{ background: 'crimson', color: 'white', padding: '10px 16px', borderRadius: 6 }}>
+          <button
+            className={isWishlisted ? 'wishlist-filled' : 'wishlist-outlined'}
+            onClick={handleToggleWishlist}
+          >
             <FaHeart style={{ marginRight: 6 }} />
-            Wishlist
+            {isWishlisted ? 'Wishlisted' : 'Wishlist'}
           </button>
         </div>
       </div>

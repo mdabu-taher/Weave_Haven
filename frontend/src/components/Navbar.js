@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import axios from 'axios';
 import logo from "../assets/LOGO.png";
 
@@ -11,6 +12,7 @@ import '../styles/Navbar.css';
 
 export default function Navbar() {
   const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
   const [user, setUser] = useState(null);
   const [modal, setModal] = useState('none');
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,8 +138,11 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link to="/favorites">
+          <Link to="/favorites" className="wishlist-icon-wrapper">
             <FaHeart className="nav-icon heart-icon" />
+            {wishlistItems.length > 0 && (
+              <span className="wishlist-count">{wishlistItems.length}</span>
+            )}
           </Link>
 
           <Link to="/cart" className="cart-icon-wrapper">
@@ -149,7 +154,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ✅ Mobile Search Bar Only on Small Screens */}
       {windowWidth <= 768 && (
         <div className="mobile-search-bar">
           <FaSearch className="search-icon-left" />
@@ -164,7 +168,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Sidebar */}
       <div className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`} onClick={() => setSidebarOpen(false)}></div>
       <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={() => setSidebarOpen(false)}>×</button>
@@ -177,7 +180,6 @@ export default function Navbar() {
         <Link to="/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
       </div>
 
-      {/* Modals */}
       {modal === 'login' && (
         <LoginModal
           onClose={() => setModal('none')}

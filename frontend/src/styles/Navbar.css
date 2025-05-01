@@ -231,6 +231,24 @@
   cursor: pointer;
   color: #333;
 }
+.wishlist-icon-wrapper {
+  position: relative;
+  margin-right: 1rem;
+}
+
+.wishlist-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: rgb(250, 247, 247);
+  color: rgb(13, 13, 13);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  border: #333;
+  font-weight: bold;
+}
+
 
 /* ───────── Mobile search always visible ───────── */
 @media (max-width: 768px) {
