@@ -6,7 +6,8 @@ export default function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/orders', { withCredentials: true })
+    axios
+      .get('/api/orders', { withCredentials: true })
       .then(res => setOrders(res.data))
       .catch(err => console.error('Failed to fetch orders:', err));
   }, []);
@@ -20,20 +21,28 @@ export default function OrderHistoryPage() {
         <div className="orders-list">
           {orders.map(order => (
             <div key={order._id} className="order-card">
-              <p><strong>Order ID:</strong> {order._id}</p>
+              <h3>Order ID: <span>{order._id}</span></h3>
               <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
               <p><strong>Status:</strong> {order.status}</p>
-              <ul>
-                {order.items.map((item, index) => (
-                  <li key={index}>
-                    {item.name} - {item.quantity} pcs - ${item.price}
+              <ul className="order-items">
+                {order.orderItems.map((item, index) => (
+                  <li key={index} className="order-item">
+                    {item.image && (
+                      <img src={item.image} alt={item.name || 'Product'} className="order-item-image" />
+                    )}
+                    <div className="order-item-info">
+                      <span className="order-item-name">{item.name || item.product?.name || 'Item'}</span>
+                      <span>{item.qty} pcs – ${item.price}</span>
+                    </div>
                   </li>
                 ))}
               </ul>
-              <p><strong>Total:</strong> ${order.totalAmount}</p>
+
+              <p className="order-total"><strong>Total:</strong> ${order.totalPrice.toFixed(2)}</p>
             </div>
           ))}
         </div>
+
       )}
     </div>
   );

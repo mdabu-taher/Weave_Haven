@@ -121,3 +121,86 @@ form div label {
 .logout-btn:hover {
   color: crimson;
 }
+.account-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.order-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.order-card span {
+  font-weight: normal;
+  color: #666;
+}
+
+.order-card p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.order-items {
+  margin: 0.8rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.order-item-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+}
+
+.order-item-name {
+  font-weight: 500;
+  color: #333;
+}
+
+
+.order-total {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 0.6rem;
+}
