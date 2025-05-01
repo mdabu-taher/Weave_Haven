@@ -51,9 +51,7 @@ export default function Payment() {
     };
 
     try {
-        await axios.post('http://localhost:5000/api/orders', orderPayload, {
-            withCredentials: true,
-          });
+        await axios.post('http://localhost:5000/api/orders', orderPayload, { withCredentials: true });
           
       navigate('/payment-success', {
         state: {

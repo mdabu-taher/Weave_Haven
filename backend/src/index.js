@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
+import orderRoutes from './routes/order.js';
+
 
 dotenv.config();
 
@@ -34,6 +36,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // 5) Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+
 
 // 6) Connect to Mongo & start server
 const PORT = process.env.PORT || 5000;

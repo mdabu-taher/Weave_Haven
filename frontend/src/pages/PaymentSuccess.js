@@ -1,29 +1,31 @@
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import '../styles/Payment.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../styles/PaymentSuccess.css';
 
 export default function PaymentSuccess() {
-  const location = useLocation();
-  const { address, shippingCompany, total, paymentMethod } = location.state || {};
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  const {
+    address,
+    shippingCompany,
+    paymentMethod,
+    total
+  } = state || {};
 
   return (
-    <div className="payment-success-container">
-      <h2>🎉 Payment Successful!</h2>
-
-      <p><strong>Delivery Address:</strong> {address}</p>
-      <p><strong>Shipping Company:</strong> {shippingCompany}</p>
-      <p><strong>Payment Method:</strong> {
-        paymentMethod === 'card' ? 'Credit Card' :
-        paymentMethod === 'paypal' ? 'PayPal' :
-        paymentMethod === 'swish' ? 'Swish' :
-        'Cash on Delivery'
-      }</p>
-      <p><strong>Total Paid:</strong> ${total?.toFixed(2)}</p>
-
-      <div style={{ marginTop: '2rem' }}>
-        <Link to="/" className="payment-btn">
+    <div className="success-container">
+      <div className="success-box">
+        <h2 className="success-title">🎉 Payment Successful!</h2>
+        <div className="success-details">
+          <p><strong>📍 Delivery Address:</strong> {address}</p>
+          <p><strong>🚚 Shipping Company:</strong> {shippingCompany}</p>
+          <p><strong>💳 Payment Method:</strong> {paymentMethod}</p>
+          <p><strong>💰 Total Paid:</strong> ${total?.toFixed(2)}</p>
+        </div>
+        <button className="home-btn" onClick={() => navigate('/')}>
           Back to Home
-        </Link>
+        </button>
       </div>
     </div>
   );
