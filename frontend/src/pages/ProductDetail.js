@@ -64,7 +64,7 @@ export default function ProductDetail() {
 
       <div className="product-details">
         <h2>{product.name}</h2>
-        <p><strong>Price:</strong> ${product.price}</p>
+        <p><strong>Price:</strong> {product.price} SEK</p>
         <p><strong>Material:</strong> {product.material}</p>
         <p>{product.description}</p>
 

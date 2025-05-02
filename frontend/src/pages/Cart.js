@@ -1,4 +1,3 @@
-// frontend/src/pages/Cart.js
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -79,7 +78,7 @@ function Cart() {
 
                 <div className="item-details">
                   <span className="item-price">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    SEK {(item.price * item.quantity).toFixed(2)}
                   </span>
 
                   <div className="quantity-controls">
@@ -103,8 +102,8 @@ function Cart() {
           </ul>
 
           <div className="cart-summary">
-            <h3>Full Cart Total: ${subtotal.toFixed(2)}</h3>
-            <h3>Selected Items Total: ${selectedSubtotal.toFixed(2)}</h3>
+            <h3>Full Cart Total: SEK{subtotal.toFixed(2)}</h3>
+            <h3>Selected Items Total: SEK{selectedSubtotal.toFixed(2)}</h3>
             <div className="cart-actions">
               <button onClick={clearCart} className="clear-btn">Clear Cart</button>
               <button

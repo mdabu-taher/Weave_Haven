@@ -63,13 +63,23 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// List all or by category and subCategory (case-insensitive match)
+// List all or by category and subCategory
 router.get('/', async (req, res) => {
   try {
     const filter = {};
+
     if (req.query.category) {
-      filter.category = new RegExp(`^${req.query.category}$`, 'i');
+      const cat = req.query.category.toLowerCase();
+
+      if (cat === 'new-arrivals') {
+        const twoWeeksAgo = new Date();
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+        filter.createdAt = { $gte: twoWeeksAgo };
+      } else {
+        filter.category = new RegExp(`^${req.query.category}$`, 'i');
+      }
     }
+
     if (req.query.subCategory) {
       filter.subCategory = new RegExp(`^${req.query.subCategory}$`, 'i');
     }
@@ -82,14 +92,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Search products by name
+// 🔍 Search by name, category, or subCategory
 router.get('/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
-    const regex = new RegExp(q, 'i');
-    const results = await Product.find({ name: regex });
+    const regex = new RegExp(q, 'i'); // case-insensitive
+    const results = await Product.find({
+      $or: [
+        { name: regex },
+        { category: regex },
+        { subCategory: regex }
+      ]
+    });
     res.json(results);
   } catch (err) {
     console.error('Search error:', err);

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Payment.css';
 import axios from 'axios';
+import { useCart } from '../context/CartContext'; // ✅ Import CartContext
 
 export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
   const { selectedItems = [], address, shippingCompany, total } = location.state || {};
+
+  const { removeFromCart } = useCart(); // ✅ Use removeFromCart instead of clearCart
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [cardDetails, setCardDetails] = useState({ name: '', number: '', expiry: '', cvv: '' });
@@ -51,8 +54,11 @@ export default function Payment() {
     };
 
     try {
-        await axios.post('http://localhost:5000/api/orders', orderPayload, { withCredentials: true });
-          
+      await axios.post('http://localhost:5000/api/orders', orderPayload, { withCredentials: true });
+
+      // ✅ Remove only the ordered items
+      selectedItems.forEach(item => removeFromCart(item.id));
+
       navigate('/payment-success', {
         state: {
           selectedItems,
@@ -102,28 +108,29 @@ export default function Payment() {
           <input type="text" name="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleInput} />
         </div>
       )}
-    {paymentMethod === 'paypal' && (
-    <div className="qr-payment-info">
-        <h4>PayPal Payment</h4>
-        <img src="/images/paypal-qr.png" alt="PayPal QR Code" className="qr-code" />
-        <p>Pay to: <strong>paypal@example.com</strong></p>
-    </div>
-    )}
 
-    {paymentMethod === 'swish' && (
-    <div className="qr-payment-info">
-        <h4>Swish Payment</h4>
-        <img src="/images/swish-qr.png" alt="Swish QR Code" className="qr-code" />
-        <p>Swish to: <strong>+46701234567</strong></p>
-    </div>
-    )}
+      {paymentMethod === 'paypal' && (
+        <div className="qr-payment-info">
+          <h4>PayPal Payment</h4>
+          <img src="/images/paypal-qr.png" alt="PayPal QR Code" className="qr-code" />
+          <p>Pay to: <strong>paypal@example.com</strong></p>
+        </div>
+      )}
+
+      {paymentMethod === 'swish' && (
+        <div className="qr-payment-info">
+          <h4>Swish Payment</h4>
+          <img src="/images/swish-qr.png" alt="Swish QR Code" className="qr-code" />
+          <p>Swish to: <strong>+46701234567</strong></p>
+        </div>
+      )}
 
       <div className="payment-summary">
         <p><strong>Delivery Address:</strong> {address}</p>
         <p><strong>Shipping Company:</strong> {shippingCompany}</p>
-        <p><strong>Items:</strong> ${itemsPrice.toFixed(2)}</p>
-        <p><strong>Shipping:</strong> ${shippingPrice.toFixed(2)}</p>
-        <p><strong>Total:</strong> ${total.toFixed(2)}</p>
+        <p><strong>Items:</strong> SEK{itemsPrice.toFixed(2)}</p>
+        <p><strong>Shipping:</strong> SEK{shippingPrice.toFixed(2)}</p>
+        <p><strong>Total:</strong> SEK{total.toFixed(2)}</p>
       </div>
 
       {error && <p className="payment-error">{error}</p>}

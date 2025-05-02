@@ -77,15 +77,15 @@
   }
   
   .cart-btn.filled {
-    background: black;
+    background: green;
     color: white;
-    border: 1px solid black;
+    border: 1px solid green;
   }
   
   .cart-btn.outlined {
-    background: white;
-    color: black;
-    border: 1px solid black;
+    background: crimson;
+    color: white;
+    border: 1px solid crimson;
   }
   
   .wishlist-btn.filled {

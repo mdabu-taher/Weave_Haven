@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useParams, Link } from 'react-router-dom';
 import '../styles/ProductsList.css';
 
 function ProductsList() {
   const { category, subCategory } = useParams();
-  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,14 +43,15 @@ function ProductsList() {
         <div className="products-grid">
           {products.map(product => (
             <div className="product-card" key={product._id}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
-              />
+              <Link to={`/product/${product._id}`} className="product-image-link">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="product-image"
+                />
+              </Link>
               <h3>{product.name}</h3>
               <p>{product.price} SEK</p>
-              <button onClick={() => addToCart(product)}>Add to Cart</button>
             </div>
           ))}
         </div>

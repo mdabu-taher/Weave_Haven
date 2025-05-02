@@ -21,7 +21,7 @@ export default function PaymentSuccess() {
           <p><strong>📍 Delivery Address:</strong> {address}</p>
           <p><strong>🚚 Shipping Company:</strong> {shippingCompany}</p>
           <p><strong>💳 Payment Method:</strong> {paymentMethod}</p>
-          <p><strong>💰 Total Paid:</strong> ${total?.toFixed(2)}</p>
+          <p><strong>💰 Total Paid:</strong> SEK{total?.toFixed(2)}</p>
         </div>
         <button className="home-btn" onClick={() => navigate('/')}>
           Back to Home

@@ -84,9 +84,9 @@ export default function Checkout() {
       </div>
 
       <div className="checkout-summary">
-        <p>Subtotal: ${subtotal.toFixed(2)}</p>
-        <p>Shipping Fee: {shipping ? `$${shippingFee.toFixed(2)}` : '-'}</p>
-        <p><strong>Total: ${shipping ? total.toFixed(2) : '-'}</strong></p>
+        <p>Subtotal: SEK{subtotal.toFixed(2)}</p>
+        <p>Shipping Fee: {shipping ? `SEK${shippingFee.toFixed(2)}` : '-'}</p>
+        <p><strong>Total: {shipping ? `SEK${total.toFixed(2)}` : '-'}</strong></p>
       </div>
 
       {error && <p className="checkout-error">{error}</p>}
