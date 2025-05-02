@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import axios from 'axios';
 import logo from "../assets/LOGO.png";
-
+import categories from '../utils/categories';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import '../styles/Navbar.css';
@@ -78,15 +78,24 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* CENTER: Links */}
+        {/* CENTER: Categories with dropdown */}
         <div className="navbar-center">
-          <Link to="/men">Men</Link>
-          <Link to="/women">Women</Link>
-          <Link to="/kids">Kids</Link>
-          <Link to="/teens">Teens</Link>
-          <Link to="/newborn">Newborn</Link>
-          <Link to="/all-products">New Arrivals</Link>
-          <Link to="/sale">Sale</Link>
+          <ul className="main-nav">
+            {categories.map((cat, idx) => (
+              <li className="nav-item" key={idx}>
+                <Link to={`/products/${cat.name.toLowerCase()}`}>{cat.name}</Link>
+                <ul className="dropdown-menu">
+                  {cat.subcategories.map((sub, subIdx) => (
+                    <li key={subIdx}>
+                      <Link to={`/products/${cat.name.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {sub}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* RIGHT: Icons */}
@@ -154,6 +163,7 @@ export default function Navbar() {
         </div>
       </nav>
 
+      {/* Mobile Search Bar */}
       {windowWidth <= 768 && (
         <div className="mobile-search-bar">
           <FaSearch className="search-icon-left" />
@@ -168,18 +178,19 @@ export default function Navbar() {
         </div>
       )}
 
+      {/* Sidebar for mobile */}
       <div className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`} onClick={() => setSidebarOpen(false)}></div>
       <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={() => setSidebarOpen(false)}>×</button>
         <Link to="/men" onClick={() => setSidebarOpen(false)}>Men</Link>
         <Link to="/women" onClick={() => setSidebarOpen(false)}>Women</Link>
         <Link to="/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
-        <Link to="/teens" onClick={() => setSidebarOpen(false)}>Teens</Link>
         <Link to="/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
         <Link to="/all-products" onClick={() => setSidebarOpen(false)}>New Arrivals</Link>
         <Link to="/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
       </div>
 
+      {/* Modals */}
       {modal === 'login' && (
         <LoginModal
           onClose={() => setModal('none')}

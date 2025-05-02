@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '..', '..', 'uploads'));
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname); // e.g. ".webp"
+    const ext = path.extname(file.originalname);
     cb(null, `${Date.now()}${ext}`);
   }
 });
@@ -31,6 +31,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       description = '',
       price,
       category,
+      subCategory = '',
       sizes = '[]',
       colors = '[]',
       material = ''
@@ -43,6 +44,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       description,
       price,
       category,
+      subCategory,
       sizes: JSON.parse(sizes),
       colors: JSON.parse(colors),
       material,
@@ -61,12 +63,15 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// List all or by category
+// List all or by category and subCategory (case-insensitive match)
 router.get('/', async (req, res) => {
   try {
     const filter = {};
     if (req.query.category) {
-      filter.category = req.query.category;
+      filter.category = new RegExp(`^${req.query.category}$`, 'i');
+    }
+    if (req.query.subCategory) {
+      filter.subCategory = new RegExp(`^${req.query.subCategory}$`, 'i');
     }
 
     const products = await Product.find(filter);
@@ -83,7 +88,7 @@ router.get('/search', async (req, res) => {
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
-    const regex = new RegExp(q, 'i'); // case-insensitive search
+    const regex = new RegExp(q, 'i');
     const results = await Product.find({ name: regex });
     res.json(results);
   } catch (err) {
@@ -91,6 +96,8 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Search failed' });
   }
 });
+
+// Get product by ID
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -101,6 +108,5 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch product' });
   }
 });
-
 
 export default router;

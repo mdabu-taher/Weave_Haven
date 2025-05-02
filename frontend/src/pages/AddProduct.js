@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import categories from '../utils/categories';
 import '../styles/AddProduct.css';
 
 const allSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
@@ -14,6 +15,7 @@ function AddProduct() {
     description: '',
     price: '',
     category: '',
+    subCategory: '',
     sizes: [],
     colors: [],
     material: '',
@@ -22,7 +24,11 @@ function AddProduct() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'category' ? { subCategory: '' } : {}) // Reset subCategory if category changes
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -54,6 +60,7 @@ function AddProduct() {
     form.append('description', formData.description);
     form.append('price', formData.price);
     form.append('category', formData.category);
+    form.append('subCategory', formData.subCategory.toLowerCase().replace(/\s+/g, '-'));
     form.append('material', formData.material);
     form.append('sizes', JSON.stringify(formData.sizes));
     form.append('colors', JSON.stringify(formData.colors));
@@ -68,34 +75,44 @@ function AddProduct() {
     alert(result.message || 'Product uploaded!');
   };
 
+  const subCategories =
+    categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())?.subcategories || [];
+
   return (
     <div className="add-product">
       <h2>Add New Product</h2>
       <form onSubmit={handleSubmit}>
-        <label>Name<br/>
+        <label>Name<br />
           <input name="name" value={formData.name} onChange={handleChange} required />
         </label>
 
-        <label>Description<br/>
+        <label>Description<br />
           <textarea name="description" value={formData.description} onChange={handleChange} required />
         </label>
 
-        <label>Price<br/>
+        <label>Price<br />
           <input name="price" type="number" value={formData.price} onChange={handleChange} required />
         </label>
 
-        <label>Category<br/>
+        <label>Category<br />
           <select name="category" value={formData.category} onChange={handleChange} required>
             <option value="">Select category</option>
-            <option value="men">Men</option>
-            <option value="women">Women</option>
-            <option value="kids">Kids</option>
-            <option value="teens">Teens</option>
-            <option value="newborn">Newborn</option>
-            <option value="new-arrivals">New Arrivals</option>
-            <option value="sale">Sale</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat.name}>{cat.name}</option>
+            ))}
           </select>
         </label>
+
+        {subCategories.length > 0 && (
+          <label>Sub-Category<br />
+            <select name="subCategory" value={formData.subCategory} onChange={handleChange} required>
+              <option value="">Select sub-category</option>
+              {subCategories.map((sub, idx) => (
+                <option key={idx} value={sub}>{sub}</option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <div className="size-picker">
           <label>Available Sizes</label>
@@ -126,11 +143,11 @@ function AddProduct() {
           </div>
         </div>
 
-        <label>Material<br/>
+        <label>Material<br />
           <input name="material" value={formData.material} onChange={handleChange} />
         </label>
 
-        <label>Image<br/>
+        <label>Image<br />
           <input type="file" accept="image/*" onChange={handleFileChange} required />
         </label>
 

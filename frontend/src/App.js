@@ -10,7 +10,7 @@ import ProductsList from "./pages/ProductsList";
 import Cart from "./pages/Cart";
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
-import Payment from './pages/Payment';             // ✅ Add this line
+import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
 
 import Home from "./pages/Home";
@@ -38,6 +38,8 @@ function App() {
             <Route path="/add-product" element={<AddProduct />} />
             <Route path="/all-products" element={<AllProducts />} />
             <Route path="/products" element={<ProductsList />} />
+            <Route path="/products/:category" element={<ProductsList />} />
+            <Route path="/products/:category/:subCategory" element={<ProductsList />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/about" element={<About />} />
@@ -56,7 +58,7 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/payment" element={<Payment />} />             {/* ✅ Add this route */}
+            <Route path="/payment" element={<Payment />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
           </Routes>
           <Footer />
