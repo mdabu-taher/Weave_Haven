@@ -92,13 +92,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 🔍 Search by name, category, or subCategory
+// 🔍 Search by partial name, category, or subCategory
 router.get('/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
-    const regex = new RegExp(q, 'i'); // case-insensitive
+    const regex = new RegExp(q, 'i'); // partial and case-insensitive
+
     const results = await Product.find({
       $or: [
         { name: regex },
@@ -106,6 +107,7 @@ router.get('/search', async (req, res) => {
         { subCategory: regex }
       ]
     });
+
     res.json(results);
   } catch (err) {
     console.error('Search error:', err);
