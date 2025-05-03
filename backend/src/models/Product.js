@@ -27,18 +27,21 @@ const productSchema = new mongoose.Schema({
     default: ''
   },
   sizes: {
-    type: [String]
+    type: [String],
+    default: []
   },
   colors: {
-    type: [String]
+    type: [String],
+    default: []
   },
   image: {
     type: String,
     default: ''
   }
 }, {
-  timestamps: true
+  timestamps: true // ✅ Enables createdAt and updatedAt
 });
 
 const Product = mongoose.model('Product', productSchema);
+
 export default Product;

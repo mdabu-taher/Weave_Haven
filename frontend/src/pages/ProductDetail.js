@@ -9,6 +9,7 @@ import '../styles/ProductDetail.css';
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [error, setError] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
 
@@ -16,11 +17,20 @@ export default function ProductDetail() {
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/products/${id}`)
-      .then(res => setProduct(res.data))
-      .catch(err => console.error('Failed to load product:', err));
+    if (!id) return setError('Invalid product ID');
+
+    axios
+      .get(`http://localhost:5000/api/products/${id}`)
+      .then(res => {
+        setProduct(res.data);
+        setError('');
+      })
+      .catch(() => {
+        setError('Failed to load product. Please try again.');
+      });
   }, [id]);
 
+  if (error) return <p>{error}</p>;
   if (!product) return <p>Loading product details...</p>;
 
   const inCart = cartItems.some(item => item.id === product._id);
@@ -54,6 +64,16 @@ export default function ProductDetail() {
     inWishlist ? removeFromWishlist(product._id) : addToWishlist(payload);
   };
 
+  const getSizeOptions = () => {
+    if (product.category?.toLowerCase() === 'newborn') {
+      return ['0-3M', '3-6M', '6-9M', '9-12M'];
+    } else if (product.category?.toLowerCase() === 'kids') {
+      return ['1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y', '9Y', '10Y'];
+    } else {
+      return ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+    }
+  };
+
   return (
     <div className="product-detail-container">
       <img
@@ -64,7 +84,7 @@ export default function ProductDetail() {
 
       <div className="product-details">
         <h2>{product.name}</h2>
-        <p><strong>Price:</strong> {product.price} SEK</p>
+        <p><strong>Price:</strong> SEK{product.price}</p>
         <p><strong>Material:</strong> {product.material}</p>
         <p>{product.description}</p>
 
@@ -72,7 +92,7 @@ export default function ProductDetail() {
         <div className="size-selector">
           <label><strong>Choose Size:</strong></label>
           <div className="size-options">
-            {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(size => {
+            {getSizeOptions().map(size => {
               const isAvailable = product.sizes?.includes(size);
               return (
                 <button

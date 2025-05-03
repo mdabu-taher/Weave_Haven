@@ -10,7 +10,12 @@ export default function AllProducts() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/products');
+        const endpoint =
+          categoryFromPath === 'new-arrivals'
+            ? 'http://localhost:5000/api/products?new=true'
+            : 'http://localhost:5000/api/products';
+
+        const res = await fetch(endpoint);
         const data = await res.json();
 
         const filtered =
@@ -33,10 +38,7 @@ export default function AllProducts() {
   return (
     <div style={{ padding: 20 }}>
       <h2>
-        Products:{' '}
-        {categoryFromPath === 'new-arrivals'
-          ? 'All'
-          : categoryFromPath}
+        {categoryFromPath.replace('-', ' ')}
       </h2>
 
       <div
@@ -76,7 +78,7 @@ export default function AllProducts() {
                 />
                 <h3>{product.name}</h3>
                 <p>
-                  <strong>${product.price}</strong>
+                  <strong>SEK {product.price}</strong>
                 </p>
               </Link>
             );

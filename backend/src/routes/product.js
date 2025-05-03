@@ -10,7 +10,7 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Multer setup: save into /uploads at project root
+// Multer setup for image upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '..', '..', 'uploads'));
@@ -20,10 +20,9 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}${ext}`);
   }
 });
-
 const upload = multer({ storage });
 
-// Create / Upload product
+// POST /api/products – Add new product
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     const {
@@ -53,38 +52,38 @@ router.post('/', upload.single('image'), async (req, res) => {
 
     await product.save();
 
-    res.status(201).json({
-      message: 'Product uploaded successfully',
-      product
-    });
+    res.status(201).json({ message: 'Product uploaded successfully', product });
   } catch (err) {
     console.error('Product upload error:', err);
     res.status(500).json({ message: 'Failed to upload product' });
   }
 });
 
-// List all or by category and subCategory
+// GET /api/products – Get all, category, subCategory or new-arrivals
 router.get('/', async (req, res) => {
   try {
     const filter = {};
+    const category = req.query.category?.toLowerCase();
+    const subCategory = req.query.subCategory?.toLowerCase();
 
-    if (req.query.category) {
-      const cat = req.query.category.toLowerCase();
+    if (category === 'new-arrivals') {
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+      filter.createdAt = { $gte: twoWeeksAgo };
 
-      if (cat === 'new-arrivals') {
-        const twoWeeksAgo = new Date();
-        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-        filter.createdAt = { $gte: twoWeeksAgo };
-      } else {
-        filter.category = new RegExp(`^${req.query.category}$`, 'i');
+      if (subCategory) {
+        filter.category = { $regex: `^${subCategory}$`, $options: 'i' };
+      }
+    } else {
+      if (category) {
+        filter.category = { $regex: `^${category}$`, $options: 'i' };
+      }
+      if (subCategory) {
+        filter.subCategory = { $regex: `^${subCategory}$`, $options: 'i' };
       }
     }
 
-    if (req.query.subCategory) {
-      filter.subCategory = new RegExp(`^${req.query.subCategory}$`, 'i');
-    }
-
-    const products = await Product.find(filter);
+    const products = await Product.find(filter).sort({ createdAt: -1 });
     res.json(products);
   } catch (err) {
     console.error('Fetch products error:', err);
@@ -92,14 +91,13 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 🔍 Search by partial name, category, or subCategory
+// GET /api/products/search?q=query – Search products
 router.get('/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
-    const regex = new RegExp(q, 'i'); // partial and case-insensitive
-
+    const regex = new RegExp(q, 'i');
     const results = await Product.find({
       $or: [
         { name: regex },
@@ -107,7 +105,6 @@ router.get('/search', async (req, res) => {
         { subCategory: regex }
       ]
     });
-
     res.json(results);
   } catch (err) {
     console.error('Search error:', err);
@@ -115,7 +112,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// Get product by ID
+// GET /api/products/:id – Get product by ID
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

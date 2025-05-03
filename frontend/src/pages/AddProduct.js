@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import categories from '../utils/categories';
 import '../styles/AddProduct.css';
 
-const allSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+const sizesByCategory = {
+  Newborn: ['0-3M', '3-6M', '6-9M', '9-12M'],
+  Kids: ['1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y', '9Y', '10Y'],
+  default: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+};
+
 const allColors = [
   '#ffffff', '#000000', '#808080', '#c0c0c0', '#ff0000',
   '#ffa500', '#ffff00', '#008000', '#00ffff', '#0000ff',
@@ -27,7 +32,7 @@ function AddProduct() {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      ...(name === 'category' ? { subCategory: '' } : {}) // Reset subCategory if category changes
+      ...(name === 'category' ? { subCategory: '', sizes: [] } : {}) // Reset subCategory and sizes if category changes
     }));
   };
 
@@ -78,6 +83,9 @@ function AddProduct() {
   const subCategories =
     categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())?.subcategories || [];
 
+  const sizeOptions =
+    sizesByCategory[formData.category] || sizesByCategory.default;
+
   return (
     <div className="add-product">
       <h2>Add New Product</h2>
@@ -117,7 +125,7 @@ function AddProduct() {
         <div className="size-picker">
           <label>Available Sizes</label>
           <div className="size-grid">
-            {allSizes.map(size => (
+            {sizeOptions.map(size => (
               <button type="button"
                 key={size}
                 className={formData.sizes.includes(size) ? 'selected' : ''}
