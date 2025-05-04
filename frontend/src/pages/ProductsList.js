@@ -41,19 +41,37 @@ function ProductsList() {
         <p>No products found.</p>
       ) : (
         <div className="products-grid">
-          {products.map(product => (
-            <div className="product-card" key={product._id}>
-              <Link to={`/product/${product._id}`} className="product-image-link">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image"
-                />
-              </Link>
-              <h3>{product.name}</h3>
-              <p>{product.price} SEK</p>
-            </div>
-          ))}
+          {products.map(product => {
+            // pick the first photo, or fallback
+            const thumb =
+              Array.isArray(product.photos) && product.photos.length > 0
+                ? product.photos[0]
+                : null;
+
+            return (
+              <div className="product-card" key={product._id}>
+                <Link
+                  to={`/product/${product._id}`}
+                  className="product-image-link"
+                >
+                  {thumb ? (
+                    <img
+                      src={thumb}
+                      alt={product.name}
+                      className="product-image"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="no-photo-thumbnail">
+                      No image available
+                    </div>
+                  )}
+                </Link>
+                <h3>{product.name}</h3>
+                <p>{product.price.toFixed(2)} SEK</p>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

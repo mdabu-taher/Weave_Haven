@@ -1,13 +1,14 @@
 // src/pages/ForgotPassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Modal.css'; // reuse your modal styles
-
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -19,6 +20,13 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(err.response?.data?.message || 'Error sending reset link');
     }
+  };
+
+  const handleClose = () => {
+    setEmail('');
+    setMessage('');
+    setError('');
+    navigate('/login');
   };
 
   return (
@@ -39,7 +47,7 @@ export default function ForgotPassword() {
           <button type="submit">Send Reset Link</button>
         </form>
 
-        <p className="close" onClick={() => (window.location = '/')}>
+        <p className="close" onClick={handleClose}>
           Close
         </p>
       </div>

@@ -1,4 +1,3 @@
-// src/models/Product.js
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
@@ -34,14 +33,13 @@ const productSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
-  image: {
-    type: String,
-    default: ''
+  photos: {           // updated field
+    type: [String],   // array of image URL strings
+    default: []
   }
 }, {
-  timestamps: true // ✅ Enables createdAt and updatedAt
+  timestamps: true     // enables createdAt & updatedAt
 });
 
 const Product = mongoose.model('Product', productSchema);
-
 export default Product;

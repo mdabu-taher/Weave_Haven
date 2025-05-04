@@ -1,142 +1,137 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/ProductDetail.js
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import '../styles/ProductDetail.css';
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
+
   const [product, setProduct] = useState(null);
-  const [error, setError] = useState('');
+  const [mainIdx, setMainIdx] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-
-  const { cartItems, addToCart, removeFromCart } = useCart();
-  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return setError('Invalid product ID');
-
-    axios
-      .get(`http://localhost:5000/api/products/${id}`)
-      .then(res => {
-        setProduct(res.data);
-        setError('');
-      })
-      .catch(() => {
-        setError('Failed to load product. Please try again.');
-      });
+    async function load() {
+      try {
+        const res = await fetch(`http://localhost:5000/api/products/${id}`);
+        const data = await res.json();
+        setProduct(data);
+        if (data.sizes.length) setSelectedSize(data.sizes[0]);
+        if (data.colors.length) setSelectedColor(data.colors[0]);
+      } catch {
+        console.error('Failed to load product');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
   }, [id]);
 
-  if (error) return <p>{error}</p>;
-  if (!product) return <p>Loading product details...</p>;
+  if (loading) return <p>Loading…</p>;
+  if (!product) return <p>Product not found</p>;
 
-  const inCart = cartItems.some(item => item.id === product._id);
-  const inWishlist = wishlistItems.some(item => item.id === product._id);
+  const { name, description, price, material, sizes = [], colors = [], photos = [] } = product;
+  const mainSrc = photos[mainIdx] || '';
 
-  const handleCartToggle = () => {
+  const onSizeClick = sz => sizes.includes(sz) && setSelectedSize(sz);
+  const onColorClick = clr => colors.includes(clr) && setSelectedColor(clr);
+
+  const onAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      alert('Please choose your size and color before adding to cart.');
-      return;
+      return alert('Please select both size and color.');
     }
-
-    const payload = {
-      id: product._id,
-      name: product.name,
-      price: Number(product.price),
-      image: `http://localhost:5000${product.image}`,
-      size: selectedSize,
-      color: selectedColor
-    };
-
-    inCart ? removeFromCart(product._id) : addToCart(payload);
+    addToCart({ id, name, price, size: selectedSize, color: selectedColor, image: mainSrc, quantity: 1 });
+    alert(`Added to cart: ${name} (${selectedSize}, ${selectedColor})`);
   };
 
-  const handleWishlistToggle = () => {
-    const payload = {
-      id: product._id,
-      name: product.name,
-      price: Number(product.price),
-      image: `http://localhost:5000${product.image}`,
-    };
-    inWishlist ? removeFromWishlist(product._id) : addToWishlist(payload);
-  };
-
-  const getSizeOptions = () => {
-    if (product.category?.toLowerCase() === 'newborn') {
-      return ['0-3M', '3-6M', '6-9M', '9-12M'];
-    } else if (product.category?.toLowerCase() === 'kids') {
-      return ['1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y', '9Y', '10Y'];
-    } else {
-      return ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-    }
+  const onWishlist = () => {
+    addToWishlist({ id, name, price, image: mainSrc });
+    alert(`Added to wishlist: ${name}`);
   };
 
   return (
     <div className="product-detail-container">
-      <img
-        src={`http://localhost:5000${product.image}`}
-        alt={product.name}
-        className="product-image"
-      />
+      <div className="images-section">
+        {mainSrc ? (
+          <img
+            src={mainSrc}
+            alt={name}
+            className="main-photo"
+            loading="lazy"
+            onClick={() => {
+              if (photos.length > 1) setMainIdx((mainIdx + 1) % photos.length);
+            }}
+            style={{ cursor: photos.length > 1 ? 'pointer' : 'default' }}
+          />
+        ) : (
+          <div className="no-photo-large">No image available</div>
+        )}
 
-      <div className="product-details">
-        <h2>{product.name}</h2>
-        <p><strong>Price:</strong> SEK{product.price}</p>
-        <p><strong>Material:</strong> {product.material}</p>
-        <p>{product.description}</p>
-
-        {/* Choose Size */}
-        <div className="size-selector">
-          <label><strong>Choose Size:</strong></label>
-          <div className="size-options">
-            {getSizeOptions().map(size => {
-              const isAvailable = product.sizes?.includes(size);
-              return (
-                <button
-                  key={size}
-                  onClick={() => isAvailable && setSelectedSize(size)}
-                  className={`size-btn ${size === selectedSize ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}`}
-                  disabled={!isAvailable}
-                >
-                  {size}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Choose Color */}
-        <div className="color-selector">
-          <label><strong>Choose Color:</strong></label>
-          <div className="color-options">
-            {(product.colors ?? []).map(color => (
-              <div
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={`color-swatch ${color === selectedColor ? 'selected' : ''}`}
-                style={{ backgroundColor: color }}
-              ></div>
+        {photos.length > 1 && (
+          <div className="thumbnails">
+            {photos.map((src, idx) => (
+              <img
+                key={idx}
+                src={src}
+                alt={`${name} thumbnail ${idx + 1}`}
+                className={`thumbnail${idx === mainIdx ? ' selected' : ''}`}
+                onClick={() => setMainIdx(idx)}
+                loading="lazy"
+              />
             ))}
           </div>
+        )}
+      </div>
+
+      <div className="product-details">
+        <h1>{name}</h1>
+        <p><strong>Price:</strong> SEK{price.toFixed(2)}</p>
+        <p><strong>Material:</strong> {material}</p>
+
+        {description && (
+          <div className="description-section">
+            <h3>Description</h3>
+            <p>{description}</p>
+          </div>
+        )}
+
+        <div className="size-options">
+          <p><strong>Choose Size:</strong></p>
+          {sizes.map(sz => (
+            <button
+              key={sz}
+              className={`size-btn${sz === selectedSize ? ' selected' : ''}`}
+              onClick={() => onSizeClick(sz)}
+            >
+              {sz}
+            </button>
+          ))}
         </div>
 
-        {/* Action Buttons */}
-        <div className="action-buttons">
-          <button
-            className={`cart-btn ${inCart ? 'outlined' : 'filled'}`}
-            onClick={handleCartToggle}
-          >
-            <FaShoppingBag /> {inCart ? 'Remove from Cart' : 'Add to Cart'}
-          </button>
+        <div className="color-options">
+          <p><strong>Choose Color:</strong></p>
+          {colors.map(clr => (
+            <div
+              key={clr}
+              className={`color-swatch${clr === selectedColor ? ' selected' : ''}`}
+              style={{ backgroundColor: clr }}
+              onClick={() => onColorClick(clr)}
+            />
+          ))}
+        </div>
 
-          <button
-            className={`wishlist-btn ${inWishlist ? 'filled' : 'outlined'}`}
-            onClick={handleWishlistToggle}
-          >
-            <FaHeart /> {inWishlist ? 'Wishlisted' : 'Wishlist'}
+        <div className="action-buttons">
+          <button className="cart-btn filled" onClick={onAddToCart}>
+            Add to Cart
+          </button>
+          <button className="wishlist-btn outlined" onClick={onWishlist}>
+            Wishlist
           </button>
         </div>
       </div>

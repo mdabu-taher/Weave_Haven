@@ -1,3 +1,4 @@
+// backend/src/routes/product.js
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -10,56 +11,66 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Multer setup for image upload
+// Multer setup: accept up to 10 files under field name "photos"
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '..', '..', 'uploads'));
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}${ext}`);
+    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
   }
 });
 const upload = multer({ storage });
 
-// POST /api/products – Add new product
-router.post('/', upload.single('image'), async (req, res) => {
-  try {
-    const {
-      name,
-      description = '',
-      price,
-      category,
-      subCategory = '',
-      sizes = '[]',
-      colors = '[]',
-      material = ''
-    } = req.body;
+/**
+ * POST /api/products
+ * Create a new product, uploading multiple images under "photos"
+ */
+router.post(
+  '/',
+  upload.array('photos', 10),
+  async (req, res) => {
+    try {
+      const {
+        name,
+        description = '',
+        price,
+        category,
+        subCategory = '',
+        sizes = '[]',
+        colors = '[]',
+        material = ''
+      } = req.body;
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+      // Map each uploaded file to its URL
+      const photoUrls = req.files.map(f => `/uploads/${f.filename}`);
 
-    const product = new Product({
-      name,
-      description,
-      price,
-      category,
-      subCategory,
-      sizes: JSON.parse(sizes),
-      colors: JSON.parse(colors),
-      material,
-      image: imageUrl
-    });
+      const product = new Product({
+        name,
+        description,
+        price,
+        category,
+        subCategory,
+        sizes: JSON.parse(sizes),
+        colors: JSON.parse(colors),
+        material,
+        photos: photoUrls
+      });
 
-    await product.save();
-
-    res.status(201).json({ message: 'Product uploaded successfully', product });
-  } catch (err) {
-    console.error('Product upload error:', err);
-    res.status(500).json({ message: 'Failed to upload product' });
+      await product.save();
+      res.status(201).json({ message: 'Product uploaded successfully', product });
+    } catch (err) {
+      console.error('Product upload error:', err);
+      res.status(500).json({ message: 'Failed to upload product' });
+    }
   }
-});
+);
 
-// GET /api/products – Get all, category, subCategory or new-arrivals
+/**
+ * GET /api/products
+ * List all products, optionally filter by category / subCategory / new-arrivals
+ */
 router.get('/', async (req, res) => {
   try {
     const filter = {};
@@ -67,20 +78,15 @@ router.get('/', async (req, res) => {
     const subCategory = req.query.subCategory?.toLowerCase();
 
     if (category === 'new-arrivals') {
-      const twoWeeksAgo = new Date();
-      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-      filter.createdAt = { $gte: twoWeeksAgo };
-
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 14);
+      filter.createdAt = { $gte: cutoff };
       if (subCategory) {
         filter.category = { $regex: `^${subCategory}$`, $options: 'i' };
       }
     } else {
-      if (category) {
-        filter.category = { $regex: `^${category}$`, $options: 'i' };
-      }
-      if (subCategory) {
-        filter.subCategory = { $regex: `^${subCategory}$`, $options: 'i' };
-      }
+      if (category) filter.category = { $regex: `^${category}$`, $options: 'i' };
+      if (subCategory) filter.subCategory = { $regex: `^${subCategory}$`, $options: 'i' };
     }
 
     const products = await Product.find(filter).sort({ createdAt: -1 });
@@ -91,20 +97,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/products/search?q=query – Search products
+/**
+ * GET /api/products/search?q=…
+ * Live‐search endpoint: only matches on product.name
+ */
 router.get('/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Query missing' });
 
   try {
     const regex = new RegExp(q, 'i');
-    const results = await Product.find({
-      $or: [
-        { name: regex },
-        { category: regex },
-        { subCategory: regex }
-      ]
-    });
+    const results = await Product.find({ name: regex }).limit(10);
     res.json(results);
   } catch (err) {
     console.error('Search error:', err);
@@ -112,7 +115,10 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// GET /api/products/:id – Get product by ID
+/**
+ * GET /api/products/:id
+ * Fetch a single product by its ID
+ */
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

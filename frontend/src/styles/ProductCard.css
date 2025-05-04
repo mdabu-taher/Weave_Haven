@@ -1,0 +1,30 @@
+.product-card {
+    /* your existing styles */
+  }
+  
+  .product-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .product-photo {
+    display: inline-block;
+    width: 120px;          /* debug size, adjust as needed */
+    height: 120px;         /* debug size, adjust as needed */
+    object-fit: cover;
+    border: 1px solid red; /* remove once confirmed working */
+  }
+  
+  .no-photo {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #888;
+    font-size: 0.9rem;
+    border: 1px dashed #ccc;
+  }
+  

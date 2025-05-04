@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
 import axios from 'axios';
 import logo from "../assets/LOGO.png";
 import categories from '../utils/categories';
@@ -11,83 +10,111 @@ import RegisterModal from './RegisterModal';
 import '../styles/Navbar.css';
 
 export default function Navbar() {
-  const { cartItems } = useCart();
-  const { wishlistItems } = useWishlist();
+  const { cartItems, wishlistItems } = useCart();
   const [user, setUser] = useState(null);
   const [modal, setModal] = useState('none');
   const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [debounceTimer, setDebounceTimer] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const searchBoxRef = useRef(null);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const searchBoxRef = useRef(null);
+
+  // fetch user
   useEffect(() => {
     axios.get('/api/auth/profile', { withCredentials: true })
       .then(({ data }) => setUser(data))
       .catch(() => setUser(null));
   }, []);
 
+  // resize listener
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // click outside to close desktop search
   useEffect(() => {
-    function handleClickOutside(e) {
+    const onClick = e => {
       if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
         setDesktopSearchOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  const openLogin = () => setModal('login');
+  // debounced live search
+  useEffect(() => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (!searchTerm.trim()) {
+      setSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(
+          `/api/products/search?q=${encodeURIComponent(searchTerm)}`
+        );
+        setSuggestions(res.data.slice(0, 5));
+      } catch (err) {
+        console.error('Live search failed:', err);
+      }
+    }, 300);
+    setDebounceTimer(timer);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
+  const doSearch = () => {
+    if (!searchTerm.trim()) return;
+    navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+    setSearchTerm('');
+    setSuggestions([]);
+    setDesktopSearchOpen(false);
+  };
+
+  const handleSelectSuggestion = id => {
+    navigate(`/product/${id}`);
+    setSearchTerm('');
+    setSuggestions([]);
+    setDesktopSearchOpen(false);
+  };
+
+  const openLogin = () => setModal('login');
   const handleLogout = async () => {
     try {
       await axios.post('/api/auth/logout', {}, { withCredentials: true });
       setUser(null);
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
-  };
-
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && searchTerm.trim()) {
-      navigate(`/search?query=${searchTerm}`);
-      setSearchTerm('');
-      setDesktopSearchOpen(false);
-    }
+    } catch {}
   };
 
   return (
     <>
       <nav className="navbar">
-        {/* LEFT: Logo + Hamburger */}
+        {/* LEFT */}
         <div className="navbar-left">
           <div className="hamburger" onClick={() => setSidebarOpen(true)}>
-            <div className="bar"></div>
-            <div className="bar"></div>
-            <div className="bar"></div>
+            <div className="bar" /><div className="bar" /><div className="bar" />
           </div>
           <Link to="/" className="navbar-logo">
             <img src={logo} alt="Weave Haven" className="brand-logo" />
           </Link>
         </div>
 
-        {/* CENTER: Categories with dropdown */}
+        {/* CENTER */}
         <div className="navbar-center">
           <ul className="main-nav">
-            {categories.map((cat, idx) => (
-              <li className="nav-item" key={idx}>
+            {categories.map(cat => (
+              <li className="nav-item" key={cat.name}>
                 <Link to={`/products/${cat.name.toLowerCase()}`}>{cat.name}</Link>
                 <ul className="dropdown-menu">
-                  {cat.subcategories.map((sub, subIdx) => (
-                    <li key={subIdx}>
-                      <Link to={`/products/${cat.name.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g, '-')}`}>
+                  {cat.subcategories.map(sub => (
+                    <li key={sub}>
+                      <Link to={`/products/${cat.name.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g,'-')}`}>
                         {sub}
                       </Link>
                     </li>
@@ -98,37 +125,58 @@ export default function Navbar() {
           </ul>
         </div>
 
-        {/* RIGHT: Icons */}
+        {/* RIGHT */}
         <div className="navbar-right">
+          {/* Desktop Search */}
           {windowWidth > 768 && (
-            <div className="desktop-search-wrapper">
+            <div className="desktop-search-wrapper" ref={searchBoxRef}>
               <FaSearch
                 className="nav-icon desktop-search-icon"
-                onClick={() => setDesktopSearchOpen(prev => !prev)}
+                onClick={() => setDesktopSearchOpen(o => !o)}
               />
               {desktopSearchOpen && (
-                <div className="desktop-search-box" ref={searchBoxRef}>
-                  <input
-                    type="text"
-                    placeholder="Search for jacket, shirt, jeans..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={handleSearch}
-                  />
-                  <div className="suggestions">
-                    <strong>Popular:</strong>
-                    <ul>
-                      <li>T-Shirts</li>
-                      <li>Jeans</li>
-                      <li>Shirts</li>
-                      <li>Boxers</li>
-                    </ul>
+                <div className="desktop-search-box">
+                  <div className="search-input-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Search for jacket, shirt, jeans..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && doSearch()}
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className="search-btn"
+                      onClick={doSearch}
+                      aria-label="Search"
+                    >
+                      🔍
+                    </button>
                   </div>
+
+                  {suggestions.length > 0 ? (
+                    <ul className="live-suggestions">
+                      {suggestions.map(p => (
+                        <li key={p._id} onClick={() => handleSelectSuggestion(p._id)}>
+                          <img
+                            src={p.photos?.[0] || '/placeholder.png'}
+                            alt={p.name}
+                            className="suggestion-thumb"
+                          />
+                          <span>{p.name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    searchTerm.trim() && <div className="no-suggestions">No matches</div>
+                  )}
                 </div>
               )}
             </div>
           )}
 
+          {/* Account */}
           <div className="account-wrapper">
             {user ? (
               <div className="user-dropdown">
@@ -147,6 +195,7 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Wishlist */}
           <Link to="/favorites" className="wishlist-icon-wrapper">
             <FaHeart className="nav-icon heart-icon" />
             {wishlistItems.length > 0 && (
@@ -154,6 +203,7 @@ export default function Navbar() {
             )}
           </Link>
 
+          {/* Cart */}
           <Link to="/cart" className="cart-icon-wrapper">
             <FaShoppingBag className="nav-icon" />
             {cartItems.length > 0 && (
@@ -163,7 +213,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Search Bar */}
+      {/* Mobile Search */}
       {windowWidth <= 768 && (
         <div className="mobile-search-bar">
           <FaSearch className="search-icon-left" />
@@ -172,14 +222,17 @@ export default function Navbar() {
             className="mobile-search-input"
             placeholder="Search for jacket, shirt, jeans..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleSearch}
+            onChange={e => setSearchTerm(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && doSearch()}
           />
         </div>
       )}
 
-      {/* Sidebar for mobile */}
-      <div className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`} onClick={() => setSidebarOpen(false)}></div>
+      {/* Sidebar */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
       <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={() => setSidebarOpen(false)}>×</button>
         <Link to="/men" onClick={() => setSidebarOpen(false)}>Men</Link>
@@ -195,13 +248,9 @@ export default function Navbar() {
         <LoginModal
           onClose={() => setModal('none')}
           onSwitch={() => setModal('register')}
-          onSuccess={(userData) => {
-            setUser(userData);
-            setModal('none');
-          }}
+          onSuccess={ud => { setUser(ud); setModal('none'); }}
         />
       )}
-
       {modal === 'register' && (
         <RegisterModal
           onClose={() => setModal('none')}

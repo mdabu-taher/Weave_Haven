@@ -1,69 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { useWishlist } from '../context/WishlistContext';
+// src/pages/FavoritesPage.js
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { useCart } from '../context/CartContext';
+import '../styles/FavoritesPage.css';
 
-function FavoritesPage() {
-  const { wishlistItems, removeFromWishlist } = useWishlist();
-  const [validProducts, setValidProducts] = useState([]);
+export default function FavoritesPage() {
+  const { wishlistItems, removeFromWishlist } = useCart();
 
-  useEffect(() => {
-    const fetchValidProducts = async () => {
-      const results = [];
-
-      for (let item of wishlistItems) {
-        try {
-          const res = await axios.get(`http://localhost:5000/api/products/${item.id}`);
-          results.push(res.data);
-        } catch (err) {
-          // Item no longer exists, optionally remove it from localStorage
-          removeFromWishlist(item.id);
-        }
-      }
-
-      setValidProducts(results);
-    };
-
-    fetchValidProducts();
-  }, [wishlistItems, removeFromWishlist]);
+  if (wishlistItems.length === 0) {
+    return (
+      <div className="favorites-page">
+        <h2>Your Wishlist</h2>
+        <p>You have no items in your wishlist.</p>
+        <Link to="/products" className="browse-link">
+          Browse Products
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Your Favorite Items</h2>
-
-      {validProducts.length === 0 ? (
-        <p>You haven't added any favorites yet.</p>
-      ) : (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-          {validProducts.map(item => (
-            <div key={item._id} style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              width: '200px',
-              padding: '10px',
-              textAlign: 'center'
-            }}>
-              <Link to={`/product/${item._id}`}>
-                <img
-                  src={`http://localhost:5000${item.image}`}
-                  alt={item.name}
-                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '6px' }}
-                />
-              </Link>
-              <h4>{item.name}</h4>
-              <p><strong>SEK{item.price}</strong></p>
+    <div className="favorites-page">
+      <h2>Your Wishlist</h2>
+      <div className="favorites-grid">
+        {wishlistItems.map(item => (
+          <div className="favorite-card" key={item.id}>
+            <Link to={`/product/${item.id}`} className="favorite-image-link">
+              <img
+                src={item.image || (item.photos && item.photos[0]) || '/placeholder.png'}
+                alt={item.name}
+                className="favorite-image"
+              />
+            </Link>
+            <div className="favorite-info">
+              <h3>{item.name}</h3>
+              <p>SEK {Number(item.price).toFixed(2)}</p>
               <button
-                style={{ marginTop: '10px', background: 'crimson', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '6px' }}
-                onClick={() => removeFromWishlist(item._id)}
+                className="remove-btn"
+                onClick={() => removeFromWishlist(item.id)}
               >
                 Remove
               </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
-
-export default FavoritesPage;

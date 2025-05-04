@@ -35,20 +35,32 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// ─── Instance method: generate email confirmation token ────────────────────
+/**
+ * Generate an email confirmation token.
+ * Stores a SHA256 hash in the DB and returns the raw token.
+ */
 userSchema.methods.generateEmailConfirmToken = function() {
-  const token = crypto.randomBytes(20).toString('hex');
-  this.confirmToken       = token;
-  this.confirmTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-  return token;
+  const rawToken = crypto.randomBytes(20).toString('hex');
+  this.confirmToken = crypto
+    .createHash('sha256')
+    .update(rawToken)
+    .digest('hex');
+  this.confirmTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24h
+  return rawToken;
 };
 
-// ─── Instance method: generate password reset token ───────────────────────
+/**
+ * Generate a password reset token.
+ * Stores a SHA256 hash in the DB and returns the raw token.
+ */
 userSchema.methods.generatePasswordResetToken = function() {
-  const token = crypto.randomBytes(20).toString('hex');
-  this.resetToken       = token;
-  this.resetTokenExpiry = Date.now() + 3600_000; // 1 hour
-  return token;
+  const rawToken = crypto.randomBytes(20).toString('hex');
+  this.resetToken = crypto
+    .createHash('sha256')
+    .update(rawToken)
+    .digest('hex');
+  this.resetTokenExpiry = Date.now() + 60 * 60 * 1000; // 1h
+  return rawToken;
 };
 
 const User = mongoose.model('User', userSchema);
