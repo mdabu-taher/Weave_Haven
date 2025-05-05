@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import orderRoutes from './routes/order.js';
-
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
@@ -30,14 +30,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 // 4) Serve uploads folder at /uploads
-//    => http://localhost:5000/uploads/yourfile.ext
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, '..', 'uploads'))
+);
 
 // 5) Mount routers
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-
+app.use('/api/auth',      authRoutes);
+app.use('/api/products',  productRoutes);
+app.use('/api/orders',    orderRoutes);
+// All admin endpoints are protected inside routes/admin.js
+app.use('/api/admin',     adminRoutes);
 
 // 6) Connect to Mongo & start server
 const PORT = process.env.PORT || 5000;
@@ -48,6 +51,8 @@ mongoose
   })
   .then(() => {
     console.log('✅ MongoDB connected');
-    app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
+    app.listen(PORT, () =>
+      console.log(`🚀 Server listening on port ${PORT}`)
+    );
   })
   .catch(err => console.error('❌ Mongo connection error:', err));

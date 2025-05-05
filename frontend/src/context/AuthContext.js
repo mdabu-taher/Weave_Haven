@@ -1,47 +1,72 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
-import api, {
-  fetchProfile as apiFetchProfile,
+import {
+  fetchProfile,
   login as apiLogin,
   register as apiRegister,
-  logout as apiLogout,
-} from '../api';
+  logout as apiLogout
+} from '../utils/api';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: null,
+  loading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: async () => {}
+});
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // On mount, load the profile if token is present
+  // On mount, load the current user's profile (or clear if it fails)
   useEffect(() => {
     (async () => {
-      const profile = await apiFetchProfile();
-      if (profile) setUser(profile);
+      try {
+        const profile = await fetchProfile();
+        console.log('👤 fetched profile:', profile);
+        setUser(profile || null);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
-  // Login via our api helper
-  const login = async (email, password) => {
-    const loggedInUser = await apiLogin({ email, password });
+  // LOGIN
+  const login = async (credentials) => {
+    const loggedInUser = await apiLogin(credentials);
     setUser(loggedInUser);
     return loggedInUser;
   };
 
-  // Register via our api helper
-  const register = async (username, email, password) => {
-    const newUser = await apiRegister({ username, email, password });
+  // REGISTER
+  const register = async (details) => {
+    const newUser = await apiRegister(details);
     setUser(newUser);
     return newUser;
   };
 
-  // Logout via our api helper
+  // LOGOUT
   const logout = async () => {
-    await apiLogout();
-    setUser(null);
+    try {
+      await apiLogout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setUser(null);
+    }
   };
 
+  // While auth is loading, render nothing (or a spinner)
+  if (loading) {
+    return null;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

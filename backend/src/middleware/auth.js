@@ -1,3 +1,5 @@
+// backend/src/middleware/auth.js
+
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
@@ -19,7 +21,7 @@ export async function protect(req, res, next) {
     req.user = user; // contains .id and .role
     next();
   } catch (err) {
-    console.error(err);
+    console.error('Auth protect error:', err);
     res.status(401).json({ message: 'Invalid token' });
   }
 }
@@ -34,11 +36,18 @@ export function authorize(...allowedRoles) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
     if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Forbidden: insufficient rights' });
+      return res
+        .status(403)
+        .json({ message: 'Forbidden: insufficient rights' });
     }
     next();
   };
 }
 
-// Default export so routes can import `protect` directly
+/**
+ * Convenience middleware: authenticate and ensure the user is an admin
+ */
+export const isAdmin = [protect, authorize('admin')];
+
+// Default export for backward compatibility (protect only)
 export default protect;
