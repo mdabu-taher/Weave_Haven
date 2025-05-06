@@ -1,3 +1,4 @@
+// src/components/Navbar.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
@@ -15,7 +16,6 @@ export default function Navbar() {
   const [modal, setModal] = useState('none');
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [debounceTimer, setDebounceTimer] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -23,23 +23,23 @@ export default function Navbar() {
   const navigate = useNavigate();
   const searchBoxRef = useRef(null);
 
-  // fetch user
+  // Fetch current user
   useEffect(() => {
     axios.get('/api/auth/profile', { withCredentials: true })
       .then(({ data }) => setUser(data))
       .catch(() => setUser(null));
   }, []);
 
-  // resize listener
+  // Handle window resize
   useEffect(() => {
     const onResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // click outside to close desktop search
+  // Close desktop search when clicking outside
   useEffect(() => {
-    const onClick = e => {
+    const onClick = (e) => {
       if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
         setDesktopSearchOpen(false);
       }
@@ -48,14 +48,13 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  // debounced live search
+  // Debounced live search
   useEffect(() => {
-    if (debounceTimer) clearTimeout(debounceTimer);
     if (!searchTerm.trim()) {
       setSuggestions([]);
       return;
     }
-    const timer = setTimeout(async () => {
+    const handler = setTimeout(async () => {
       try {
         const res = await axios.get(
           `/api/products/search?q=${encodeURIComponent(searchTerm)}`
@@ -65,10 +64,10 @@ export default function Navbar() {
         console.error('Live search failed:', err);
       }
     }, 300);
-    setDebounceTimer(timer);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(handler);
   }, [searchTerm]);
 
+  // Search submission
   const doSearch = () => {
     if (!searchTerm.trim()) return;
     navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
@@ -77,7 +76,8 @@ export default function Navbar() {
     setDesktopSearchOpen(false);
   };
 
-  const handleSelectSuggestion = id => {
+  // Navigate to selected suggestion
+  const handleSelectSuggestion = (id) => {
     navigate(`/product/${id}`);
     setSearchTerm('');
     setSuggestions([]);
@@ -85,11 +85,15 @@ export default function Navbar() {
   };
 
   const openLogin = () => setModal('login');
+
+  // Log out
   const handleLogout = async () => {
     try {
       await axios.post('/api/auth/logout', {}, { withCredentials: true });
       setUser(null);
-    } catch {}
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
   };
 
   return (
@@ -108,20 +112,26 @@ export default function Navbar() {
         {/* CENTER */}
         <div className="navbar-center">
           <ul className="main-nav">
-            {categories.map(cat => (
-              <li className="nav-item" key={cat.name}>
-                <Link to={`/products/${cat.name.toLowerCase()}`}>{cat.name}</Link>
-                <ul className="dropdown-menu">
-                  {cat.subcategories.map(sub => (
-                    <li key={sub}>
-                      <Link to={`/products/${cat.name.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g,'-')}`}>
-                        {sub}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+            {categories.map(cat => {
+              const slug = cat.name.toLowerCase().replace(/\s+/g, '-');
+              return (
+                <li className="nav-item" key={cat.name}>
+                  <Link to={`/products/${slug}`}>{cat.name}</Link>
+                  <ul className="dropdown-menu">
+                    {cat.subcategories.map(sub => {
+                      const subSlug = sub.toLowerCase().replace(/\s+/g, '-');
+                      return (
+                        <li key={sub}>
+                          <Link to={`/products/${slug}/${subSlug}`}>
+                            {sub}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -154,7 +164,6 @@ export default function Navbar() {
                       🔍
                     </button>
                   </div>
-
                   {suggestions.length > 0 ? (
                     <ul className="live-suggestions">
                       {suggestions.map(p => (
@@ -187,7 +196,9 @@ export default function Navbar() {
                   <Link to="/membership">My membership</Link>
                   <Link to="/bonus">Bonus overview</Link>
                   <Link to="/settings">My settings</Link>
-                  <button className="logout-btn" onClick={handleLogout}>Log out</button>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    Log out
+                  </button>
                 </div>
               </div>
             ) : (
@@ -234,13 +245,17 @@ export default function Navbar() {
         onClick={() => setSidebarOpen(false)}
       />
       <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
-        <button className="close-btn" onClick={() => setSidebarOpen(false)}>×</button>
-        <Link to="/men" onClick={() => setSidebarOpen(false)}>Men</Link>
-        <Link to="/women" onClick={() => setSidebarOpen(false)}>Women</Link>
-        <Link to="/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
-        <Link to="/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
-        <Link to="/all-products" onClick={() => setSidebarOpen(false)}>New Arrivals</Link>
-        <Link to="/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
+        <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+          ×
+        </button>
+        <Link to="/products/men" onClick={() => setSidebarOpen(false)}>Men</Link>
+        <Link to="/products/women" onClick={() => setSidebarOpen(false)}>Women</Link>
+        <Link to="/products/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
+        <Link to="/products/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
+        <Link to="/products/new-arrivals" onClick={() => setSidebarOpen(false)}>
+          New Arrivals
+        </Link>
+        <Link to="/products/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
       </div>
 
       {/* Modals */}

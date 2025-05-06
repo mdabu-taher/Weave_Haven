@@ -4,29 +4,34 @@ import { useLocation, Link } from 'react-router-dom';
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
+
   const location = useLocation();
   const categoryFromPath = location.pathname.replace('/', '');
 
   useEffect(() => {
     (async () => {
       try {
-        const endpoint =
-          categoryFromPath === 'new-arrivals'
-            ? 'http://localhost:5000/api/products?new=true'
-            : 'http://localhost:5000/api/products';
-
-        const res = await fetch(endpoint);
+        // Always fetch all products
+        const res = await fetch('http://localhost:5000/api/products');
         const data = await res.json();
 
-        const filtered =
-          categoryFromPath && categoryFromPath !== 'new-arrivals'
-            ? data.filter(
-                p =>
-                  p.category &&
-                  p.category.toLowerCase() ===
-                    categoryFromPath.toLowerCase()
-              )
-            : data;
+        let filtered = data;
+
+        if (categoryFromPath === 'new-arrivals') {
+          // Show only products created in the last 14 days
+          const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+          const cutoff = Date.now() - TWO_WEEKS_MS;
+          filtered = data.filter(
+            p => new Date(p.createdAt).getTime() >= cutoff
+          );
+        } else if (categoryFromPath) {
+          // Filter by category
+          filtered = data.filter(
+            p =>
+              p.category &&
+              p.category.toLowerCase() === categoryFromPath.toLowerCase()
+          );
+        }
 
         setProducts(filtered);
       } catch (err) {
@@ -38,7 +43,9 @@ export default function AllProducts() {
   return (
     <div style={{ padding: 20 }}>
       <h2>
-        {categoryFromPath.replace('-', ' ')}
+        {categoryFromPath
+          ? categoryFromPath.replace('-', ' ')
+          : 'All Products'}
       </h2>
 
       <div
@@ -52,7 +59,10 @@ export default function AllProducts() {
           <p>No products found in this category.</p>
         ) : (
           products.map(product => {
-            const imgUrl = `http://localhost:5000${product.image}`;
+            // Use either `image` or fall back to first photo
+            const imgUrl = `http://localhost:5000${
+              product.image || product.photos?.[0] || ''
+            }`;
 
             return (
               <Link
