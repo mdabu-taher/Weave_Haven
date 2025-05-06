@@ -6,6 +6,8 @@ export async function createProduct(req, res) {
   try {
     const { name, price, category, sizes, colors, material } = req.body;
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    // Populate the existing photos array with the uploaded image URL
+    const photos = imageUrl ? [imageUrl] : [];
 
     const product = await Product.create({
       name,
@@ -15,7 +17,7 @@ export async function createProduct(req, res) {
       sizes: sizes ? sizes.split(',') : [],
       colors: colors ? colors.split(',') : [],
       material,
-      image: imageUrl,
+      photos,
     });
 
     res.status(201).json(product);

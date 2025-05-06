@@ -34,7 +34,8 @@ export async function createOrder(req, res) {
         return {
           product: product._id,
           name:    product.name,
-          image:   product.image,
+          // use the first photo from the photos array (fallback to placeholder)
+          image:   product.photos[0] || '/images/placeholder.png',
           qty:     item.qty,
           price:   item.price
         };
