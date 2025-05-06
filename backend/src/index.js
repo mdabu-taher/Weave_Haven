@@ -7,7 +7,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import feedbackRoutes from './routes/feedback.js';
 import authRoutes    from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import orderRoutes   from './routes/order.js';
@@ -44,6 +44,7 @@ app.use('/api/auth',     authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders',   orderRoutes);   // ← here we mount orderRoutes
 app.use('/api/admin',    adminRoutes);   // adminRoutes applies its own protect/authorize
+app.use('/api/feedback', feedbackRoutes);
 
 // 6) MongoDB connection & server start
 const PORT = process.env.PORT || 5000;

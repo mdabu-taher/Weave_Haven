@@ -78,6 +78,11 @@ export async function fetchOrders() {
   return data;
 }
 
+export async function createOrder(payload) {
+  const { data } = await api.post('/orders', payload);
+  return data;
+}
+
 /** ─────────── ADMIN HELPERS ─────────── **/
 
 // Products CRUD
@@ -143,6 +148,25 @@ export async function fetchAdminSalesData() {
 export async function fetchTopProducts() {
   const { data } = await api.get('/admin/reports/top-products');
   // returns: [{ productId, name, totalSold, price }]
+  return data;
+}
+
+/** ─────────── FEEDBACK HELPERS ─────────── **/
+
+// Leave product feedback (rating 0–5)
+export async function createFeedback({ orderId, productId, rating, comment }) {
+  const { data } = await api.post('/feedback', {
+    orderId,
+    productId,
+    rating,
+    comment
+  });
+  return data;
+}
+
+// Fetch feedback for a product
+export async function fetchProductFeedback(productId) {
+  const { data } = await api.get(`/feedback/product/${productId}`);
   return data;
 }
 
