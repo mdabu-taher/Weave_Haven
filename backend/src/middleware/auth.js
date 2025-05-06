@@ -4,31 +4,50 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 /**
- * Verify JWT in httpOnly cookie and attach `req.user`
+ * protect:
+ * Verify JWT in httpOnly cookie or Authorization header and attach `req.user`
  */
 export async function protect(req, res, next) {
   try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({ message: 'Not authenticated' });
+    // 1. Grab token from httpOnly cookie or Authorization header
+    let token = null;
+    if (req.cookies?.token) {
+      token = req.cookies.token;
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer ')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
     }
+
+    if (!token) {
+      return res.status(401).json({ message: 'Not authenticated (token missing)' });
+    }
+
+    // 2. Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // fetch fresh user (optional) or use decoded payload
+    if (!decoded?.id) {
+      return res.status(401).json({ message: 'Invalid token payload' });
+    }
+
+    // 3. Fetch user (without sensitive fields)
     const user = await User.findById(decoded.id).select('-passwordHash');
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
-    req.user = user; // contains .id and .role
+
+    // 4. Attach and continue
+    req.user = user;
     next();
   } catch (err) {
     console.error('Auth protect error:', err);
-    res.status(401).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 }
 
 /**
- * Allow only the specified roles to proceed
- * e.g. authorize('admin'), authorize('seller','admin')
+ * authorize:
+ * Only allow routes for users whose role is in allowedRoles
  */
 export function authorize(...allowedRoles) {
   return (req, res, next) => {
@@ -36,18 +55,16 @@ export function authorize(...allowedRoles) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
     if (!allowedRoles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: 'Forbidden: insufficient rights' });
+      return res.status(403).json({ message: 'Forbidden: insufficient rights' });
     }
     next();
   };
 }
 
 /**
- * Convenience middleware: authenticate and ensure the user is an admin
+ * isAdmin:
+ * Shortcut to protect + authorize('admin')
  */
 export const isAdmin = [protect, authorize('admin')];
 
-// Default export for backward compatibility (protect only)
 export default protect;

@@ -24,26 +24,26 @@ export async function createOrder(req, res) {
       return res.status(400).json({ message: 'No order items provided' });
     }
 
+    // Enrich each item with product details
     const detailedItems = await Promise.all(
       orderItems.map(async (item) => {
         const product = await Product.findById(item.product);
         if (!product) {
           throw new Error(`Product not found: ${item.product}`);
         }
-
         return {
-          product: item.product,
-          qty: item.qty,
-          price: item.price,
-          name: product.name,
-          image: product.image // ✅ include image from product model
+          product: product._id,
+          name:    product.name,
+          image:   product.image,
+          qty:     item.qty,
+          price:   item.price
         };
       })
     );
 
     const order = new Order({
-      user: req.user.id,
-      orderItems: detailedItems,
+      user:             req.user.id,        // set by auth middleware
+      orderItems:       detailedItems,
       shippingAddress,
       paymentMethod,
       paymentResult,
@@ -51,14 +51,15 @@ export async function createOrder(req, res) {
       shippingPrice,
       taxPrice,
       totalPrice,
-      paidAt: new Date()
+      paidAt:           new Date(),
+      status:           'Confirmed'
     });
 
     const createdOrder = await order.save();
-    res.status(201).json(createdOrder);
+    return res.status(201).json(createdOrder);
   } catch (err) {
     console.error('Order creation error:', err);
-    res.status(500).json({ message: 'Server error creating order' });
+    return res.status(500).json({ message: err.message || 'Server error creating order' });
   }
 }
 
@@ -68,11 +69,13 @@ export async function createOrder(req, res) {
  */
 export async function getOrders(req, res) {
   try {
-    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
-    res.json(orders);
+    const orders = await Order.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate('orderItems.product', 'name image price');
+    return res.json(orders);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error fetching orders' });
+    console.error('Error fetching orders:', err);
+    return res.status(500).json({ message: 'Server error fetching orders' });
   }
 }
 
@@ -83,20 +86,25 @@ export async function getOrders(req, res) {
 export async function updateOrderStatus(req, res) {
   try {
     const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
 
     const { status } = req.body;
-    if (!['Confirmed', 'Shipping', 'Delivered'].includes(status)) {
+    const validStatuses = ['Confirmed', 'Shipping', 'Delivered'];
+    if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
     order.status = status;
-    if (status === 'Delivered') order.deliveredAt = Date.now();
+    if (status === 'Delivered') {
+      order.deliveredAt = new Date();
+    }
 
     const updatedOrder = await order.save();
-    res.json(updatedOrder);
+    return res.json(updatedOrder);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error updating order' });
+    console.error('Error updating order status:', err);
+    return res.status(500).json({ message: 'Server error updating order' });
   }
 }

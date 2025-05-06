@@ -1,10 +1,11 @@
 // backend/src/routes/admin.js
+
 import express from 'express';
 import { isAdmin } from '../middleware/auth.js';
 
 import {
   getStats,
-  getTopProducts,      // ← new
+  getTopProducts,
   listProducts,
   createProduct,
   updateProduct,
@@ -13,12 +14,12 @@ import {
   updateOrderStatus,
   getUsers,
   deleteUser,
-  updateUserRole       // ← assume you add this in adminController.js
+  updateUserRole
 } from '../controllers/adminController.js';
 
 const router = express.Router();
 
-// All routes under /api/admin/** require an authenticated admin
+// All /api/admin/** routes require an authenticated admin user
 router.use(isAdmin);
 
 /**

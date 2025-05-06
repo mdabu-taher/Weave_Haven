@@ -1,58 +1,67 @@
 // backend/src/controllers/adminController.js
 
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Order   from '../models/Order.js';
 import User    from '../models/User.js';
 
 /**
- * Admin: Dashboard stats
  * GET /api/admin/stats
+ * Returns total counts and sales over last 30 days (Confirmed orders only)
  */
 export async function getStats(req, res) {
   try {
-    // Counts
+    // 1. Total counts
     const [productCount, orderCount, userCount] = await Promise.all([
       Product.countDocuments(),
       Order.countDocuments(),
       User.countDocuments()
     ]);
 
-    // Sales over last 30 days
+    // 2. Sales over last 30 days (Confirmed orders only)
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const salesData = await Order.aggregate([
-      { $match: { createdAt: { $gte: since } } },
+      { $match: { createdAt: { $gte: since }, status: 'Confirmed' } },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           total: { $sum: '$totalPrice' }
         }
       },
-      { $sort: { '_id': 1 } }
+      { $sort: { '_id': 1 } },
+      { $project: { _id: 0, date: '$_id', total: 1 } }
     ]);
 
-    res.json({ productCount, orderCount, userCount, salesData });
+    return res.json({ productCount, orderCount, userCount, salesData });
   } catch (err) {
     console.error('Error fetching stats:', err);
-    res.status(500).json({ message: 'Server error retrieving stats' });
+    return res.status(500).json({ message: 'Server error retrieving stats' });
   }
 }
 
 /**
- * Admin: Top 5 selling products report
  * GET /api/admin/reports/top-products
+ * Returns top 5 selling products (Confirmed orders only)
  */
 export async function getTopProducts(req, res) {
   try {
     const top = await Order.aggregate([
-      { $unwind: '$items' },
+      // Only Confirmed orders
+      { $match: { status: 'Confirmed' } },
+      // Unwind the orderItems array
+      { $unwind: '$orderItems' },
+      // Group by product ID, summing the qty
       {
         $group: {
-          _id: '$items.product',
-          totalSold: { $sum: '$items.quantity' }
+          _id: '$orderItems.product',
+          totalSold: { $sum: '$orderItems.qty' }
         }
       },
+      // Sort descending by quantity sold
       { $sort: { totalSold: -1 } },
+      // Take top 5
       { $limit: 5 },
+      // Lookup product details
       {
         $lookup: {
           from: 'products',
@@ -62,6 +71,7 @@ export async function getTopProducts(req, res) {
         }
       },
       { $unwind: '$product' },
+      // Project only the fields we need
       {
         $project: {
           _id:       0,
@@ -73,30 +83,30 @@ export async function getTopProducts(req, res) {
       }
     ]);
 
-    res.json(top);
+    return res.json(top);
   } catch (err) {
     console.error('Error fetching top products:', err);
-    res.status(500).json({ message: 'Server error retrieving top products' });
+    return res.status(500).json({ message: 'Server error retrieving top products' });
   }
 }
 
 /**
- * Admin: List all products
  * GET /api/admin/products
+ * List all products
  */
 export async function listProducts(req, res) {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
+    return res.json(products);
   } catch (err) {
     console.error('Error listing products:', err);
-    res.status(500).json({ message: 'Server error retrieving products' });
+    return res.status(500).json({ message: 'Server error retrieving products' });
   }
 }
 
 /**
- * Admin: Create a new product
  * POST /api/admin/products
+ * Create a new product
  */
 export async function createProduct(req, res) {
   try {
@@ -123,16 +133,16 @@ export async function createProduct(req, res) {
     });
 
     const created = await product.save();
-    res.status(201).json(created);
+    return res.status(201).json(created);
   } catch (err) {
     console.error('Error creating product:', err);
-    res.status(500).json({ message: 'Server error creating product' });
+    return res.status(500).json({ message: 'Server error creating product' });
   }
 }
 
 /**
- * Admin: Update an existing product
  * PUT /api/admin/products/:id
+ * Update an existing product
  */
 export async function updateProduct(req, res) {
   try {
@@ -160,16 +170,16 @@ export async function updateProduct(req, res) {
     });
 
     const updated = await product.save();
-    res.json(updated);
+    return res.json(updated);
   } catch (err) {
     console.error('Error updating product:', err);
-    res.status(500).json({ message: 'Server error updating product' });
+    return res.status(500).json({ message: 'Server error updating product' });
   }
 }
 
 /**
- * Admin: Delete a product
  * DELETE /api/admin/products/:id
+ * Delete a product
  */
 export async function deleteProduct(req, res) {
   try {
@@ -178,32 +188,32 @@ export async function deleteProduct(req, res) {
       return res.status(404).json({ message: 'Product not found' });
     }
     await product.remove();
-    res.json({ message: 'Product removed' });
+    return res.json({ message: 'Product removed' });
   } catch (err) {
     console.error('Error deleting product:', err);
-    res.status(500).json({ message: 'Server error deleting product' });
+    return res.status(500).json({ message: 'Server error deleting product' });
   }
 }
 
 /**
- * Admin: List all orders
  * GET /api/admin/orders
+ * List all orders
  */
 export async function getOrders(req, res) {
   try {
     const orders = await Order.find()
       .sort({ createdAt: -1 })
       .populate('user', 'fullName email');
-    res.json(orders);
+    return res.json(orders);
   } catch (err) {
     console.error('Error listing orders:', err);
-    res.status(500).json({ message: 'Server error retrieving orders' });
+    return res.status(500).json({ message: 'Server error retrieving orders' });
   }
 }
 
 /**
- * Admin: Update order status
  * PUT /api/admin/orders/:id/status
+ * Update order status
  */
 export async function updateOrderStatus(req, res) {
   try {
@@ -214,32 +224,32 @@ export async function updateOrderStatus(req, res) {
     }
     order.status = status;
     const updated = await order.save();
-    res.json(updated);
+    return res.json(updated);
   } catch (err) {
     console.error('Error updating order status:', err);
-    res.status(500).json({ message: 'Server error updating order' });
+    return res.status(500).json({ message: 'Server error updating order' });
   }
 }
 
 /**
- * Admin: List all users
  * GET /api/admin/users
+ * List all users
  */
 export async function getUsers(req, res) {
   try {
     const users = await User.find()
       .select('-passwordHash')
       .sort({ createdAt: -1 });
-    res.json(users);
+    return res.json(users);
   } catch (err) {
     console.error('Error listing users:', err);
-    res.status(500).json({ message: 'Server error retrieving users' });
+    return res.status(500).json({ message: 'Server error retrieving users' });
   }
 }
 
 /**
- * Admin: Delete a user
  * DELETE /api/admin/users/:id
+ * Delete a user
  */
 export async function deleteUser(req, res) {
   try {
@@ -248,16 +258,16 @@ export async function deleteUser(req, res) {
       return res.status(404).json({ message: 'User not found' });
     }
     await user.remove();
-    res.json({ message: 'User deleted' });
+    return res.json({ message: 'User deleted' });
   } catch (err) {
     console.error('Error deleting user:', err);
-    res.status(500).json({ message: 'Server error deleting user' });
+    return res.status(500).json({ message: 'Server error deleting user' });
   }
 }
 
 /**
- * Admin: Update a user's role
  * PUT /api/admin/users/:id/role
+ * Update a user's role
  */
 export async function updateUserRole(req, res) {
   try {
@@ -268,9 +278,9 @@ export async function updateUserRole(req, res) {
     }
     user.role = role;
     await user.save();
-    res.json({ message: 'User role updated', user });
+    return res.json({ message: 'User role updated', user });
   } catch (err) {
     console.error('Error updating user role:', err);
-    res.status(500).json({ message: 'Server error updating user role' });
+    return res.status(500).json({ message: 'Server error updating user role' });
   }
 }

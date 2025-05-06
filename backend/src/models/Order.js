@@ -1,5 +1,32 @@
 // backend/src/models/Order.js
+
 import mongoose from 'mongoose';
+
+const orderItemSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  name: { 
+    type: String, 
+    required: true 
+  },  
+  image: { 
+    type: String, 
+    required: true 
+  }, 
+  qty: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+}, { _id: false });
 
 const orderSchema = new mongoose.Schema({
   user: {
@@ -7,43 +34,23 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  orderItems: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
-      },
-      name: String,  // ✅ Add this
-      image: String, // ✅ And this
-      qty: {
-        type: Number,
-        required: true,
-        min: 1
-      },
-      price: {
-        type: Number,
-        required: true,
-        min: 0
-      }
-    }
-  ],
+  orderItems: [orderItemSchema],
   shippingAddress: {
-    fullName: { type: String, required: true },
+    fullName:     { type: String, required: true },
     addressLine1: { type: String, required: true },
     addressLine2: String,
-    city: { type: String, required: true },
-    postalCode: { type: String, required: true },
-    country: { type: String, required: true }
+    city:         { type: String, required: true },
+    postalCode:   { type: String, required: true },
+    country:      { type: String, required: true }
   },
   paymentMethod: {
     type: String,
     required: true
   },
   paymentResult: {
-    id: String,
-    status: String,
-    update_time: String,
+    id:            String,
+    status:        String,
+    update_time:   String,
     email_address: String
   },
   itemsPrice: {
@@ -71,7 +78,7 @@ const orderSchema = new mongoose.Schema({
     enum: ['Confirmed', 'Shipping', 'Delivered'],
     default: 'Confirmed'
   },
-  paidAt: Date,
+  paidAt:      Date,
   deliveredAt: Date
 }, {
   timestamps: true

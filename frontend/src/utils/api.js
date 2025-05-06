@@ -1,4 +1,5 @@
 // src/utils/api.js
+
 import axios from 'axios';
 
 const api = axios.create({
@@ -106,7 +107,7 @@ export async function fetchAdminOrders() {
 }
 
 export async function updateAdminOrderStatus(id, status) {
-  const { data } = await api.put(`/admin/orders/${id}`, { status });
+  const { data } = await api.put(`/admin/orders/${id}/status`, { status });
   return data;
 }
 
@@ -120,21 +121,25 @@ export async function deleteAdminUser(id) {
   await api.delete(`/admin/users/${id}`);
 }
 
-// Stats (counts + sales over time)
+export async function updateAdminUserRole(id, role) {
+  const { data } = await api.put(`/admin/users/${id}/role`, { role });
+  return data;
+}
+
+// Full dashboard stats (counts + sales over time)
 export async function fetchAdminStats() {
   const { data } = await api.get('/admin/stats');
-  // returns: { productCount, orderCount, userCount, salesData: [{ _id, total }] }
+  // returns: { productCount, orderCount, userCount, salesData: [{ date, total }] }
   return data;
 }
 
-// Sales-over-time only (for granular use)
-export async function fetchSalesData() {
-  const { data } = await api.get('/admin/stats/sales');
-  // returns: [{ _id: 'YYYY-MM-DD', total: Number }]
-  return data;
+// Standalone sales data (if you ever need only the sales array)
+export async function fetchAdminSalesData() {
+  const { data } = await api.get('/admin/stats');
+  return data.salesData;
 }
 
-// Reports (Top 5 Selling Products)
+// Top 5 Selling Products report
 export async function fetchTopProducts() {
   const { data } = await api.get('/admin/reports/top-products');
   // returns: [{ productId, name, totalSold, price }]
