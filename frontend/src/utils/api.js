@@ -17,37 +17,32 @@ api.interceptors.request.use(config => {
 
 /** ───────────── AUTH HELPERS ───────────── **/
 
-// Fetch the current user's profile (protected route)
 export async function fetchProfile() {
   const token = localStorage.getItem('token');
   if (!token) return null;
   const { data } = await api.get('/auth/profile');
-  return data;    // expects { id, fullName, username, email, phone, role, ... }
+  return data;
 }
 
-// Login and return the user object (including role)
 export async function login({ email, password }) {
   const { data } = await api.post('/auth/login', {
     identifier: email,
     password
   });
-  // backend sets httpOnly cookie, but if it returns token you may store it:
   if (data.token) {
     localStorage.setItem('token', data.token);
   }
-  return data;  // data = user object from backend, must include .role
+  return data;
 }
 
-// Register a new user
 export async function register(details) {
   const { data } = await api.post('/auth/register', details);
   if (data.token) {
     localStorage.setItem('token', data.token);
   }
-  return data;  // adjust if backend wraps user differently
+  return data;
 }
 
-// Logout current user
 export async function logout() {
   await api.post('/auth/logout');
   localStorage.removeItem('token');
@@ -82,8 +77,9 @@ export async function fetchOrders() {
   return data;
 }
 
-/** ─────────── ADMIN CRUD HELPERS ─────────── **/
+/** ─────────── ADMIN HELPERS ─────────── **/
 
+// Products CRUD
 export async function fetchAdminProducts() {
   const { data } = await api.get('/admin/products');
   return data;
@@ -103,15 +99,45 @@ export async function deleteAdminProduct(id) {
   await api.delete(`/admin/products/${id}`);
 }
 
-/** ─────────── ADMIN STATS HELPERS ─────────── **/
-
+// Orders CRUD & Status
 export async function fetchAdminOrders() {
   const { data } = await api.get('/admin/orders');
   return data;
 }
 
+export async function updateAdminOrderStatus(id, status) {
+  const { data } = await api.put(`/admin/orders/${id}`, { status });
+  return data;
+}
+
+// Users
 export async function fetchAdminUsers() {
   const { data } = await api.get('/admin/users');
+  return data;
+}
+
+export async function deleteAdminUser(id) {
+  await api.delete(`/admin/users/${id}`);
+}
+
+// Stats (counts + sales over time)
+export async function fetchAdminStats() {
+  const { data } = await api.get('/admin/stats');
+  // returns: { productCount, orderCount, userCount, salesData: [{ _id, total }] }
+  return data;
+}
+
+// Sales-over-time only (for granular use)
+export async function fetchSalesData() {
+  const { data } = await api.get('/admin/stats/sales');
+  // returns: [{ _id: 'YYYY-MM-DD', total: Number }]
+  return data;
+}
+
+// Reports (Top 5 Selling Products)
+export async function fetchTopProducts() {
+  const { data } = await api.get('/admin/reports/top-products');
+  // returns: [{ productId, name, totalSold, price }]
   return data;
 }
 

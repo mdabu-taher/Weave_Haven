@@ -12,9 +12,6 @@ export default function FavoritesPage() {
       <div className="favorites-page">
         <h2>Your Wishlist</h2>
         <p>You have no items in your wishlist.</p>
-        <Link to="/products" className="browse-link">
-          Browse Products
-        </Link>
       </div>
     );
   }

@@ -1,42 +1,73 @@
-// src/pages/admin/AdminOrders.js
+// src/pages/admin/AdminOrders.jsx
 import React, { useEffect, useState } from 'react';
-import { fetchAdminOrders } from '../../utils/api';
+import { fetchAdminOrders, updateAdminOrderStatus } from '../../utils/api';
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([]);
+  // 1. State
+  const [orders, setOrders]   = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // 2. Fetch orders on mount
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await fetchAdminOrders();
-        setOrders(data);
-      } catch (err) {
-        console.error('Failed to load orders:', err);
-      }
-    })();
+    fetchAdminOrders()
+      .then(data => setOrders(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
+  // 3. Status change handler (here’s where you put it)
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const updated = await updateAdminOrderStatus(orderId, newStatus);
+      setOrders(orders.map(o => (o._id === orderId ? updated : o)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) return <p className="p-6">Loading orders…</p>;
+
+  // 4. Render table
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Order Overview</h1>
-      <table className="w-full bg-white shadow rounded">
-        <thead className="bg-gray-100">
+      <table className="min-w-full table-auto border-collapse">
+        <thead>
           <tr>
-            <th className="p-2 border">Order ID</th>
-            <th className="p-2 border">Customer</th>
-            <th className="p-2 border">Total</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Date</th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Total ($)</th>
+            <th>Status</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          {orders.map(o => (
-            <tr key={o._id} className="hover:bg-gray-50">
-              <td className="p-2 border">{o._id}</td>
-              <td className="p-2 border">{o.userEmail || '—'}</td>
-              <td className="p-2 border">${o.total.toFixed(2)}</td>
-              <td className="p-2 border">{o.status}</td>
-              <td className="p-2 border">{new Date(o.createdAt).toLocaleDateString()}</td>
+          {orders.map(order => (
+            <tr key={order._id} className="border-t">
+              <td className="px-4 py-2">{order._id}</td>
+              <td className="px-4 py-2">{order.user?.email || '—'}</td>
+              <td className="px-4 py-2 text-right">
+                {typeof order.totalPrice === 'number'
+                  ? order.totalPrice.toFixed(2)
+                  : '—'}
+              </td>
+              <td className="px-4 py-2">
+                {/* 5. Use the handler here */}
+                <select
+                  value={order.status}
+                  onChange={e => handleStatusChange(order._id, e.target.value)}
+                  className="border rounded p-1"
+                >
+                  {['Confirmed','Shipped','Delivered','Canceled'].map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </td>
+              <td className="px-4 py-2">
+                {order.createdAt
+                  ? new Date(order.createdAt).toLocaleDateString()
+                  : '—'}
+              </td>
             </tr>
           ))}
         </tbody>
