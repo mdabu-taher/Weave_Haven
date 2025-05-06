@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import FeedbackList from '../components/FeedbackList';        // ← NEW
 import '../styles/ProductDetail.css';
 
 export default function ProductDetail() {
@@ -46,7 +47,15 @@ export default function ProductDetail() {
     if (!selectedSize || !selectedColor) {
       return alert('Please select both size and color.');
     }
-    addToCart({ id, name, price, size: selectedSize, color: selectedColor, image: mainSrc, quantity: 1 });
+    addToCart({
+      id,
+      name,
+      price,
+      size: selectedSize,
+      color: selectedColor,
+      image: mainSrc,
+      quantity: 1
+    });
     alert(`Added to cart: ${name} (${selectedSize}, ${selectedColor})`);
   };
 
@@ -135,6 +144,12 @@ export default function ProductDetail() {
           </button>
         </div>
       </div>
+
+      {/* —————— NEW FEEDBACK SECTION —————— */}
+      <section className="product-feedback-section">
+        <h2 className="feedback-heading">Customer Reviews</h2>
+        <FeedbackList productId={id} />
+      </section>
     </div>
   );
 }
