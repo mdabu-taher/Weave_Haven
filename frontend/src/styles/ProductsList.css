@@ -46,3 +46,23 @@
   object-fit: cover;
   border-radius: 8px;
 }
+.orig-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 0.5em;
+}
+.sale-price {
+  color: #c00;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+.discount-badge {
+  background: crimson;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8em;
+}
+.regular-price {
+  color: #000;
+}

@@ -1,18 +1,24 @@
 // backend/src/controllers/productController.js
 import Product from '../models/Product.js';
 
-// Create a new product (with optional file upload)
+// Create a new product (with optional file upload + optional sale info)
 export async function createProduct(req, res) {
   try {
-    const { name, price, category, sizes, colors, material } = req.body;
+    // pull salePrice in addition to your existing fields
+    const { name, price, category, sizes, colors, material, salePrice } = req.body;
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    // Populate the existing photos array with the uploaded image URL
     const photos = imageUrl ? [imageUrl] : [];
+
+    // only mark onSale if salePrice is provided and less than the regular price
+    const onSale = salePrice != null && Number(salePrice) < Number(price);
 
     const product = await Product.create({
       name,
-      description: req.body.description || '',  // include description if used
+      description: req.body.description || '',
       price: Number(price),
+      // new sale fields:
+      salePrice: onSale ? Number(salePrice) : null,
+      onSale,
       category,
       sizes: sizes ? sizes.split(',') : [],
       colors: colors ? colors.split(',') : [],

@@ -23,12 +23,13 @@ export default function AddProduct() {
     name: '',
     description: '',
     price: '',
+    salePrice: '',      // ← NEW
     category: '',
     subCategory: '',
     sizes: [],
     colors: [],
     material: '',
-    photos: [],   // array for multiple files
+    photos: [],         // array for multiple files
   });
 
   const handleChange = (e) => {
@@ -36,9 +37,7 @@ export default function AddProduct() {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      // reset subCategory & sizes when category changes
       ...(name === 'category' ? { subCategory: '', sizes: [] } : {}),
-      // reset sizes when subCategory changes
       ...(name === 'subCategory' ? { sizes: [] } : {}),
     }));
   };
@@ -78,6 +77,7 @@ export default function AddProduct() {
     form.append('name', formData.name);
     form.append('description', formData.description);
     form.append('price', formData.price);
+    form.append('salePrice', formData.salePrice || '');   // ← NEW
     form.append('category', formData.category);
     form.append(
       'subCategory',
@@ -100,6 +100,7 @@ export default function AddProduct() {
         name: '',
         description: '',
         price: '',
+        salePrice: '',     // ← RESET
         category: '',
         subCategory: '',
         sizes: [],
@@ -116,7 +117,6 @@ export default function AddProduct() {
   const subCategories =
     categories.find(c => c.name === formData.category)?.subcategories || [];
 
-  // Determine size options
   let sizeOptions = sizesByCategory.default;
   if (
     formData.category === 'Men' &&
@@ -165,6 +165,18 @@ export default function AddProduct() {
             value={formData.price}
             onChange={handleChange}
             required
+          />
+        </label>
+
+        <label>
+          Sale Price (optional)<br />
+          <input
+            name="salePrice"
+            type="number"
+            min="0"
+            step="0.01"
+            value={formData.salePrice}
+            onChange={handleChange}
           />
         </label>
 

@@ -1,3 +1,5 @@
+// backend/src/models/Product.js
+
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
@@ -10,6 +12,24 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  // optional sale price, must be less than regular price if set
+  salePrice: {
+    type: Number,
+    min: 0,
+    default: null,
+    validate: {
+      validator: function(v) {
+        // only validate when salePrice is not null
+        return v == null || v < this.price;
+      },
+      message: props => `Sale price (${props.value}) must be below regular price`
+    }
+  },
+  // flag to mark a product as on sale
+  onSale: {
+    type: Boolean,
+    default: false
   },
   category: {
     type: String,
@@ -39,22 +59,24 @@ const productSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
-  photos: {            // array of image URLs
+  photos: {
+    // array of image URLs
     type: [String],
     default: []
   },
-  countInStock: {      // inventory count
+  countInStock: {
+    // inventory count
     type: Number,
     default: 0,
     min: 0
   },
-  isActive: {          // soft-delete / visibility flag
+  isActive: {
+    // soft-delete / visibility flag
     type: Boolean,
     default: true
   }
 }, {
-  timestamps: true     // createdAt & updatedAt
+  timestamps: true     // adds createdAt & updatedAt
 });
 
-const Product = mongoose.model('Product', productSchema);
-export default Product;
+export default mongoose.model('Product', productSchema);
