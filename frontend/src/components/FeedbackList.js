@@ -42,7 +42,7 @@ export default function FeedbackList({ productId }) {
       {reviews.map(fb => (
         <div key={fb._id} className="p-4 bg-gray-50 rounded shadow">
           <p className="font-semibold">
-            {fb.user.name}{' '}
+            {fb.user.Fullname || 'Anonymous'}{' '}
             <span className="text-gray-500">
               ({new Date(fb.createdAt).toLocaleDateString()})
             </span>
