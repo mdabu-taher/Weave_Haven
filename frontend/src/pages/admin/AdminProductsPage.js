@@ -7,7 +7,7 @@ import {
   deleteAdminProduct
 } from '../../utils/api';
 import ProductForm from '../../components/admin/ProductForm';
-
+import '../../styles/AdminProductsPage.css';
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [editing, setEditing] = useState(null);

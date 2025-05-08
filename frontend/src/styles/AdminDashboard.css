@@ -1,0 +1,61 @@
+/* src/styles/AdminDashboard.css */
+
+/* Vertical spacing between direct children */
+.space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  /* Text sizes */
+  .text-2xl {
+    font-size: 1.5rem;        /* 24px */
+    line-height: 2rem;        /* 32px */
+  }
+  .text-lg {
+    font-size: 1.125rem;      /* 18px */
+    line-height: 1.75rem;     /* 28px */
+  }
+  .text-3xl {
+    font-size: 1.875rem;      /* 30px */
+    line-height: 2.25rem;     /* 36px */
+  }
+  
+  /* Font weights */
+  .font-bold {
+    font-weight: 700;
+  }
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  /* Grid utilities */
+  .grid {
+    display: grid;
+  }
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .gap-4 {
+    gap: 1rem;                /* 16px */
+  }
+  
+  /* Spacing & layout */
+  .p-4 {
+    padding: 1rem;            /* 16px */
+  }
+  .mb-2 {
+    margin-bottom: 0.5rem;    /* 8px */
+  }
+  
+  /* Borders & corners */
+  .border {
+    border: 1px solid #e2e8f0; /* light gray */
+  }
+  .rounded {
+    border-radius: 0.25rem;    /* 4px */
+  }
+  
+  /* Background */
+  .bg-white {
+    background-color: #fff;
+  }
+  

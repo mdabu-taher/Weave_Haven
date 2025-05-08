@@ -1,7 +1,7 @@
 // src/pages/admin/AdminOrders.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchAdminOrders, updateAdminOrderStatus } from '../../utils/api';
-
+import '../../styles/AdminOrders.css';
 export default function AdminOrders() {
   // 1. State
   const [orders, setOrders]   = useState([]);

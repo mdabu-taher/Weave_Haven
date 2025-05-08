@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-
+import '../../styles/AdminDashboard.css';
 // register chart.js components
 ChartJS.register(
   CategoryScale,

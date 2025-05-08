@@ -1,52 +1,23 @@
+// src/components/admin/AdminLayout.jsx
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import '../../styles/AdminLayout.css';  // adjust path if your CSS lives in src/styles
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 p-6 bg-white border-r">
-        <h2 className="text-2xl font-bold mb-6">Admin</h2>
-        <nav className="space-y-4">
-          <NavLink 
-            to="/admin" 
-            end 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Dashboard
-          </NavLink>
-          <NavLink 
-            to="users" 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Users
-          </NavLink>
-          <NavLink 
-            to="products" 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Products
-          </NavLink>
-          <NavLink 
-            to="orders" 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Orders
-          </NavLink>
-          <NavLink 
-            to="analytics" 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Analytics
-          </NavLink>
-          <NavLink 
-            to="settings" 
-            className={({ isActive }) => isActive ? 'font-bold text-pink-600' : ''}
-          >
-            Settings
-          </NavLink>
+    <div className="admin-container">
+      <aside className="admin-sidebar">
+        <h2 className="admin-logo">Admin</h2>
+        <nav className="admin-nav">
+          <NavLink to=""      end className="admin-link">Dashboard</NavLink>
+          <NavLink to="users"       className="admin-link">Users</NavLink>
+          <NavLink to="products"    className="admin-link">Products</NavLink>
+          <NavLink to="orders"      className="admin-link">Orders</NavLink>
+          <NavLink to="analytics"   className="admin-link">Analytics</NavLink>
+          <NavLink to="settings"    className="admin-link">Settings</NavLink>
         </nav>
       </aside>
-      <main className="flex-1 p-6 bg-gray-50">
+      <main className="admin-main">
         <Outlet />
       </main>
     </div>

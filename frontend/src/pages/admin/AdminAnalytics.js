@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { fetchAdminStats, fetchTopProducts } from '../../utils/api';
-
+import '../../styles/AdminAnalytics.css';
 export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);

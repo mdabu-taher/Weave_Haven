@@ -1,17 +1,19 @@
 // src/App.js
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation
+} from "react-router-dom";
 
-// Layout components
 import Navbar  from "./components/Navbar";
 import Footer  from "./components/Footer";
 
-// Context providers
 import { AuthProvider }     from "./context/AuthContext";
 import { CartProvider }     from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
-// Public pages
 import Home                from "./pages/Home";
 import LoginPage           from "./pages/LoginPage";
 import AddProduct          from "./pages/AddProduct";
@@ -33,7 +35,6 @@ import BonusPage           from "./pages/BonusPage";
 import SettingsPage        from "./pages/SettingsPage";
 import About               from "./components/About";
 
-// Admin imports
 import RequireAdmin        from "./components/admin/RequireAdmin";
 import AdminLayout         from "./components/admin/AdminLayout";
 import AdminDashboard      from "./pages/admin/AdminDashboard";
@@ -43,60 +44,71 @@ import AdminOrders         from "./pages/admin/AdminOrders";
 import AdminAnalytics      from "./pages/admin/AdminAnalytics";
 import AdminSettings       from "./pages/admin/AdminSettings";
 
-function App() {
+function AppContent() {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith("/admin");
+
+  return (
+    <>
+      {/* only show Navbar when NOT on an admin route */}
+      {!isAdmin && <Navbar />}
+
+      <main className="min-h-screen">
+        <Routes>
+          {/* public */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/all-products" element={<AllProducts />} />
+          <Route path="/products" element={<ProductsList />} />
+          <Route path="/products/:category" element={<ProductsList />} />
+          <Route path="/products/:category/:subCategory" element={<ProductsList />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/orders" element={<OrderHistoryPage />} />
+          <Route path="/membership" element={<MembershipPage />} />
+          <Route path="/bonus" element={<BonusPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/about" element={<About />} />
+
+          {/* admin */}
+          <Route element={<RequireAdmin />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index       element={<AdminDashboard />} />
+              <Route path="users"     element={<AdminUsers />} />
+              <Route path="products"  element={<AdminProductsPage />} />
+              <Route path="orders"    element={<AdminOrders />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="settings"  element={<AdminSettings />} />
+            </Route>
+          </Route>
+        </Routes>
+      </main>
+
+      {/* only show Footer when NOT on an admin route */}
+      {!isAdmin && <Footer />}
+    </>
+  );
+}
+
+export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <Navbar />
-
-            <main className="min-h-screen">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/add-product" element={<AddProduct />} />
-                <Route path="/all-products" element={<AllProducts />} />
-                <Route path="/products" element={<ProductsList />} />
-                <Route path="/products/:category" element={<ProductsList />} />
-                <Route path="/products/:category/:subCategory" element={<ProductsList />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/favorites" element={<FavoritesPage />} />
-                <Route path="/search" element={<SearchResultsPage />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/payment" element={<Payment />} />
-                <Route path="/payment-success" element={<PaymentSuccess />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/orders" element={<OrderHistoryPage />} />
-                <Route path="/membership" element={<MembershipPage />} />
-                <Route path="/bonus" element={<BonusPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/about" element={<About />} />
-
-                {/* Admin routes (protected) */}
-                <Route element={<RequireAdmin />}>
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="users"     element={<AdminUsers />} />
-                    <Route path="products"  element={<AdminProductsPage />} />
-                    <Route path="orders"    element={<AdminOrders />} />
-                    <Route path="analytics" element={<AdminAnalytics />} />
-                    <Route path="settings"  element={<AdminSettings />} />
-                  </Route>
-                </Route>
-              </Routes>
-            </main>
-
-            <Footer />
+            <AppContent />
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );
 }
-
-export default App;

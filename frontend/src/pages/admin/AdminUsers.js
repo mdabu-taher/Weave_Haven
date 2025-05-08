@@ -1,7 +1,7 @@
 // src/pages/admin/AdminUsers.js
 import React, { useEffect, useState } from 'react';
 import { fetchAdminUsers } from '../../utils/api';
-
+import '../../styles/AdminUsers.css';
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
 

@@ -1,6 +1,6 @@
 // src/components/Navbar.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
@@ -21,6 +21,8 @@ export default function Navbar() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');
   const searchBoxRef = useRef(null);
 
   // Fetch current user
@@ -67,7 +69,6 @@ export default function Navbar() {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  // Search submission
   const doSearch = () => {
     if (!searchTerm.trim()) return;
     navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
@@ -76,7 +77,6 @@ export default function Navbar() {
     setDesktopSearchOpen(false);
   };
 
-  // Navigate to selected suggestion
   const handleSelectSuggestion = (id) => {
     navigate(`/product/${id}`);
     setSearchTerm('');
@@ -85,8 +85,6 @@ export default function Navbar() {
   };
 
   const openLogin = () => setModal('login');
-
-  // Log out
   const handleLogout = async () => {
     try {
       await axios.post('/api/auth/logout', {}, { withCredentials: true });
@@ -101,9 +99,12 @@ export default function Navbar() {
       <nav className="navbar">
         {/* LEFT */}
         <div className="navbar-left">
-          <div className="hamburger" onClick={() => setSidebarOpen(true)}>
-            <div className="bar" /><div className="bar" /><div className="bar" />
-          </div>
+          {/* only show hamburger on non-admin */}
+          {!isAdmin && (
+            <div className="hamburger" onClick={() => setSidebarOpen(true)}>
+              <div className="bar" /><div className="bar" /><div className="bar" />
+            </div>
+          )}
           <Link to="/" className="navbar-logo">
             <img src={logo} alt="Weave Haven" className="brand-logo" />
           </Link>
@@ -138,7 +139,7 @@ export default function Navbar() {
         {/* RIGHT */}
         <div className="navbar-right">
           {/* Desktop Search */}
-          {windowWidth > 768 && (
+          {windowWidth > 768 && !isAdmin && (
             <div className="desktop-search-wrapper" ref={searchBoxRef}>
               <FaSearch
                 className="nav-icon desktop-search-icon"
@@ -224,8 +225,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Search */}
-      {windowWidth <= 768 && (
+      {/* only show mobile search & drawer on non-admin */}
+      {!isAdmin && windowWidth <= 768 && (
         <div className="mobile-search-bar">
           <FaSearch className="search-icon-left" />
           <input
@@ -239,24 +240,27 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Sidebar */}
-      <div
-        className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
-        onClick={() => setSidebarOpen(false)}
-      />
-      <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
-        <button className="close-btn" onClick={() => setSidebarOpen(false)}>
-          ×
-        </button>
-        <Link to="/products/men" onClick={() => setSidebarOpen(false)}>Men</Link>
-        <Link to="/products/women" onClick={() => setSidebarOpen(false)}>Women</Link>
-        <Link to="/products/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
-        <Link to="/products/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
-        <Link to="/products/new-arrivals" onClick={() => setSidebarOpen(false)}>
-          New Arrivals
-        </Link>
-        <Link to="/products/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
-      </div>
+      {!isAdmin && (
+        <>
+          <div
+            className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
+            <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+              ×
+            </button>
+            <Link to="/products/men" onClick={() => setSidebarOpen(false)}>Men</Link>
+            <Link to="/products/women" onClick={() => setSidebarOpen(false)}>Women</Link>
+            <Link to="/products/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
+            <Link to="/products/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
+            <Link to="/products/new-arrivals" onClick={() => setSidebarOpen(false)}>
+              New Arrivals
+            </Link>
+            <Link to="/products/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
+          </div>
+        </>
+      )}
 
       {/* Modals */}
       {modal === 'login' && (
