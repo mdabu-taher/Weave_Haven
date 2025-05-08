@@ -123,3 +123,20 @@ footer {
   border-top: 1px solid #ddd;
   margin-top: 25px;
 }
+
+/* Home.css */
+.home-carousel .carousel .slide img {
+  max-height: 500px;
+  object-fit: cover;
+}
+
+/* src/styles/Home.css */
+.home-carousel .legend {
+  background: transparent !important;
+  opacity:    1           !important;
+  bottom:     50px        !important;
+  color:      #fff        !important;
+  text-shadow: 0 0 5px rgba(6, 6, 6, 0.7) !important;
+  padding:    0           !important;
+  font-size:  3rem      !important;
+}
