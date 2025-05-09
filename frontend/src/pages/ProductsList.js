@@ -90,6 +90,7 @@ export default function ProductsList() {
                       <span className="sale-price">
                         SEK {product.salePrice.toFixed(2)}
                       </span>
+                      <br></br>
                       <span className="discount-badge">
                         {Math.round((1 - product.salePrice / product.price) * 100)}% off
                       </span>

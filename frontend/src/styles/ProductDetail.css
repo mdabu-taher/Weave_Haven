@@ -170,3 +170,38 @@
   color: crimson;
   border: 1px solid crimson;
 }
+/* Price block */
+.price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.orig-price {
+  font-size: 1rem;
+  color: #888;
+  text-decoration: line-through;
+}
+
+.sale-price {
+  font-size: 1.5rem;
+  color: #d7263d;
+  font-weight: bold;
+}
+
+.regular-price {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Discount badge */
+.discount-badge {
+  background: #d7263d;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+}

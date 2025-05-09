@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import {
   BrowserRouter,
@@ -7,42 +6,43 @@ import {
   useLocation
 } from "react-router-dom";
 
-import Navbar  from "./components/Navbar";
-import Footer  from "./components/Footer";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-import { AuthProvider }     from "./context/AuthContext";
-import { CartProvider }     from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
-import Home                from "./pages/Home";
-import LoginPage           from "./pages/LoginPage";
-import AddProduct          from "./pages/AddProduct";
-import AllProducts         from "./pages/AllProducts";
-import ProductsList        from "./pages/ProductsList";
-import ProductDetail       from "./pages/ProductDetail";
-import FavoritesPage       from "./pages/FavoritesPage";
-import SearchResultsPage   from "./pages/SearchResultsPage";
-import Cart                from "./pages/Cart";
-import Checkout            from "./pages/Checkout";
-import Payment             from "./pages/Payment";
-import PaymentSuccess      from "./pages/PaymentSuccess";
-import ForgotPassword      from "./pages/ForgotPassword";
-import ResetPassword       from "./pages/ResetPassword";
-import AccountPage         from "./pages/AccountPages";
-import OrderHistoryPage    from "./pages/OrderHistoryPage";
-import MembershipPage      from "./pages/MembershipPage";
-import BonusPage           from "./pages/BonusPage";
-import SettingsPage        from "./pages/SettingsPage";
-import About               from "./components/About";
+import Home from "./pages/Home";
+import LoginPage from "./pages/LoginPage";
+import WelcomePage from "./components/WelcomePage";
+import AddProduct from "./pages/AddProduct";
+import AllProducts from "./pages/AllProducts";
+import ProductsList from "./pages/ProductsList";
+import ProductDetail from "./pages/ProductDetail";
+import FavoritesPage from "./pages/FavoritesPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import AccountPage from "./pages/AccountPages";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
+import MembershipPage from "./pages/MembershipPage";
+import BonusPage from "./pages/BonusPage";
+import SettingsPage from "./pages/SettingsPage";
+import About from "./components/About";
 
-import RequireAdmin        from "./components/admin/RequireAdmin";
-import AdminLayout         from "./components/admin/AdminLayout";
-import AdminDashboard      from "./pages/admin/AdminDashboard";
-import AdminUsers          from "./pages/admin/AdminUsers";
-import AdminProductsPage   from "./pages/admin/AdminProductsPage";
-import AdminOrders         from "./pages/admin/AdminOrders";
-import AdminAnalytics      from "./pages/admin/AdminAnalytics";
-import AdminSettings       from "./pages/admin/AdminSettings";
+import RequireAdmin from "./components/admin/RequireAdmin";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 function AppContent() {
   const { pathname } = useLocation();
@@ -50,15 +50,15 @@ function AppContent() {
 
   return (
     <>
-      {/* only show Navbar when NOT on an admin route */}
       {!isAdmin && <Navbar />}
 
       <main className="min-h-screen">
         <Routes>
           {/* public */}
           <Route path="/" element={<Home />} />
+          <Route path="/welcome" element={<WelcomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/register" element={<LoginPage />} />
           <Route path="/all-products" element={<AllProducts />} />
           <Route path="/products" element={<ProductsList />} />
           <Route path="/products/:category" element={<ProductsList />} />
@@ -82,18 +82,24 @@ function AppContent() {
           {/* admin */}
           <Route element={<RequireAdmin />}>
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index       element={<AdminDashboard />} />
-              <Route path="users"     element={<AdminUsers />} />
-              <Route path="products"  element={<AdminProductsPage />} />
-              <Route path="orders"    element={<AdminOrders />} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+
+              {/* Products overview with nested "new" */}
+              <Route path="products">
+                <Route index element={<AdminProductsPage />} />
+                <Route path="new" element={<AddProduct />} />
+                {/* future: <Route path=":id/edit" element={<EditProduct/>} /> */}
+              </Route>
+
+              <Route path="orders" element={<AdminOrders />} />
               <Route path="analytics" element={<AdminAnalytics />} />
-              <Route path="settings"  element={<AdminSettings />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>
         </Routes>
       </main>
 
-      {/* only show Footer when NOT on an admin route */}
       {!isAdmin && <Footer />}
     </>
   );

@@ -1,0 +1,136 @@
+/* Import calligraphic font */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+/* Hide the global navbar */
+body.login-page .navbar {
+  display: none !important;
+}
+
+/* Full-viewport gray background & centering */
+.login-wrapper {
+  min-height: 100vh;
+  background: #fafafa;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Container to align header + card */
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 2rem;
+}
+
+/* ─── Header Bar ─── */
+.login-header {
+  background: #fcfcfc;
+  padding: 1rem;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-logo {
+  width: 48px;
+  height: auto;
+}
+
+.header-text {
+  line-height: 1.2;
+}
+
+.site-name {
+  margin: 0;
+  font-family: 'Dancing Script', cursive;
+  font-size: 2rem;
+  color: #333;
+}
+
+.welcome-text {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.subtitle-text {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #777;
+}
+
+/* ─── Login Card ─── */
+.login-card {
+  background: #fff;
+  margin-top: 80px;
+  padding: 2rem 1.5rem;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Welcome message at top of the card */
+.card-welcome {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
+/* Card title */
+.login-title {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+/* ─── Form Fields ─── */
+.login-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #d7263d;
+  box-shadow: 0 0 0 2px rgba(215,38,61,0.2);
+}
+
+/* ─── Submit Button ─── */
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  background: #2b8c33;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-button:hover {
+  background: #158217;
+}

@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterModal({ onClose, onSwitch }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: '',
     username: '',
@@ -29,9 +31,12 @@ export default function RegisterModal({ onClose, onSwitch }) {
     e.preventDefault();
     setError('');
     if (!form.gender) return setError('Please select your gender');
-    if (form.password !== form.confirmPassword) return setError('Passwords do not match');
+    if (form.password !== form.confirmPassword)
+      return setError('Passwords do not match');
     if (!validatePassword(form.password)) {
-      return setError('Password must include upper, lower, number and be at least 8 characters');
+      return setError(
+        'Password must include upper, lower, number and be at least 8 characters'
+      );
     }
 
     try {
@@ -47,7 +52,15 @@ export default function RegisterModal({ onClose, onSwitch }) {
         },
         { withCredentials: true }
       );
-      setSuccessMsg('Registration successful! Please check your email to confirm.');
+      setSuccessMsg(
+        'Registration successful! Please check your email to confirm.'
+      );
+
+      // After a brief pause, close the modal and navigate home
+      setTimeout(() => {
+        onClose();
+        navigate('/');
+      }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
