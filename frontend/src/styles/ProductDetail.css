@@ -92,12 +92,12 @@
 }
 
 .size-btn {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
+  width: 30px;
+  height: 30px;
   border-radius: 4px;
-  background: #fff;
-  color: #000;
+  border: 1px solid #ccc;
   cursor: pointer;
+  padding: 2px;
 }
 
 .size-btn.selected {

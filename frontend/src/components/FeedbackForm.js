@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-// Change alias import to relative path
 import { createFeedback } from '../utils/api';
+import '../styles/FeedbackForm.css';
 
 export default function FeedbackForm({ orderId, productId, onSubmitted }) {
-  const [rating, setRating] = useState(5);
+  const [rating, setRating]   = useState(5);
   const [comment, setComment] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -19,28 +19,43 @@ export default function FeedbackForm({ orderId, productId, onSubmitted }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 p-4 bg-white rounded shadow">
-      {error && <p className="text-red-500">{error}</p>}
-      <label>
-        Rating:
-        <select value={rating} onChange={e => setRating(+e.target.value)}>
-          {[5,4,3,2,1,0].map(n => (
-            <option key={n} value={n}>
-              {n === 0 ? '0 – No Rating' : `${n} Star${n > 1 ? 's' : ''}`}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block">
+    <form onSubmit={handleSubmit} className="feedback-form">
+      <h3 className="form-heading">Your Review</h3>
+
+      {error && <p className="error-text">{error}</p>}
+
+      {/* Star Rating */}
+      <div className="rating-stars">
+        {[5, 4, 3, 2, 1].map(n => (
+          <React.Fragment key={n}>
+            <input
+              type="radio"
+              id={`star${n}`}
+              name="rating"
+              value={n}
+              checked={rating === n}
+              onChange={() => setRating(n)}
+            />
+            <label htmlFor={`star${n}`} title={`${n} Star${n > 1 ? 's' : ''}`}>
+              ★
+            </label>
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Comment box */}
+      <label className="feedback-label">
         Comment:
         <textarea
+          className="feedback-textarea"
           value={comment}
           onChange={e => setComment(e.target.value)}
-          rows={3}
-          className="w-full border rounded p-2"
+          rows={4}
+          placeholder="Write your thoughts..."
         />
       </label>
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+
+      <button type="submit" className="submit-feedback-btn">
         Submit Feedback
       </button>
     </form>

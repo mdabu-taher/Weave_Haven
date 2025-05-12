@@ -4,8 +4,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  height: 100px;
-  background: #f9d5d3;
+  height: 70px;
+  background:	#FFFFFF;
+
+  ;
   border-bottom: 1px solid #eee;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
   overflow: visible;  /* ← allow dropdowns & suggestions to overflow */
@@ -18,17 +20,39 @@
   align-items: center;
 }
 
+/* 1) Keep the same perspective on the wrapper */
 .navbar-logo {
   display: flex;
   align-items: center;
   text-decoration: none;
+  perspective: 800px;   /* adjust for more/less depth */
 }
 
+/* 2) Define a Y-axis spin */
+@keyframes spinY {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
+
+/* 3) Apply to your .brand-logo */
 .navbar-logo .brand-logo {
-  height: 100px;
+  height: 70px;
   width: auto;
   padding: 5px;
   object-fit: contain;
+
+  transform-style: preserve-3d;
+  transform-origin: center center;
+
+  animation: spinY 4s linear infinite;
+}
+.brand-text {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;            /* adjust to taste */
+  line-height: 1;
+  user-select: none;
 }
 
 /* ───────── Center (menu links) ───────── */
@@ -195,6 +219,42 @@
   width: 100%;
   padding: 10px 16px;
 }
+/* ───────── Search Button Styles ───────── */
+/* ───────── Search Button Styles ───────── */
+.search-btn {
+  background-color: transparent;  /* Transparent background */
+  border: 1px solid #ccc;         /* Soft border */
+  padding: 4px 8px;                /* Even smaller padding */
+  border-radius: 25px;             /* Rounded button */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  margin-left: 10px;               /* Slight left margin for spacing */
+}
+
+/* ───────── Button Icon ───────── */
+.search-btn svg {
+  font-size: 18px;                 /* Icon size */
+  color: #555;                     /* Neutral color for the icon */
+  transition: transform 0.3s ease;
+  margin: 0;                        /* Remove any extra margin around the icon */
+  padding: 0;                       /* Ensure no padding is added around the icon */
+}
+
+/* ───────── Search Input Styles ───────── */
+.desktop-search-wrapper input {
+  padding: 10px 15px;             /* Balanced padding */
+  font-size: 16px;                  /* Comfortable font size */
+  border: 1px solid #ccc;          /* Soft border */
+  border-radius: 25px;             /* Matching rounded edges */
+  outline: none;
+  width: 100%;                      /* Make input take full width */
+  box-sizing: border-box;          /* Prevent overflow */
+}
+
 
 /* ───────── Hamburger Menu Icon ───────── */
 .hamburger {

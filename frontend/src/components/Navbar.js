@@ -1,4 +1,3 @@
-// src/components/Navbar.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
@@ -23,6 +22,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith('/admin');
+  // Hide search on any “account” pages
+  const hideSearch = /^\/(account|orders|membership|bonus|settings)/.test(pathname);
+
   const searchBoxRef = useRef(null);
 
   // Fetch current user
@@ -32,7 +34,7 @@ export default function Navbar() {
       .catch(() => setUser(null));
   }, []);
 
-  // Handle window resize
+  // Track window width
   useEffect(() => {
     const onResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', onResize);
@@ -41,7 +43,7 @@ export default function Navbar() {
 
   // Close desktop search when clicking outside
   useEffect(() => {
-    const onClick = (e) => {
+    const onClick = e => {
       if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
         setDesktopSearchOpen(false);
       }
@@ -50,7 +52,7 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  // Debounced live search
+  // Live‐search debounce
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSuggestions([]);
@@ -61,9 +63,9 @@ export default function Navbar() {
         const res = await axios.get(
           `/api/products/search?q=${encodeURIComponent(searchTerm)}`
         );
-        setSuggestions(res.data.slice(0, 5));
+        setSuggestions(res.data.slice(0,5));
       } catch (err) {
-        console.error('Live search failed:', err);
+        console.error(err);
       }
     }, 300);
     return () => clearTimeout(handler);
@@ -77,11 +79,9 @@ export default function Navbar() {
     setDesktopSearchOpen(false);
   };
 
-  const handleSelectSuggestion = (id) => {
+  const handleSelectSuggestion = id => {
     navigate(`/product/${id}`);
-    setSearchTerm('');
-    setSuggestions([]);
-    setDesktopSearchOpen(false);
+    setSearchTerm(''); setSuggestions([]); setDesktopSearchOpen(false);
   };
 
   const openLogin = () => setModal('login');
@@ -90,7 +90,7 @@ export default function Navbar() {
       await axios.post('/api/auth/logout', {}, { withCredentials: true });
       setUser(null);
     } catch (err) {
-      console.error('Logout failed', err);
+      console.error(err);
     }
   };
 
@@ -99,33 +99,32 @@ export default function Navbar() {
       <nav className="navbar">
         {/* LEFT */}
         <div className="navbar-left">
-          {/* only show hamburger on non-admin */}
           {!isAdmin && (
             <div className="hamburger" onClick={() => setSidebarOpen(true)}>
-              <div className="bar" /><div className="bar" /><div className="bar" />
+              <div className="bar"/><div className="bar"/><div className="bar"/>
             </div>
           )}
           <Link to="/" className="navbar-logo">
             <img src={logo} alt="Weave Haven" className="brand-logo" />
+            <span className="brand-text">Weave Haven</span>
           </Link>
+
         </div>
 
         {/* CENTER */}
         <div className="navbar-center">
           <ul className="main-nav">
             {categories.map(cat => {
-              const slug = cat.name.toLowerCase().replace(/\s+/g, '-');
+              const slug = cat.name.toLowerCase().replace(/\s+/g,'-');
               return (
                 <li className="nav-item" key={cat.name}>
                   <Link to={`/products/${slug}`}>{cat.name}</Link>
                   <ul className="dropdown-menu">
                     {cat.subcategories.map(sub => {
-                      const subSlug = sub.toLowerCase().replace(/\s+/g, '-');
+                      const subSlug = sub.toLowerCase().replace(/\s+/g,'-');
                       return (
                         <li key={sub}>
-                          <Link to={`/products/${slug}/${subSlug}`}>
-                            {sub}
-                          </Link>
+                          <Link to={`/products/${slug}/${subSlug}`}>{sub}</Link>
                         </li>
                       );
                     })}
@@ -139,7 +138,7 @@ export default function Navbar() {
         {/* RIGHT */}
         <div className="navbar-right">
           {/* Desktop Search */}
-          {windowWidth > 768 && !isAdmin && (
+          {windowWidth > 768 && !isAdmin && !hideSearch && (
             <div className="desktop-search-wrapper" ref={searchBoxRef}>
               <FaSearch
                 className="nav-icon desktop-search-icon"
@@ -153,24 +152,17 @@ export default function Navbar() {
                       placeholder="Search for jacket, shirt, jeans..."
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && doSearch()}
+                      onKeyDown={e => e.key==='Enter' && doSearch()}
                       autoFocus
                     />
-                    <button
-                      type="button"
-                      className="search-btn"
-                      onClick={doSearch}
-                      aria-label="Search"
-                    >
-                      🔍
-                    </button>
+                    <button onClick={doSearch} className="search-btn">🔍</button>
                   </div>
-                  {suggestions.length > 0 ? (
+                  {suggestions.length>0 ? (
                     <ul className="live-suggestions">
-                      {suggestions.map(p => (
-                        <li key={p._id} onClick={() => handleSelectSuggestion(p._id)}>
+                      {suggestions.map(p=>(
+                        <li key={p._id} onClick={()=>handleSelectSuggestion(p._id)}>
                           <img
-                            src={p.photos?.[0] || '/placeholder.png'}
+                            src={p.photos?.[0]||'/placeholder.png'}
                             alt={p.name}
                             className="suggestion-thumb"
                           />
@@ -186,7 +178,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Account */}
+          {/* Account / Login */}
           <div className="account-wrapper">
             {user ? (
               <div className="user-dropdown">
@@ -203,77 +195,76 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <FaUser className="nav-icon auth-icon" onClick={openLogin} />
+              <FaUser className="nav-icon auth-icon" onClick={openLogin}/>
             )}
           </div>
 
           {/* Wishlist */}
           <Link to="/favorites" className="wishlist-icon-wrapper">
             <FaHeart className="nav-icon heart-icon" />
-            {wishlistItems.length > 0 && (
+            {wishlistItems.length>0 && (
               <span className="wishlist-count">{wishlistItems.length}</span>
             )}
           </Link>
 
           {/* Cart */}
           <Link to="/cart" className="cart-icon-wrapper">
-            <FaShoppingBag className="nav-icon" />
-            {cartItems.length > 0 && (
+            <FaShoppingBag className="nav-icon"/>
+            {cartItems.length>0 && (
               <span className="cart-count">{cartItems.length}</span>
             )}
           </Link>
         </div>
       </nav>
 
-      {/* only show mobile search & drawer on non-admin */}
-      {!isAdmin && windowWidth <= 768 && (
+      {/* Mobile Search Bar */}
+      {!isAdmin && windowWidth<=768 && !hideSearch && (
         <div className="mobile-search-bar">
-          <FaSearch className="search-icon-left" />
+          <FaSearch className="search-icon-left"/>
           <input
             type="text"
             className="mobile-search-input"
             placeholder="Search for jacket, shirt, jeans..."
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && doSearch()}
+            onChange={e=>setSearchTerm(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&doSearch()}
           />
         </div>
       )}
 
+      {/* Sidebar Drawer */}
       {!isAdmin && (
         <>
           <div
-            className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
-            onClick={() => setSidebarOpen(false)}
+            className={`sidebar-overlay ${sidebarOpen?'show':''}`}
+            onClick={()=>setSidebarOpen(false)}
           />
-          <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
-            <button className="close-btn" onClick={() => setSidebarOpen(false)}>
-              ×
-            </button>
-            <Link to="/products/men" onClick={() => setSidebarOpen(false)}>Men</Link>
-            <Link to="/products/women" onClick={() => setSidebarOpen(false)}>Women</Link>
-            <Link to="/products/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
-            <Link to="/products/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
-            <Link to="/products/new-arrivals" onClick={() => setSidebarOpen(false)}>
+          <div className={`sidebar-menu ${sidebarOpen?'open':''}`}>
+            <button className="close-btn" onClick={()=>setSidebarOpen(false)}>×</button>
+            <Link to="/products/men"      onClick={()=>setSidebarOpen(false)}>Men</Link>
+            <Link to="/products/women"    onClick={()=>setSidebarOpen(false)}>Women</Link>
+            <Link to="/products/kids"     onClick={()=>setSidebarOpen(false)}>Kids</Link>
+            <Link to="/products/newborn"  onClick={()=>setSidebarOpen(false)}>Newborn</Link>
+            <Link to="/products/new-arrivals" onClick={()=>setSidebarOpen(false)}>
               New Arrivals
             </Link>
-            <Link to="/products/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
+            <Link to="/products/sale"     onClick={()=>setSidebarOpen(false)}>Sale</Link>
           </div>
         </>
       )}
 
       {/* Modals */}
-      {modal === 'login' && (
+      {modal==='login' && (
         <LoginModal
-          onClose={() => setModal('none')}
-          onSwitch={() => setModal('register')}
-          onSuccess={ud => { setUser(ud); setModal('none'); }}
+          onClose={()=>setModal('none')}
+          onSwitch={()=>setModal('register')}
+          onSuccess={ud=>{ setUser(ud); setModal('none'); }}
         />
       )}
-      {modal === 'register' && (
+      {modal==='register' && (
         <RegisterModal
-          onClose={() => setModal('none')}
-          onSwitch={() => setModal('login')}
+          onClose={()=>setModal('none')}
+          onSwitch={()=>setModal('login')}
         />
       )}
     </>

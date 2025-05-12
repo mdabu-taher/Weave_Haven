@@ -25,12 +25,12 @@ export default function AdminOrders() {
     }
   };
 
-  if (loading) return <p className="p-6">Loading orders…</p>;
+  if (loading) return <p className="Orders">Loading orders…</p>;
 
   // 4. Render table
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Order Overview</h1>
+    <div className="Orders">
+      <h1 className="OrdersHeadline">Order Overview</h1>
       <table className="min-w-full table-auto border-collapse">
         <thead>
           <tr>

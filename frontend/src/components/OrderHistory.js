@@ -16,7 +16,7 @@ export default function OrderHistory({ order }) {
           <li key={item.product._id} className="py-3">
             <div className="flex justify-between items-center">
               <span>{item.name} × {item.qty}</span>
-              <span>${item.price.toFixed(2)}</span>
+              <span>SEK {item.price.toFixed(2)}</span>
             </div>
 
             {/* Feedback UI only for delivered orders */}

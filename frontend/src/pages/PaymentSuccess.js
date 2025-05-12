@@ -17,6 +17,7 @@ export default function PaymentSuccess() {
     <div className="success-container">
       <div className="success-box">
         <h2 className="success-title">🎉 Payment Successful!</h2>
+        <h1 className= "success-message">Thanks for shopping with us! Your order's on it's way, and we can't wait for you to enjoy it. Need anything? We're just a click away!</h1>
         <div className="success-details">
           <p><strong>📍 Delivery Address:</strong> {address}</p>
           <p><strong>🚚 Shipping Company:</strong> {shippingCompany}</p>

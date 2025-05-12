@@ -1,5 +1,6 @@
 /* Payment.css */
 
+
 .payment-container {
     max-width: 600px;
     margin: 2rem auto;
@@ -50,6 +51,8 @@
     width: auto;
     object-fit: contain;
   }
+
+
   
   .card-form {
     display: flex;
@@ -72,6 +75,7 @@
     font-size: 1rem;
     line-height: 1.6;
     color: #444;
+  
   }
   
   .payment-error {
@@ -81,7 +85,8 @@
   }
   
   .payment-btn {
-    width: 100%;
+    width: 180px;
+    margin-left: 200px;
     background: #000;
     color: #fff;
     padding: 0.9rem;
@@ -94,9 +99,10 @@
   }
   
   .payment-btn:hover {
-    background: #222;
+    background-color: #297a18;
   }
   
+
   .qr-payment-info {
     margin-top: 1.5rem;
     text-align: center;
@@ -117,4 +123,3 @@
     border-radius: 8px;
     margin-bottom: 0.5rem;
   }
-  

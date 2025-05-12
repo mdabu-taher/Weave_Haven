@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
 .success-container {
   display: flex;
   justify-content: center;
@@ -21,6 +23,16 @@
   margin-bottom: 20px;
   font-size: 26px;
   font-weight: 700;
+}
+.success-message {
+  font-family: 'Dancing Script', cursive;
+  font-size: 20px;
+  border: 1px solid #a3eb8f;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  background-color: #64b668;
+  color: rgb(21, 20, 20);
 }
 
 .success-details p {

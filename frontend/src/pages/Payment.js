@@ -128,14 +128,14 @@ export default function Payment() {
       <div className="payment-summary">
         <p><strong>Delivery Address:</strong> {address}</p>
         <p><strong>Shipping Company:</strong> {shippingCompany}</p>
-        <p><strong>Items:</strong> SEK{itemsPrice.toFixed(2)}</p>
-        <p><strong>Shipping:</strong> SEK{shippingPrice.toFixed(2)}</p>
-        <p><strong>Total:</strong> SEK{total.toFixed(2)}</p>
+        <p><strong>Items:</strong> SEK {itemsPrice.toFixed(2)}</p>
+        <p><strong>Shipping:</strong> SEK {shippingPrice.toFixed(2)}</p>
+        <p><strong>Total:</strong> SEK {total.toFixed(2)}</p>
       </div>
 
       {error && <p className="payment-error">{error}</p>}
 
-      <button onClick={handlePayment} className="payment-btn">Pay Now</button>
+      <button onClick={handlePayment} className="payment-btn">Confirm and Pay</button>
     </div>
   );
 }

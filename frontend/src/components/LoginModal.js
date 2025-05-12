@@ -1,21 +1,19 @@
-// src/components/LoginModal.js
 import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
+import bgImage from '../assets/login_bg.png'; // Path to your background image
 
 export default function LoginModal({ onClose, onSwitch, onSuccess }) {
   const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState('');
 
-  const handleChange = e =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     try {
       const res = await axios.post('/api/auth/login', form, { withCredentials: true });
-      // return user profile data
       const profile = await axios.get('/api/auth/profile', { withCredentials: true });
       onSuccess(profile.data);
     } catch (err) {
@@ -38,7 +36,6 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
             onChange={handleChange}
             required
           />
-
           <input
             type="password"
             name="password"
@@ -47,7 +44,6 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
             onChange={handleChange}
             required
           />
-
           <p
             className="link"
             style={{ margin: '5px 0', fontSize: '0.9rem' }}
@@ -59,7 +55,7 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
             Forgot Password?
           </p>
 
-          <button type="submit">Login</button>
+          <button type="submit" className='loginbutton'>Login</button>
         </form>
 
         <p className="link" onClick={onSwitch}>

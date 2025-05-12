@@ -109,9 +109,9 @@ function Cart() {
               <button
                 disabled={selectedItems.length === 0}
                 onClick={() => navigate('/checkout', { state: { selectedItems } })}
-                className="checkout-btn"
+                className="checkout-button"
               >
-                Proceed to Payment
+                Go to Checkout
               </button>
             </div>
           </div>

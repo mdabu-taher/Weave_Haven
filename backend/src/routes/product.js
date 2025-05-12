@@ -25,50 +25,57 @@ const upload = multer({ storage });
 
 /**
  * POST /api/products
- * Create a new product, uploading multiple images under "photos"
- */
+ * Create a new product, uploading multiple images under "photos"*/
 router.post(
   '/',
   upload.array('photos', 10),
   async (req, res) => {
+    console.log('🛎  POST /api/products body:', req.body);
     try {
       const {
         name,
         description = '',
         price,
+        salePrice = '',
+        inStock = '0',
         category,
         subCategory = '',
-        sizes = '[]',
+        sizes  = '[]',
         colors = '[]',
         material = ''
       } = req.body;
 
-      // Map each uploaded file to its URL
+      // build photo URLs
       const photoUrls = req.files.map(f => `/uploads/${f.filename}`);
 
+      // create new product
       const product = new Product({
         name,
         description,
-        price,
+        price:      parseFloat(price),
+        salePrice:  salePrice ? parseFloat(salePrice) : undefined,
+        inStock:    parseInt(inStock, 10),
+        onSale:     Boolean(salePrice),
         category,
         subCategory,
-        sizes: JSON.parse(sizes),
-        colors: JSON.parse(colors),
+        sizes:      JSON.parse(sizes),
+        colors:     JSON.parse(colors),
         material,
-        photos: photoUrls
+        photos:     photoUrls
       });
 
       await product.save();
-      res.status(201).json({ message: 'Product uploaded successfully', product });
+      res.status(201).json({
+        message: 'Product uploaded successfully',
+        product
+      });
     } catch (err) {
       console.error('Product upload error:', err);
       res.status(500).json({ message: 'Failed to upload product' });
     }
   }
 );
-
-/**
- * GET /api/products
+ /* GET /api/products
  * List all products, optionally filter by category / subCategory / new-arrivals
  */
 router.get('/', async (req, res) => {

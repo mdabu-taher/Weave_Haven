@@ -1,0 +1,95 @@
+/* src/styles/FeedbackList.css */
+
+/* Wrapper */
+.feedback-list {
+  /* on small screens, stack reviews */
+  display: block;
+  margin: 20px;
+  padding: 0 1rem;
+}
+
+/* Vertical spacing between items */
+.feedback-list > * + * {
+  margin-top: 1rem;
+}
+
+/* === Summary === */
+.feedback-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.feedback-average {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  color: #1e3a8a;
+}
+
+.feedback-count {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+/* === Individual Review === */
+.review-item {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.review-date {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.review-stars {
+  font-size: 1.25rem;
+  color: #f59e0b; /* amber-500 */
+  margin-bottom: 0.5rem;
+}
+
+.review-comment {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #374151;
+}
+
+/* === Responsive (md and up) === */
+@media (min-width: 768px) {
+  .feedback-list {
+    max-width: 700px;
+    padding: 0;
+  }
+  .feedback-list > * + * {
+    margin-top: 1.5rem;
+  }
+  .feedback-summary {
+    margin-bottom: 1.5rem;
+  }
+  .feedback-average {
+    font-size: 1.75rem;
+  }
+  .feedback-count {
+    font-size: 1.125rem;
+  }
+  .review-item {
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  }
+  .review-stars {
+    font-size: 1.5rem;
+  }
+}

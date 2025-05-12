@@ -1,117 +1,94 @@
 /* src/styles/Modal.css */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .modal {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    position: relative;
-  }
-  
-  .modal h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    text-align: center;
-  }
-  
-  .modal form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .modal input {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .modal button {
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    background-color: #f28ab2;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .modal button:hover {
-    background-color: #e27099;
-  }
-  
-  .modal .error {
-    background-color: #ffe5e5;
-    color: #cc0000;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-  }
-  
-  .modal .link {
-    margin-top: 10px;
-    text-align: center;
-    color: #007bff;
-    cursor: pointer;
-  }
-  
-  .modal .link:hover {
-    text-decoration: underline;
-  }
-  
-  .modal .close {
-    margin-top: 10px;
-    text-align: center;
-    color: #999;
-    cursor: pointer;
-  }
-  
-  .modal .close:hover {
-    color: #555;
-  }
-  .gender-group {
-    display: flex;
-    gap: 1rem;
-    margin: 0.5rem 0;
-  }
-  .gender-group label {
-    font-weight: normal;
-  }
-  .success {
-    background: #e0ffe0;
-    color: #007700;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border-radius: 4px;
-    white-space: pre-line; /* preserve line breaks */
-  }
-  
-  .gender-group {
-    display: flex;
-    gap: 1.5rem;
-    margin: 0.75rem 0;
-  }
-  .success {
-    background: #e0ffe0;
-    color: #007700;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border-radius: 4px;
-    text-align: center;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);  /* Semi-transparent black overlay */
+  z-index: 9999;
+}
+
+.modal {
+  background: rgb(254, 253, 253);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.modal h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+button {
+  background-color: #f26b6b;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.loginbutton{
+  background-color: #68ab31;
+  color: white;
+  padding: 10px;
+  width: 100px;
+  margin:15px;
+  margin-left: 125px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+
+}
+
+.loginbutton:hover{
+  background-color: green;
+
+}
+
+.link {
+  color: #f26b6b;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.close {
+  color: #333;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 20px;
+}
+/* at the very top of Modal.css */
+.submit:hover{
+  background-color:green ;
+
+}

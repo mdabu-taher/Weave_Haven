@@ -59,7 +59,7 @@ export default function OrderHistoryPage() {
                       <div className="order-item-info">
                         <p className="item-name">{item.name}</p>
                         <p>
-                          {item.qty} × ${item.price.toFixed(2)}
+                          {item.qty} × SEK {item.price.toFixed(2)}
                         </p>
                       </div>
 
@@ -84,7 +84,7 @@ export default function OrderHistoryPage() {
               </ul>
 
               <p className="order-total">
-                <strong>Total:</strong> ${order.totalPrice.toFixed(2)}
+                <strong>Total:</strong> SEK {order.totalPrice.toFixed(2)}
               </p>
             </div>
           ))}

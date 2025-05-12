@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchProductFeedback } from '../utils/api';
+import '../styles/FeedbackList.css';
 
 export default function FeedbackList({ productId }) {
   const [reviews, setReviews] = useState([]);
@@ -23,35 +24,34 @@ export default function FeedbackList({ productId }) {
       : null;
 
   if (loading) {
-    return <p>Loading reviews…</p>;
+    return <p className="feedback-loading">Loading reviews…</p>;
   }
 
   if (reviews.length === 0) {
-    return <p>No reviews yet. Be the first to review this product!</p>;
+    return <p className="feedback-no-reviews">No reviews yet. Be the first to review this product!</p>;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="feedback-list">
       {/* Summary */}
-      <div className="flex items-center space-x-2 mb-4">
-        <div className="text-2xl font-bold">{average} ★</div>
-        <div className="text-gray-600">({reviews.length} review{reviews.length > 1 ? 's' : ''})</div>
+      <div className="feedback-summary">
+        <div className="feedback-average">{average} ★</div>
+        <div className="feedback-count">
+          ({reviews.length} review{reviews.length > 1 ? 's' : ''})
+        </div>
       </div>
 
       {/* Individual reviews */}
       {reviews.map(fb => (
-        <div key={fb._id} className="p-4 bg-gray-50 rounded shadow">
-          <p className="font-semibold">
-            {fb.user.Fullname || 'Anonymous'}{' '}
-            <span className="text-gray-500">
-              ({new Date(fb.createdAt).toLocaleDateString()})
-            </span>
-          </p>
-          <p className="text-lg">
-            {'★'.repeat(fb.rating)}
-            {'☆'.repeat(5 - fb.rating)}
-          </p>
-          {fb.comment && <p className="mt-2">{fb.comment}</p>}
+        <div key={fb._id} className="review-item">
+          <div className="review-header">
+            <span className="review-user">{fb.user.Fullname || 'Anonymous'}</span>
+            <span className="review-date">{new Date(fb.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div className="review-stars">
+            {'★'.repeat(fb.rating)}{'☆'.repeat(5 - fb.rating)}
+          </div>
+          {fb.comment && <div className="review-comment">{fb.comment}</div>}
         </div>
       ))}
     </div>

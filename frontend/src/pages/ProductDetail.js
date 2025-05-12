@@ -1,9 +1,9 @@
-// src/pages/ProductDetail.js
+// src/pages/ProductDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import FeedbackList from '../components/FeedbackList';        // ← NEW
+import FeedbackList from '../components/FeedbackList';
 import '../styles/ProductDetail.css';
 
 export default function ProductDetail() {
@@ -11,22 +11,22 @@ export default function ProductDetail() {
   const { addToCart } = useCart();
   const { addToWishlist } = useWishlist();
 
-  const [product, setProduct] = useState(null);
-  const [mainIdx, setMainIdx] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('');
+  const [product, setProduct]         = useState(null);
+  const [mainIdx, setMainIdx]         = useState(0);
+  const [selectedSize, setSelectedSize]   = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]         = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
+        const res  = await fetch(`http://localhost:5000/api/products/${id}`);
         const data = await res.json();
         setProduct(data);
-        if (data.sizes.length) setSelectedSize(data.sizes[0]);
-        if (data.colors.length) setSelectedColor(data.colors[0]);
-      } catch {
-        console.error('Failed to load product');
+        if (data.sizes?.length)  setSelectedSize(data.sizes[0]);
+        if (data.colors?.length) setSelectedColor(data.colors[0]);
+      } catch (err) {
+        console.error('Failed to load product', err);
       } finally {
         setLoading(false);
       }
@@ -37,7 +37,22 @@ export default function ProductDetail() {
   if (loading) return <p>Loading…</p>;
   if (!product) return <p>Product not found</p>;
 
-  const { name, description, price, material, sizes = [], colors = [], photos = [] } = product;
+  const {
+    name,
+    description,
+    price,
+    salePrice,
+    material,
+    sizes = [],
+    colors = [],
+    photos = []
+  } = product;
+
+  const isOnSale = salePrice != null;
+  const discount = isOnSale
+    ? Math.round((1 - salePrice / price) * 100)
+    : 0;
+
   const mainSrc = photos[mainIdx] || '';
 
   const onSizeClick = sz => sizes.includes(sz) && setSelectedSize(sz);
@@ -45,42 +60,53 @@ export default function ProductDetail() {
 
   const onAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      return alert('Please select both size and color.');
+      alert('Please select both size and color.');
+      return;
     }
     addToCart({
       id,
       name,
-      price,
-      size: selectedSize,
-      color: selectedColor,
-      image: mainSrc,
+      price:    isOnSale ? salePrice : price,
+      size:     selectedSize,
+      color:    selectedColor,
+      image:    mainSrc,
       quantity: 1
     });
     alert(`Added to cart: ${name} (${selectedSize}, ${selectedColor})`);
   };
 
   const onWishlist = () => {
-    addToWishlist({ id, name, price, image: mainSrc });
+    addToWishlist({
+      id,
+      name,
+      price: isOnSale ? salePrice : price,
+      image: mainSrc
+    });
     alert(`Added to wishlist: ${name}`);
   };
 
   return (
     <div className="product-detail-container">
+
+      {/* Images */}
       <div className="images-section">
-        {mainSrc ? (
-          <img
-            src={mainSrc}
-            alt={name}
-            className="main-photo"
-            loading="lazy"
-            onClick={() => {
-              if (photos.length > 1) setMainIdx((mainIdx + 1) % photos.length);
-            }}
-            style={{ cursor: photos.length > 1 ? 'pointer' : 'default' }}
-          />
-        ) : (
-          <div className="no-photo-large">No image available</div>
-        )}
+        {mainSrc
+          ? (
+            <img
+              src={mainSrc}
+              alt={name}
+              className="main-photo"
+              loading="lazy"
+              onClick={() =>
+                photos.length > 1 &&
+                setMainIdx((mainIdx + 1) % photos.length)
+              }
+              style={{ cursor: photos.length > 1 ? 'pointer' : 'default' }}
+            />
+          ) : (
+            <div className="no-photo-large">No image available</div>
+          )
+        }
 
         {photos.length > 1 && (
           <div className="thumbnails">
@@ -98,9 +124,31 @@ export default function ProductDetail() {
         )}
       </div>
 
+      {/* Details */}
       <div className="product-details">
-        <h1>{name}</h1>
-        <p><strong>Price:</strong> SEK{price.toFixed(2)}</p>
+        <h1 className="product-name">{name}</h1>
+
+        {/* Price block */}
+        <div className="price-block">
+          {isOnSale ? (
+            <>
+              <span className="orig-price">
+                SEK {price.toFixed(2)}
+              </span>
+              <span className="sale-price">
+                SEK {salePrice.toFixed(2)}
+              </span>
+              <span className="discount-badge">
+                {discount}% OFF
+              </span>
+            </>
+          ) : (
+            <span className="regular-price">
+              SEK {price.toFixed(2)}
+            </span>
+          )}
+        </div>
+
         <p><strong>Material:</strong> {material}</p>
 
         {description && (
@@ -110,6 +158,7 @@ export default function ProductDetail() {
           </div>
         )}
 
+        {/* Size options */}
         <div className="size-options">
           <p><strong>Choose Size:</strong></p>
           {sizes.map(sz => (
@@ -123,6 +172,7 @@ export default function ProductDetail() {
           ))}
         </div>
 
+        {/* Color options */}
         <div className="color-options">
           <p><strong>Choose Color:</strong></p>
           {colors.map(clr => (
@@ -135,17 +185,24 @@ export default function ProductDetail() {
           ))}
         </div>
 
+        {/* Action buttons */}
         <div className="action-buttons">
-          <button className="cart-btn filled" onClick={onAddToCart}>
+          <button
+            className="cart-btn filled"
+            onClick={onAddToCart}
+          >
             Add to Cart
           </button>
-          <button className="wishlist-btn outlined" onClick={onWishlist}>
+          <button
+            className="wishlist-btn outlined"
+            onClick={onWishlist}
+          >
             Wishlist
           </button>
         </div>
       </div>
 
-      {/* —————— NEW FEEDBACK SECTION —————— */}
+      {/* Feedback */}
       <section className="product-feedback-section">
         <h2 className="feedback-heading">Customer Reviews</h2>
         <FeedbackList productId={id} />

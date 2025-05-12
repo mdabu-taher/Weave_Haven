@@ -1,9 +1,10 @@
-// src/pages/admin/AdminAnalytics.js
+// src/pages/admin/AdminAnalytics.jsx
 
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { fetchAdminStats, fetchTopProducts } from '../../utils/api';
 import '../../styles/AdminAnalytics.css';
+
 export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
@@ -19,8 +20,8 @@ export default function AdminAnalytics() {
     (async () => {
       try {
         const [statsRes, topRes] = await Promise.all([
-          fetchAdminStats(),      // { productCount, orderCount, userCount, salesData }
-          fetchTopProducts()      // [ { productId, name, totalSold, price }, … ]
+          fetchAdminStats(),
+          fetchTopProducts()
         ]);
         setStats(statsRes);
         setTop(topRes);
@@ -34,20 +35,19 @@ export default function AdminAnalytics() {
   }, []);
 
   if (loading) {
-    return <p className="p-6">Loading analytics…</p>;
+    return <p className="analytics-loading">Loading analytics…</p>;
   }
   if (error) {
-    return <p className="p-6 text-red-600">{error}</p>;
+    return <p className="analytics-error">{error}</p>;
   }
 
-  // Prepare chart data, guard empty array
   const labels = stats.salesData.map(d => d.date);
   const dataPoints = stats.salesData.map(d => d.total);
   const chartData = {
     labels,
     datasets: [
       {
-        label: 'Sales ($)',
+        label: 'Sales (SEK)',
         data: dataPoints,
         fill: false,
         tension: 0.1
@@ -56,65 +56,59 @@ export default function AdminAnalytics() {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+    <div className="analytics-dashboard">
+      <h1 className="analytics-title">Analytics Dashboard</h1>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="stats-grid">
         {[
           { label: 'Products', count: stats.productCount },
           { label: 'Orders',   count: stats.orderCount },
           { label: 'Users',    count: stats.userCount }
         ].map(({ label, count }) => (
-          <div key={label} className="p-4 border rounded bg-white">
-            <h2 className="font-medium">{label}</h2>
-            <p className="text-3xl">{count}</p>
+          <div key={label} className="stat-card">
+            <h2 className="stat-label">{label}</h2>
+            <p className="stat-value">{count}</p>
           </div>
         ))}
       </div>
 
       {/* Sales Over Time Chart */}
-      <div className="p-6 border rounded bg-white">
-        <h2 className="text-xl font-medium mb-4">
-          Sales Over Time (Last 30 Days)
-        </h2>
+      <section className="chart-section">
+        <h2 className="chart-title">Sales Over Time (Last 30 Days)</h2>
         {labels.length > 0 ? (
-          <Line data={chartData} />
+          <Line data={chartData} className="sales-chart" />
         ) : (
-          <p>No sales data available.</p>
+          <p className="no-data">No sales data available.</p>
         )}
-      </div>
+      </section>
 
       {/* Top 5 Selling Products */}
-      <div className="p-6 border rounded bg-white">
-        <h2 className="text-xl font-medium mb-4">
-          Top 5 Selling Products
-        </h2>
+      <section className="top-products-section">
+        <h2 className="section-title">Top 5 Selling Products</h2>
         {topProducts.length > 0 ? (
-          <table className="min-w-full table-auto">
+          <table className="products-table">
             <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">Product</th>
-                <th className="px-4 py-2 text-right">Units Sold</th>
-                <th className="px-4 py-2 text-right">Price</th>
+              <tr className="table-header-row">
+                <th className="table-header-cell">Product</th>
+                <th className="table-header-cell">Units Sold</th>
+                <th className="table-header-cell">Price</th>
               </tr>
             </thead>
             <tbody>
               {topProducts.map(p => (
-                <tr key={p.productId} className="border-t">
-                  <td className="px-4 py-2">{p.name}</td>
-                  <td className="px-4 py-2 text-right">{p.totalSold}</td>
-                  <td className="px-4 py-2 text-right">
-                    ${p.price.toFixed(2)}
-                  </td>
+                <tr key={p.productId} className="table-body-row">
+                  <td className="table-body-cell">{p.name}</td>
+                  <td className="table-body-cell">{p.totalSold}</td>
+                  <td className="table-body-cell">SEK {p.price.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No product sales yet.</p>
+          <p className="no-data">No product sales yet.</p>
         )}
-      </div>
+      </section>
     </div>
   );
 }
