@@ -1,142 +1,91 @@
-/* === HEADER === */
-header {
-  background-color: #fff5f7;
-  padding: 12px 30px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+/* src/styles/Home.css */
 
+/* container positioning */
+.home-carousel {
+  position: relative;
 }
 
-/* === NAVIGATION === */
-.nav-links {
+/* Hide the built-in play/pause button */
+.home-carousel .control-play {
+  display: none !important;
+}
+
+/* Force slides into a horizontal row and clip overflow */
+.home-carousel .slider-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow: hidden !important;
+}
+
+/* Each slide takes full width */
+.home-carousel .slide {
+  min-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Responsive image sizing */
+.home-carousel .slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 500px;
+}
+
+/* Prev/Next arrows on sides */
+.home-carousel .control-prev,
+.home-carousel .control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.nav-links a {
-  color: #2c2c2c;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.nav-links a:hover {
-  background-color: #ffd7e2;
-  color: #d7263d;
-}
-
-/* === HERO SECTION === */
-
-.hero {
-  height: 700px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  color: #faf8f8;
-  padding: 2rem;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-
-/* Optional dark overlay to make text more readable */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0); /* white-transparent overlay */
-  z-index: 0;
-}
-
-.hero h1,
-.hero p {
-  z-index: 1;
-  position: relative;
-}
-
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.hero p {
-  font-size: 1.2rem;
-}
-
-
-/* === FOOTER === */
-footer {
-  background-color: #f9f9f9;
-  padding: 40px 50px;
-  font-size: 15px;
-  color: #444;
-  border-top: 1px solid #ddd;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 30px;
-}
-
-.footer-grid h4 {
-  margin-bottom: 12px;
-  font-size: 16px;
-  color: #1a1a1a;
-  font-weight: bold;
-}
-
-.footer-grid ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-grid li {
-  margin-bottom: 8px;
-  color: #666;
   cursor: pointer;
-  transition: color 0.2s ease;
+  z-index: 2;
 }
 
-.footer-grid li:hover {
-  color: #d7263d;
+.home-carousel .control-prev {
+  left: 16px;
+}
+.home-carousel .control-next {
+  right: 16px;
 }
 
-.footer-bottom {
-  text-align: center;
-  padding-top: 20px;
-  font-size: 13px;
-  color: #888;
-  border-top: 1px solid #ddd;
-  margin-top: 25px;
+.home-carousel .control-prev:before,
+.home-carousel .control-next:before {
+  font-size: 20px;
+  color: #fff;
+}
+.home-carousel .control-prev:hover,
+.home-carousel .control-next:hover {
+  background: rgba(0,0,0,0.7);
 }
 
-/* Home.css */
-.home-carousel .carousel .slide img {
-  max-height: 500px;
-  object-fit: cover;
-}
-
-/* src/styles/Home.css */
+/* Legend caption styling */
 .home-carousel .legend {
   background: transparent !important;
   opacity:    1           !important;
   bottom:     50px        !important;
   color:      #fff        !important;
-  text-shadow: 0 0 5px rgba(6, 6, 6, 0.7) !important;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7) !important;
   padding:    0           !important;
-  font-size:  3rem      !important;
+  font-size:  3rem        !important;
+}
+
+/* Smaller legend on phones */
+@media (max-width: 768px) {
+  .home-carousel {
+  position: relative;
+
+  }
+
+  .home-carousel .legend {
+    font-size: 2rem !important;
+    bottom:     30px  !important;
+  }
 }

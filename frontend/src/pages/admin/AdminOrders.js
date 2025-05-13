@@ -36,7 +36,7 @@ export default function AdminOrders() {
           <tr>
             <th>Order ID</th>
             <th>Customer</th>
-            <th>Total ($)</th>
+            <th>Total (SEK)</th>
             <th>Status</th>
             <th>Date</th>
           </tr>

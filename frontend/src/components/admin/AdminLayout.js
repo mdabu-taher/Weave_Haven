@@ -30,13 +30,6 @@ export default function AdminLayout() {
       <div className="admin-container">
         {/* Sidebar */}
         <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
-          <button
-            className="admin-close-btn"
-            onClick={() => setSidebarOpen(false)}
-            aria-label="Close sidebar"
-          >
-            ×
-          </button>
 
           <h2 className="admin-logo">Admin</h2>
           <nav className="admin-nav">

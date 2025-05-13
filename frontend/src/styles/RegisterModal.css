@@ -1,0 +1,132 @@
+.Register-Form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  overflow: auto; /* Allow scrolling if needed */
+  padding: 1rem;
+}
+
+.Register-Form .Form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh; /* Important! Limits height */
+  overflow-y: auto;  /* Enables vertical scrolling */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeSlide 0.3s ease-out;
+}
+
+/* Modal appear animation */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Heading */
+.Register-Form h2 {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  color: #2d2d2d;
+}
+
+/* Inputs */
+.Register-Form input {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 0.6rem 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  height: 70%;
+}
+
+.Register-Form .gender-group {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin: 0.8rem 0;
+}
+
+.Register-Form .gender-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Button */
+.Register-Form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #17910a;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s;
+}
+
+.Register-Form button:hover {
+  background-color: green;
+}
+
+/* Text Links */
+.Register-Form .link{
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #126409;
+  cursor: pointer;
+}
+.Register-Form .close{
+  color: red;
+
+
+}
+.Register-Form .link:hover{
+  text-decoration: underline;
+}
+.Register-Form .close:hover{
+  text-decoration: underline;
+}
+
+/* Error and Success Messages */
+.Register-Form .error {
+  color: red;
+  background: #fdecea;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.Register-Form .success {
+  color: #27ae60;
+  background: #eafaf1;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}

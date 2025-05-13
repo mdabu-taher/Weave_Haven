@@ -54,12 +54,12 @@ button {
   font-size: 1rem;
 }
 .loginbutton{
-  background-color: #68ab31;
+  background-color: green;
   color: white;
   padding: 10px;
-  width: 100px;
+  width: 350px;
   margin:15px;
-  margin-left: 125px;
+  margin-left: 5px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -68,19 +68,19 @@ button {
 }
 
 .loginbutton:hover{
-  background-color: green;
+  background-color: rgb(2, 84, 2);
 
 }
 
 .link {
-  color: #f26b6b;
+  color: red;
   cursor: pointer;
   text-align: center;
   font-size: 0.9rem;
 }
 
 .close {
-  color: #333;
+  color: red;
   font-size: 1rem;
   text-align: center;
   cursor: pointer;

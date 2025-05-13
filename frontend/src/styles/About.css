@@ -1,10 +1,68 @@
-.about {
-    max-width: 800px;
-    margin: 3rem auto;
-    padding: 0 1rem;
-    line-height: 1.6;
-  }
-  .about h1 {
-    margin-bottom: 1rem;
-    text-align: center;
-  }
+.about-container {
+  padding: 3rem 1.5rem;
+  max-width: 1000px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  color: #2c3e50;
+}
+
+.about-intro h1 {
+  font-size: 2.4rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.about-intro p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.team-section {
+  margin-top: 3rem;
+}
+
+.team-section h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #5c67f2;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.team-card {
+  background: #fdfdfd;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.team-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.team-card .role {
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+.team-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #444;
+}

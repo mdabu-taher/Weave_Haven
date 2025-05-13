@@ -21,16 +21,18 @@
   padding: 0 1rem;
   height: 60px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  z-index: 100;
 }
 
+/* Hamburger */
 .admin-menu-btn {
+  display: none;
   font-size: 1.5rem;
-  background: none;
+  background: rgb(241, 220, 220);
   border: none;
   color: #031d37;
   cursor: pointer;
@@ -39,16 +41,17 @@
   width: 40px;
 }
 .admin-menu-btn:hover{
- background-color: #fff;
+  background-color: #e0e1e1
+  ;
 }
 
+/* Brand group */
 .admin-header-brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   perspective: 800px;
 }
-
 .admin-header-logo {
   width: 40px;
   height: 40px;
@@ -57,25 +60,24 @@
   backface-visibility: hidden;
   animation: spinY 4s linear infinite;
 }
-
 .admin-header-title {
   margin: 0;
   font-family: 'Dancing Script', cursive;
   font-size: 1.5rem;
-  font-weight: normal;
+  color: #031d37;
 }
 
-/* Sidebar + Main Container */
+/* Container under header */
 .admin-container {
   display: flex;
   flex: 1;
-  margin-top: 60px;   /* push below header */
+  margin-top: 60px;  /* push below header */
 }
 
 /* Sidebar */
 .admin-sidebar {
-  position: fixed;    /* so it can slide over on mobile */
-  top: 60px;          /* just beneath the header */
+  position: fixed;
+  top: 60px;
   left: 0;
   width: 240px;
   height: calc(100% - 60px);
@@ -83,98 +85,98 @@
   color: #fff;
   padding: 1rem;
   box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-  transform: translateX(0);        /* desktop always visible */
+  transform: translateX(0);
   transition: transform 0.3s ease;
   z-index: 90;
 }
 
-/* off-canvas by default on mobile */
+/* Closed state (add/remove this class via JS) */
 .admin-sidebar.closed {
   transform: translateX(-100%);
 }
 
+/* Sidebar header */
 .admin-logo {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem;
   font-size: 1.5rem;
   border-bottom: 1px solid #374151;
   padding-bottom: 0.5rem;
 }
 
+/* Sidebar links */
 .admin-nav .admin-link {
   display: block;
   color: #d1d5db;
   padding: 0.5rem 0;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: background-color 0.2s, color 0.2s, padding-left 0.2s;
 }
-/* Sidebar link hover */
 .admin-nav .admin-link:hover {
-  background-color: #1f2937;     /* slightly lighter than #111827 */
-  color: #fff;                   /* white text on hover */
-  padding-left: 0.75rem;         /* indent on hover */
-  border-radius: 0.25rem;        /* rounded corners */
+  background-color: #1f2937;
+  color: #fff;
+  padding-left: 0.75rem;
+  border-radius: 0.25rem;
 }
-
-/* Active link styling */
 .admin-nav .admin-link.active {
-  background-color: #374151;     /* even lighter background for the active item */
-  color: #3b82f6;                /* highlight active text in blue */
-  padding-left: 0.75rem;         /* keep same indent as hover */
-  border-left: 4px solid #3b82f6;/* vertical bar indicator */
+  background-color: #374151;
+  color: #3779e3;
+  padding-left: 0.75rem;
+  border-left: 4px solid #3b82f6;
   border-radius: 0.25rem 0 0 0.25rem;
 }
 
-/* Optional: smooth transition */
-.admin-nav .admin-link {
-  transition: background-color 0.2s, color 0.2s, padding-left 0.2s;
-}
-
-/* Close button (always absolutely placed in sidebar) */
+/* Close button */
 .admin-close-btn {
   position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #f7f1f1;
+  color: #d1d5db;
   cursor: pointer;
-  padding: 0;
   line-height: 1;
+  padding: 0;
   transition: color 0.2s;
-  width:40px;
-  
-  margin-right: 0px;
-  margin-left:180px;
 }
 .admin-close-btn:hover {
   color: #fff;
-  width: 40px;
 }
 
 /* Main content */
 .admin-main {
   flex: 1;
+  margin-left: 240px;                 /* space for desktop sidebar */
   background: #f3f4f6;
   padding: 1.5rem;
   overflow-y: auto;
-  margin-left: 240px;  /* leave room for desktop sidebar */
+  /* 2) Force a fixed height so the scrollbar appears */
+  height: calc(100vh - 60px);
   transition: margin-left 0.3s ease;
 }
 
-/* MOBILE STYLES */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  /* Hide the sidebar by default */
+  .admin-menu-btn{
+    display: block;
+  }
+  /* Sidebar off‐canvas by default */
   .admin-sidebar {
     transform: translateX(-100%);
   }
-  /* When “open” (JS toggles the absence of .closed), it slides in */
+  /* Slide in when “.open” (JS toggles this class) */
   .admin-sidebar.open {
     transform: translateX(0);
   }
-  /* Main takes full width under the header */
+
+  /* Main full width under header */
   .admin-main {
     margin-left: 0;
   }
-  .admin-close-btn {
-    width:40px;
-  }
+}
+
+/* Spin keyframes */
+@keyframes spinY {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
 }

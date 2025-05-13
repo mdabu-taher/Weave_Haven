@@ -1,6 +1,6 @@
 // src/components/RegisterModal.js
 import React, { useState } from 'react';
-import '../styles/Modal.css';
+import '../styles/RegisterModal.css';
 import axios from 'axios';
 
 export default function RegisterModal({ onClose, onSwitch }) {
@@ -54,8 +54,8 @@ export default function RegisterModal({ onClose, onSwitch }) {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="Register-Form">
+      <div className="Form">
         <h2>Register to Weave Haven</h2>
         {error && <div className="error">{error}</div>}
         {successMsg && <div className="success">{successMsg}</div>}
