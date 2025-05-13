@@ -1,14 +1,16 @@
+// src/App.jsx
+
 import React from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
-  useLocation,
-  useNavigate
+  useLocation
 } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import AdminNavbar from "./components/admin/AdminNavbar";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -16,7 +18,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
-import WelcomePage from "./components/WelcomePage";  // Import WelcomePage component
+import WelcomePage from "./components/WelcomePage";
 import AddProduct from "./pages/AddProduct";
 import AllProducts from "./pages/AllProducts";
 import ProductsList from "./pages/ProductsList";
@@ -45,29 +47,29 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
 
-// Main Content for rendering routes
 function AppContent() {
   const { pathname } = useLocation();
-  const isAdmin = pathname.startsWith("/admin");
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAuthRoute  = ["/login", "/register", "/welcome"].includes(pathname);
 
   return (
     <>
-      {/* only show Navbar when NOT on an admin route */}
-      {!isAdmin && <Navbar />}
+      {/* Top navbar */}
+      {isAdminRoute ? (
+        <AdminNavbar />
+      ) : !isAuthRoute ? (
+        <Navbar />
+      ) : null}
 
       <main className="min-h-screen">
         <Routes>
-          {/* public routes */}
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/welcome" element={<WelcomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<LoginPage />} />
 
-          {/* WelcomePage for login */}
-          <Route path="/welcome" element={<WelcomePage />} />  {/* Changed to /welcome */}
-          
-          {/* After WelcomePage, we can either show login or sign up */}
-          <Route path="/login" element={<LoginPage />} /> {/* Login Route */}
-          <Route path="/register" element={<LoginPage />} /> {/* Register Route */}
-
-          {/* Other routes */}
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/all-products" element={<AllProducts />} />
           <Route path="/products" element={<ProductsList />} />
@@ -89,17 +91,15 @@ function AppContent() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/about" element={<About />} />
 
-          {/* admin routes */}
+          {/* Admin routes */}
           <Route element={<RequireAdmin />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={<AdminUsers />} />
-              {/* Products overview with nested "new" */}
               <Route path="products">
                 <Route index element={<AdminProductsPage />} />
                 <Route path="new" element={<AddProduct />} />
-                {/* future: <Route path=":id/edit" element={<EditProduct/>} /> */}
-              </Route>
+              </Route>
               <Route path="orders" element={<AdminOrders />} />
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
@@ -108,8 +108,8 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* only show Footer when NOT on an admin route */}
-      {!isAdmin && <Footer />}
+      {/* Footer only on non-admin, non-auth pages */}
+      {!isAdminRoute && !isAuthRoute && <Footer />}
     </>
   );
 }

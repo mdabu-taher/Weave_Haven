@@ -1,0 +1,49 @@
+/* src/styles/AdminNavbar.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+
+.admin-navbar {
+  background-color: #ededee;
+  padding: 0 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.admin-navbar-content {
+  display: flex;
+  align-items: center;
+}
+
+.admin-navbar-logo {
+  margin-right: 1rem;
+  width: 40px;
+  display: inline-block;
+  perspective: 800px;
+  transform-style: preserve-3d;
+  animation: spinY 4s linear infinite;
+}
+
+.admin-navbar-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  backface-visibility: hidden;
+}
+
+.admin-navbar-title {
+  /* 2) Use the imported Pacifico font */
+ font-family: 'Dancing Script', cursive;
+  color: #031d37;
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+/* Keyframes for spin */
+@keyframes spinY {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
