@@ -11,19 +11,19 @@ export default function ProductDetail() {
   const { addToCart } = useCart();
   const { addToWishlist } = useWishlist();
 
-  const [product, setProduct]         = useState(null);
-  const [mainIdx, setMainIdx]         = useState(0);
-  const [selectedSize, setSelectedSize]   = useState('');
+  const [product, setProduct] = useState(null);
+  const [mainIdx, setMainIdx] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [loading, setLoading]         = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const res  = await fetch(`http://localhost:5000/api/products/${id}`);
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/products/${id}`);
         const data = await res.json();
         setProduct(data);
-        if (data.sizes?.length)  setSelectedSize(data.sizes[0]);
+        if (data.sizes?.length) setSelectedSize(data.sizes[0]);
         if (data.colors?.length) setSelectedColor(data.colors[0]);
       } catch (err) {
         console.error('Failed to load product', err);
@@ -49,10 +49,7 @@ export default function ProductDetail() {
   } = product;
 
   const isOnSale = salePrice != null;
-  const discount = isOnSale
-    ? Math.round((1 - salePrice / price) * 100)
-    : 0;
-
+  const discount = isOnSale ? Math.round((1 - salePrice / price) * 100) : 0;
   const mainSrc = photos[mainIdx] || '';
 
   const onSizeClick = sz => sizes.includes(sz) && setSelectedSize(sz);
@@ -66,10 +63,10 @@ export default function ProductDetail() {
     addToCart({
       id,
       name,
-      price:    isOnSale ? salePrice : price,
-      size:     selectedSize,
-      color:    selectedColor,
-      image:    mainSrc,
+      price: isOnSale ? salePrice : price,
+      size: selectedSize,
+      color: selectedColor,
+      image: mainSrc,
       quantity: 1
     });
     alert(`Added to cart: ${name} (${selectedSize}, ${selectedColor})`);
@@ -87,26 +84,21 @@ export default function ProductDetail() {
 
   return (
     <div className="product-detail-container">
-
-      {/* Images */}
       <div className="images-section">
-        {mainSrc
-          ? (
-            <img
-              src={mainSrc}
-              alt={name}
-              className="main-photo"
-              loading="lazy"
-              onClick={() =>
-                photos.length > 1 &&
-                setMainIdx((mainIdx + 1) % photos.length)
-              }
-              style={{ cursor: photos.length > 1 ? 'pointer' : 'default' }}
-            />
-          ) : (
-            <div className="no-photo-large">No image available</div>
-          )
-        }
+        {mainSrc ? (
+          <img
+            src={mainSrc}
+            alt={name}
+            className="main-photo"
+            loading="lazy"
+            onClick={() =>
+              photos.length > 1 && setMainIdx((mainIdx + 1) % photos.length)
+            }
+            style={{ cursor: photos.length > 1 ? 'pointer' : 'default' }}
+          />
+        ) : (
+          <div className="no-photo-large">No image available</div>
+        )}
 
         {photos.length > 1 && (
           <div className="thumbnails">
@@ -124,28 +116,18 @@ export default function ProductDetail() {
         )}
       </div>
 
-      {/* Details */}
       <div className="product-details">
         <h1 className="product-name">{name}</h1>
 
-        {/* Price block */}
         <div className="price-block">
           {isOnSale ? (
             <>
-              <span className="orig-price">
-                SEK {price.toFixed(2)}
-              </span>
-              <span className="sale-price">
-                SEK {salePrice.toFixed(2)}
-              </span>
-              <span className="discount-badge">
-                {discount}% OFF
-              </span>
+              <span className="orig-price">SEK {price.toFixed(2)}</span>
+              <span className="sale-price">SEK {salePrice.toFixed(2)}</span>
+              <span className="discount-badge">{discount}% OFF</span>
             </>
           ) : (
-            <span className="regular-price">
-              SEK {price.toFixed(2)}
-            </span>
+            <span className="regular-price">SEK {price.toFixed(2)}</span>
           )}
         </div>
 
@@ -158,7 +140,6 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {/* Size options */}
         <div className="size-options">
           <p><strong>Choose Size:</strong></p>
           {sizes.map(sz => (
@@ -172,7 +153,6 @@ export default function ProductDetail() {
           ))}
         </div>
 
-        {/* Color options */}
         <div className="color-options">
           <p><strong>Choose Color:</strong></p>
           {colors.map(clr => (
@@ -185,24 +165,12 @@ export default function ProductDetail() {
           ))}
         </div>
 
-        {/* Action buttons */}
         <div className="action-buttons">
-          <button
-            className="cart-btn filled"
-            onClick={onAddToCart}
-          >
-            Add to Cart
-          </button>
-          <button
-            className="wishlist-btn outlined"
-            onClick={onWishlist}
-          >
-            Wishlist
-          </button>
+          <button className="cart-btn filled" onClick={onAddToCart}>Add to Cart</button>
+          <button className="wishlist-btn outlined" onClick={onWishlist}>Wishlist</button>
         </div>
       </div>
 
-      {/* Feedback */}
       <section className="product-feedback-section">
         <h2 className="feedback-heading">Customer Reviews</h2>
         <FeedbackList productId={id} />
