@@ -11,7 +11,7 @@ import slide2 from '../assets/slide-2.jpg';
 import slide3 from '../assets/slide-3.jpg';
 import slide4 from '../assets/slide-4.jpg';
 import slide5 from '../assets/slide-5.JPG';
-import slide6 from '../assets/slide-6.jpg';
+
 
 export default function Home() {
   // track whether we’re on a narrow screen
@@ -29,7 +29,6 @@ export default function Home() {
     { src: slide3, caption: 'Bangladeshi Grace: Pure Jamdani Artistry' },
     { src: slide4, caption: 'Father & Son: United in Heritage' },
     { src: slide5, caption: 'Eco-Friendly Fabrics, Kid-Approved Fun' },
-    { src: slide6, caption: 'Celebrate South Indian Splendor in Every Drape' }
   ];
 
   return (

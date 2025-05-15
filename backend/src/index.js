@@ -8,49 +8,59 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import feedbackRoutes from './routes/feedback.js';
-import authRoutes    from './routes/auth.js';
+import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
-import orderRoutes   from './routes/order.js';
-import adminRoutes   from './routes/admin.js';
+import orderRoutes from './routes/order.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
 const app = express();
 
-// 1) CORS: allow your frontend origin + cookies
+// Allow multiple origins for local and deployed frontend
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://weave-haven-m4qd.vercel.app'
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,  // e.g. http://localhost:3000
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true
   })
 );
 
-// 2) Body parser & cookie parser
+// Parse incoming JSON and cookies
 app.use(express.json());
 app.use(cookieParser());
 
-// 3) ESM __dirname shim
+// Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-// 4) Expose uploads directory
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, '..', 'uploads'))
-);
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// 5) Mount API routers
-app.use('/api/auth',     authRoutes);
+// Mount routes
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/orders',   orderRoutes);   // ← here we mount orderRoutes
-app.use('/api/admin',    adminRoutes);   // adminRoutes applies its own protect/authorize
+app.use('/api/orders', orderRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
-// 6) MongoDB connection & server start
+// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
+
 mongoose
   .connect(process.env.MONGO_URI, {
-    useNewUrlParser:    true,
+    useNewUrlParser: true,
     useUnifiedTopology: true
   })
   .then(() => {

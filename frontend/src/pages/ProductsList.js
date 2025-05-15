@@ -1,6 +1,6 @@
-// frontend/src/pages/ProductsList.jsx
+// src/pages/ProductsList.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link }             from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import '../styles/ProductsList.css';
 
 export default function ProductsList() {
@@ -8,7 +8,8 @@ export default function ProductsList() {
   const slug = category.trim().replace(/\s+/g, '-').toLowerCase();
 
   const [products, setProducts] = useState([]);
-  const [loading,  setLoading]  = useState(true);
+  const [loading, setLoading] = useState(true);
+  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL.replace('/api', '');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,26 +17,23 @@ export default function ProductsList() {
       try {
         let data = [];
 
+        const baseUrl = `${process.env.REACT_APP_API_BASE_URL}/products`;
+
         if (slug === 'new-arrivals') {
-          // New Arrivals: last 14 days
-          const res = await fetch('http://localhost:5000/api/products');
+          const res = await fetch(baseUrl);
           data = await res.json();
           const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
           data = data.filter(p => new Date(p.createdAt).getTime() >= cutoff);
-
         } else if (slug === 'sale') {
-          // Sale: products flagged onSale === true
-          const res = await fetch('http://localhost:5000/api/products');
+          const res = await fetch(baseUrl);
           data = (await res.json()).filter(p => p.onSale);
-
         } else {
-          // Regular category / subCategory filtering
           const params = new URLSearchParams();
-          if (category)    params.append('category',    category);
+          if (category) params.append('category', category);
           if (subCategory) params.append('subCategory', subCategory);
           const url = params.toString()
-            ? `http://localhost:5000/api/products?${params.toString()}`
-            : 'http://localhost:5000/api/products';
+            ? `${baseUrl}?${params.toString()}`
+            : baseUrl;
           const res = await fetch(url);
           data = await res.json();
         }
@@ -54,9 +52,9 @@ export default function ProductsList() {
 
   const heading =
     slug === 'new-arrivals' ? 'New Arrivals' :
-    slug === 'sale'         ? 'On Sale' :
-    category               ? category.replace(/-/g, ' ') :
-                              'All Products';
+    slug === 'sale' ? 'On Sale' :
+    category ? category.replace(/-/g, ' ') :
+    'All Products';
 
   return (
     <div className="products-container">
@@ -70,14 +68,21 @@ export default function ProductsList() {
         <div className="products-grid">
           {products.map(product => {
             const thumb = Array.isArray(product.photos) && product.photos[0];
+            const thumbUrl = thumb ? `${imageBaseUrl}/${thumb}` : null;
 
             return (
               <div className="product-card" key={product._id}>
                 <Link to={`/product/${product._id}`} className="product-image-link">
-                  {thumb
-                    ? <img src={thumb} alt={product.name} className="product-image" loading="lazy" />
-                    : <div className="no-photo-thumbnail">No image available</div>
-                  }
+                  {thumbUrl ? (
+                    <img
+                      src={thumbUrl}
+                      alt={product.name}
+                      className="product-image"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="no-photo-thumbnail">No image available</div>
+                  )}
                 </Link>
                 <h3>{product.name}</h3>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
-import bgImage from '../assets/login_bg.png'; // Path to your background image
+
 
 export default function LoginModal({ onClose, onSwitch, onSuccess }) {
   const [form, setForm] = useState({ identifier: '', password: '' });
