@@ -30,7 +30,8 @@ export default function Navbar() {
 
   // Fetch current user
   useEffect(() => {
-    axios.get('/api/auth/profile', { withCredentials: true })
+    api.get('/auth/profile')
+
       .then(({ data }) => setUser(data))
       .catch(() => setUser(null));
   }, []);
@@ -61,9 +62,7 @@ export default function Navbar() {
     }
     const handler = setTimeout(async () => {
       try {
-        const res = await axios.get(
-          `/api/products/search?q=${encodeURIComponent(searchTerm)}`
-        );
+        const res = await api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`)
         setSuggestions(res.data.slice(0,5));
       } catch (err) {
         console.error(err);
