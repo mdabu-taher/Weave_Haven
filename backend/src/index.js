@@ -20,7 +20,8 @@ const app = express();
 // Allow multiple origins for local and deployed frontend
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://weave-haven-m4qd.vercel.app'
+  'https://weave-haven-m4qd.vercel.app',
+  'https://weave-haven-lhm6.vercel.app'
 ];
 
 app.use(
