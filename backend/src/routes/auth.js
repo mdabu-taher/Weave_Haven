@@ -109,7 +109,13 @@ router.post('/login', async (req, res) => {
         { phone: identifier }
       ]
     });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    console.log('Login identifier received:', identifier);
+
+
+    if (!user) {
+        console.log('No matching user found for:', identifier);
+        return res.status(404).json({ message: 'User not found' });
+      }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
