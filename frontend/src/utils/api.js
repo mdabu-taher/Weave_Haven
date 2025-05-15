@@ -2,25 +2,15 @@
 
 import axios from 'axios';
 
+// Axios instance
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL ,      // CRA proxy → Express backend
-  withCredentials: true, // send/receive httpOnly auth cookie
-});
-
-// Attach token to all requests if it exists in localStorage
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/api', // Make sure ends with `/api`
+  withCredentials: true // ⬅️ Enables cookie-based auth
 });
 
 /** ───────────── AUTH HELPERS ───────────── **/
 
 export async function fetchProfile() {
-  const token = localStorage.getItem('token');
-  if (!token) return null;
   const { data } = await api.get('/auth/profile');
   return data;
 }
@@ -30,23 +20,16 @@ export async function login({ email, password }) {
     identifier: email,
     password
   });
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-  }
   return data;
 }
 
 export async function register(details) {
   const { data } = await api.post('/auth/register', details);
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-  }
   return data;
 }
 
 export async function logout() {
   await api.post('/auth/logout');
-  localStorage.removeItem('token');
 }
 
 /** ─────────── PUBLIC PRODUCT HELPERS ─────────── **/
@@ -85,7 +68,6 @@ export async function createOrder(payload) {
 
 /** ─────────── ADMIN HELPERS ─────────── **/
 
-// Products CRUD
 export async function fetchAdminProducts() {
   const { data } = await api.get('/admin/products');
   return data;
@@ -105,7 +87,6 @@ export async function deleteAdminProduct(id) {
   await api.delete(`/admin/products/${id}`);
 }
 
-// Orders CRUD & Status
 export async function fetchAdminOrders() {
   const { data } = await api.get('/admin/orders');
   return data;
@@ -116,7 +97,6 @@ export async function updateAdminOrderStatus(id, status) {
   return data;
 }
 
-// Users
 export async function fetchAdminUsers() {
   const { data } = await api.get('/admin/users');
   return data;
@@ -131,29 +111,23 @@ export async function updateAdminUserRole(id, role) {
   return data;
 }
 
-// Full dashboard stats (counts + sales over time)
 export async function fetchAdminStats() {
   const { data } = await api.get('/admin/stats');
-  // returns: { productCount, orderCount, userCount, salesData: [{ date, total }] }
   return data;
 }
 
-// Standalone sales data (if you ever need only the sales array)
 export async function fetchAdminSalesData() {
   const { data } = await api.get('/admin/stats');
   return data.salesData;
 }
 
-// Top 5 Selling Products report
 export async function fetchTopProducts() {
   const { data } = await api.get('/admin/reports/top-products');
-  // returns: [{ productId, name, totalSold, price }]
   return data;
 }
 
 /** ─────────── FEEDBACK HELPERS ─────────── **/
 
-// Leave product feedback (rating 0–5)
 export async function createFeedback({ orderId, productId, rating, comment }) {
   const { data } = await api.post('/feedback', {
     orderId,
@@ -164,12 +138,10 @@ export async function createFeedback({ orderId, productId, rating, comment }) {
   return data;
 }
 
-// Fetch feedback for a product
 export async function fetchProductFeedback(productId) {
   const { data } = await api.get(`/feedback/product/${productId}`);
   return data;
 }
 
 /** ─────────── EXPORT AXIOS INSTANCE ─────────── **/
-
 export default api;

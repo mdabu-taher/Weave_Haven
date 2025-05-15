@@ -1,22 +1,23 @@
+// src/components/LoginModal.jsx
+
 import React, { useState } from 'react';
 import '../styles/Modal.css';
-import axios from 'axios';
-import api from '../utils/api';
-
+import { login, fetchProfile } from '../utils/api';
 
 export default function LoginModal({ onClose, onSwitch, onSuccess }) {
   const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState('');
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     try {
-        const res = await api.post('/auth/login', form);
-        const profile = await api.get('/auth/profile');
-      onSuccess(profile.data);
+      await login(form); // <- Cookie will be set
+      const profile = await fetchProfile(); // <- Get logged-in user
+      onSuccess(profile);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -56,7 +57,7 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
             Forgot Password?
           </p>
 
-          <button type="submit" className='loginbutton'>Login</button>
+          <button type="submit" className="loginbutton">Login</button>
         </form>
 
         <p className="link" onClick={onSwitch}>

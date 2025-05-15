@@ -17,26 +17,14 @@ dotenv.config();
 
 const app = express();
 
-// Allow multiple origins for local and deployed frontend
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://weave-haven-m4qd.vercel.app',
-  'https://weave-haven-lhm6.vercel.app'
-];
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://weave-haven-m4qd.vercel.app'
+  ],
+  credentials: true
+}));
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true
-  })
-);
 
 // Parse incoming JSON and cookies
 app.use(express.json());
