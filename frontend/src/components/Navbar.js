@@ -8,6 +8,7 @@ import categories from '../utils/categories';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import '../styles/Navbar.css';
+import api from '../utils/api';
 
 export default function Navbar() {
   const { cartItems, wishlistItems } = useCart();
