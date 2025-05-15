@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // Axios instance
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL, // Make sure ends with `/api`
+  baseURL: process.env.REACT_APP_API_BASE_URL+ '/api', // Make sure ends with `/api`
   withCredentials: true // ⬅️ Enables cookie-based auth
 });
 
