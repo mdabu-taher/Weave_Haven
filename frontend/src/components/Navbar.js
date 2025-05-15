@@ -87,12 +87,13 @@ export default function Navbar() {
   const openLogin = () => setModal('login');
   const handleLogout = async () => {
     try {
-      await axios.post('/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout');
       setUser(null);
     } catch (err) {
-      console.error(err);
+      console.error('Logout failed:', err);
     }
   };
+
 
   return (
     <>
