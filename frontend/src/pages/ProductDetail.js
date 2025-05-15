@@ -1,4 +1,3 @@
-// src/pages/ProductDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -16,6 +15,8 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL.replace('/api', '');
 
   useEffect(() => {
     async function load() {
@@ -50,7 +51,7 @@ export default function ProductDetail() {
 
   const isOnSale = salePrice != null;
   const discount = isOnSale ? Math.round((1 - salePrice / price) * 100) : 0;
-  const mainSrc = photos[mainIdx] || '';
+  const mainSrc = photos[mainIdx] ? `${imageBaseUrl}${photos[mainIdx]}` : '';
 
   const onSizeClick = sz => sizes.includes(sz) && setSelectedSize(sz);
   const onColorClick = clr => colors.includes(clr) && setSelectedColor(clr);
@@ -99,13 +100,12 @@ export default function ProductDetail() {
         ) : (
           <div className="no-photo-large">No image available</div>
         )}
-
         {photos.length > 1 && (
           <div className="thumbnails">
             {photos.map((src, idx) => (
               <img
                 key={idx}
-                src={src}
+                src={`${imageBaseUrl}${src}`}
                 alt={`${name} thumbnail ${idx + 1}`}
                 className={`thumbnail${idx === mainIdx ? ' selected' : ''}`}
                 onClick={() => setMainIdx(idx)}
@@ -118,7 +118,6 @@ export default function ProductDetail() {
 
       <div className="product-details">
         <h1 className="product-name">{name}</h1>
-
         <div className="price-block">
           {isOnSale ? (
             <>
@@ -130,7 +129,6 @@ export default function ProductDetail() {
             <span className="regular-price">SEK {price.toFixed(2)}</span>
           )}
         </div>
-
         <p><strong>Material:</strong> {material}</p>
 
         {description && (

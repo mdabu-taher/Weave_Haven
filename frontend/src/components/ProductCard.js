@@ -1,4 +1,3 @@
-// src/components/ProductCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/ProductCard.css';
@@ -10,7 +9,7 @@ export default function ProductCard({ product }) {
       : null;
 
   const imageBaseUrl = process.env.REACT_APP_API_BASE_URL.replace('/api', '');
-  const thumbnailUrl = thumbnail ? `${imageBaseUrl}/${thumbnail}` : null;
+  const thumbnailUrl = thumbnail ? `${imageBaseUrl}${thumbnail}` : null;
 
   return (
     <div className="product-card">

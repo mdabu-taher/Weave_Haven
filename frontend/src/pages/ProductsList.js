@@ -1,4 +1,3 @@
-// src/pages/ProductsList.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../styles/ProductsList.css';
@@ -68,7 +67,8 @@ export default function ProductsList() {
         <div className="products-grid">
           {products.map(product => {
             const thumb = Array.isArray(product.photos) && product.photos[0];
-            const thumbUrl = thumb ? `${imageBaseUrl}/${thumb}` : null;
+            const thumbUrl =
+              thumb?.startsWith('http') ? thumb : `${imageBaseUrl}${thumb}`;
 
             return (
               <div className="product-card" key={product._id}>
@@ -89,20 +89,14 @@ export default function ProductsList() {
                 <div className="price">
                   {product.salePrice != null ? (
                     <>
-                      <span className="orig-price">
-                        SEK {product.price.toFixed(2)}
-                      </span>
-                      <span className="sale-price">
-                        SEK {product.salePrice.toFixed(2)}
-                      </span>
+                      <span className="orig-price">SEK {product.price.toFixed(2)}</span>
+                      <span className="sale-price">SEK {product.salePrice.toFixed(2)}</span>
                       <span className="discount-badge">
                         {Math.round((1 - product.salePrice / product.price) * 100)}% off
                       </span>
                     </>
                   ) : (
-                    <span className="regular-price">
-                      SEK {product.price.toFixed(2)}
-                    </span>
+                    <span className="regular-price">SEK {product.price.toFixed(2)}</span>
                   )}
                 </div>
               </div>
