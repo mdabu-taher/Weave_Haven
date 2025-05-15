@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Modal.css';
 import axios from 'axios';
+import api from '../utils/api';
 
 
 export default function LoginModal({ onClose, onSwitch, onSuccess }) {
@@ -13,8 +14,8 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('/api/auth/login', form, { withCredentials: true });
-      const profile = await axios.get('/api/auth/profile', { withCredentials: true });
+        const res = await api.post('/auth/login', form);
+        const profile = await api.get('/auth/profile');
       onSuccess(profile.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
