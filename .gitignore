@@ -12,8 +12,6 @@ backend/.env
 frontend/build/
 backend/dist/
 
-# uploads (your product images)
-uploads/
 
 # IDE / OS files
 .DS_Store
