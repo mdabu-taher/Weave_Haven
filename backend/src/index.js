@@ -24,6 +24,11 @@ app.use(cors({
   ],
   credentials: true
 }));
+// ⬇️ This enables cookie sharing from cross-origin (Vercel) frontend
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 
 // Parse incoming JSON and cookies
