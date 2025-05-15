@@ -7,6 +7,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 import feedbackRoutes from './routes/feedback.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
@@ -17,39 +18,31 @@ dotenv.config();
 
 const app = express();
 
+// ✅ Proper CORS configuration — must come before other middlewares
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://weave-haven-m4qd.vercel.app'
-  ],
+  origin: 'https://weave-haven-m4qd.vercel.app', // your frontend Vercel domain
   credentials: true
 }));
-// ⬇️ This enables cookie sharing from cross-origin (Vercel) frontend
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
 
-
-// Parse incoming JSON and cookies
-app.use(express.json());
+// ✅ Parse cookies and JSON in the correct order
 app.use(cookieParser());
+app.use(express.json());
 
-// Setup __dirname for ES modules
+// ✅ Setup __dirname for ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve uploaded images
+// ✅ Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// Mount routes
+// ✅ Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
-// Connect to MongoDB and start server
+// ✅ Connect to MongoDB and start the server
 const PORT = process.env.PORT || 5000;
 
 mongoose
