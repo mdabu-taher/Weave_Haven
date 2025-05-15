@@ -14,7 +14,7 @@ export default function FeedbackForm({ orderId, productId, onSubmitted }) {
       await createFeedback({ orderId, productId, rating, comment });
       onSubmitted();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to submit feedback');
+      setError(err.response?.data?.message || 'Failed to submit feedback, please try again.')
     }
   };
 
