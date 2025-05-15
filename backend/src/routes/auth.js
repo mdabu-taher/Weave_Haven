@@ -98,7 +98,6 @@ router.get('/confirm-email/:token', async (req, res) => {
   }
 });
 
-// ─── Login ───────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
   const { identifier, password } = req.body;
   try {
@@ -111,42 +110,40 @@ router.post('/login', async (req, res) => {
     });
     console.log('Login identifier received:', identifier);
 
-
     if (!user) {
-        console.log('No matching user found for:', identifier);
-        return res.status(404).json({ message: 'User not found' });
-      }
+      console.log('No matching user found for:', identifier);
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
-    // sign JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || '1d'
     });
 
-    // set httpOnly cookie
+    // ✅ FIXED cookie settings for cross-origin auth
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none', // <-- KEY FIX
       maxAge: 24 * 60 * 60 * 1000
     });
 
-    // respond with user info (no token in body)
     res.json({
       id:        user._id,
       fullName:  user.fullName,
       username:  user.username,
       email:     user.email,
       phone:     user.phone,
-      role:      user.role,      // <-- include role
-      createdAt: user.createdAt, // <-- include createdAt
+      role:      user.role,
+      createdAt: user.createdAt,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // ─── Logout ──────────────────────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
