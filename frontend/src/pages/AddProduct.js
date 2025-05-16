@@ -1,21 +1,22 @@
 // src/pages/AddProduct.js
+
 import React, { useState } from 'react';
 import categories from '../utils/categories';
+import {
+  createAdminProduct
+} from '../utils/api';
 import '../styles/AddProduct.css';
 
 const sizesByCategory = {
-  Newborn: ['0-3M', '3-6M', '6-9M', '9-12M'],
-  Kids: ['1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y', '9Y', '10Y'],
-  default: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+  Newborn: ['0-3M','3-6M','6-9M','9-12M'],
+  Kids:     ['1Y','2Y','3Y','4Y','5Y','6Y','7Y','8Y','9Y','10Y'],
+  default:  ['XXS','XS','S','M','L','XL','XXL','XXXL']
 };
-
-// Generate inch sizes from 28 to 48
-const inchSizes = Array.from({ length: 48 - 28 + 1 }, (_, i) => `${28 + i}`);
-
+const inchSizes = Array.from({ length: 21 }, (_, i) => `${28 + i}`);
 const allColors = [
-  '#ffffff', '#000000', '#808080', '#c0c0c0', '#ff0000',
-  '#ffa500', '#ffff00', '#008000', '#00ffff', '#0000ff',
-  '#800080', '#ffc0cb', '#a52a2a', '#008080', '#4b0082',
+  '#ffffff','#000000','#808080','#c0c0c0','#ff0000',
+  '#ffa500','#ffff00','#008000','#00ffff','#0000ff',
+  '#800080','#ffc0cb','#a52a2a','#008080','#4b0082'
 ];
 
 export default function AddProduct() {
@@ -23,122 +24,117 @@ export default function AddProduct() {
     name: '',
     description: '',
     price: '',
-    salePrice: '',      // ← NEW
+    salePrice: '',
     category: '',
     subCategory: '',
     sizes: [],
     colors: [],
     material: '',
-    photos: [],         // array for multiple files
+    photos: []
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    setFormData(f => ({
+      ...f,
       [name]: value,
       ...(name === 'category' ? { subCategory: '', sizes: [] } : {}),
-      ...(name === 'subCategory' ? { sizes: [] } : {}),
+      ...(name === 'subCategory' ? { sizes: [] } : {})
     }));
   };
 
-  const handleFileChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      photos: Array.from(e.target.files),
+  const handleFileChange = e => {
+    setFormData(f => ({
+      ...f,
+      photos: Array.from(e.target.files)
     }));
   };
 
-  const toggleSize = (size) => {
-    setFormData(prev => ({
-      ...prev,
-      sizes: prev.sizes.includes(size)
-        ? prev.sizes.filter(s => s !== size)
-        : [...prev.sizes, size],
+  const toggleSize = size => {
+    setFormData(f => ({
+      ...f,
+      sizes: f.sizes.includes(size)
+        ? f.sizes.filter(s => s !== size)
+        : [...f.sizes, size]
     }));
   };
 
-  const toggleColor = (color) => {
-    setFormData(prev => ({
-      ...prev,
-      colors: prev.colors.includes(color)
-        ? prev.colors.filter(c => c !== color)
-        : [...prev.colors, color],
+  const toggleColor = color => {
+    setFormData(f => ({
+      ...f,
+      colors: f.colors.includes(color)
+        ? f.colors.filter(c => c !== color)
+        : [...f.colors, color]
     }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.photos.length === 0) {
-      return alert('Please select at least one photo.');
-    }
-
-    const form = new FormData();
-    form.append('name', formData.name);
-    form.append('description', formData.description);
-    form.append('price', formData.price);
-    form.append('salePrice', formData.salePrice || '');   // ← NEW
-    form.append('category', formData.category);
-    form.append(
-      'subCategory',
-      formData.subCategory.toLowerCase().replace(/\s+/g, '-')
-    );
-    form.append('material', formData.material);
-    form.append('sizes', JSON.stringify(formData.sizes));
-    form.append('colors', JSON.stringify(formData.colors));
-    formData.photos.forEach(photo => form.append('photos', photo));
-
-    try {
-      const res = await fetch('http://localhost:5000/api/products', {
-        method: 'POST',
-        body: form,
-      });
-      const result = await res.json();
-      alert(result.message || 'Product uploaded!');
-      // reset form
-      setFormData({
-        name: '',
-        description: '',
-        price: '',
-        salePrice: '',     // ← RESET
-        category: '',
-        subCategory: '',
-        sizes: [],
-        colors: [],
-        material: '',
-        photos: [],
-      });
-    } catch (err) {
-      console.error(err);
-      alert('Upload failed');
-    }
   };
 
   const subCategories =
     categories.find(c => c.name === formData.category)?.subcategories || [];
 
   let sizeOptions = sizesByCategory.default;
-  if (
-    formData.category === 'Men' &&
-    /pants|shorts/i.test(formData.subCategory)
-  ) {
+  if (formData.category === 'Men' && /pants|shorts/i.test(formData.subCategory)) {
     sizeOptions = inchSizes;
-  } else if (
-    formData.category === 'Women' &&
-    /pants|leggings/i.test(formData.subCategory)
-  ) {
+  } else if (formData.category === 'Women' && /pants|leggings/i.test(formData.subCategory)) {
     sizeOptions = inchSizes;
   } else {
-    sizeOptions =
-      sizesByCategory[formData.category] || sizesByCategory.default;
+    sizeOptions = sizesByCategory[formData.category] || sizesByCategory.default;
   }
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (!formData.photos.length) {
+      setError('Please select at least one photo.');
+      return;
+    }
+
+    // Build FormData
+    const payload = new FormData();
+    payload.append('name',        formData.name);
+    payload.append('description', formData.description);
+    payload.append('price',       formData.price);
+    if (formData.salePrice) {
+      payload.append('salePrice', formData.salePrice);
+    }
+    payload.append('category',    formData.category);
+    payload.append(
+      'subCategory',
+      formData.subCategory.toLowerCase().replace(/\s+/g,'-')
+    );
+    payload.append('material',    formData.material);
+    payload.append('sizes',       JSON.stringify(formData.sizes));
+    payload.append('colors',      JSON.stringify(formData.colors));
+    formData.photos.forEach(file => payload.append('photos', file));
+
+    try {
+      await createAdminProduct(payload);
+      setSuccess('Product uploaded successfully!');
+      // reset form
+      setFormData({
+        name: '', description: '', price: '', salePrice: '',
+        category: '', subCategory: '', sizes: [], colors: [],
+        material: '', photos: []
+      });
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Upload failed');
+    }
+  };
 
   return (
     <div className="add-product">
       <h2>Add New Product</h2>
+
+      {error   && <div className="error">{error}</div>}
+      {success && <div className="success">{success}</div>}
+
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <label>
-          Name<br />
+          Name<br/>
           <input
             name="name"
             value={formData.name}
@@ -148,7 +144,7 @@ export default function AddProduct() {
         </label>
 
         <label>
-          Description<br />
+          Description<br/>
           <textarea
             name="description"
             value={formData.description}
@@ -158,7 +154,7 @@ export default function AddProduct() {
         </label>
 
         <label>
-          Price<br />
+          Price<br/>
           <input
             name="price"
             type="number"
@@ -169,19 +165,17 @@ export default function AddProduct() {
         </label>
 
         <label>
-          Sale Price (optional)<br />
+          Sale Price (optional)<br/>
           <input
             name="salePrice"
             type="number"
-            min="0"
-            step="0.01"
             value={formData.salePrice}
             onChange={handleChange}
           />
         </label>
 
         <label>
-          Category<br />
+          Category<br/>
           <select
             name="category"
             value={formData.category}
@@ -189,9 +183,9 @@ export default function AddProduct() {
             required
           >
             <option value="">Select category</option>
-            {categories.map(cat => (
-              <option key={cat.name} value={cat.name}>
-                {cat.name}
+            {categories.map(c => (
+              <option key={c.name} value={c.name}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -199,7 +193,7 @@ export default function AddProduct() {
 
         {subCategories.length > 0 && (
           <label>
-            Sub-Category<br />
+            Sub-Category<br/>
             <select
               name="subCategory"
               value={formData.subCategory}
@@ -219,14 +213,14 @@ export default function AddProduct() {
         <div className="size-picker">
           <label>Available Sizes</label>
           <div className="size-grid">
-            {sizeOptions.map(size => (
+            {sizeOptions.map(sz => (
               <button
+                key={sz}
                 type="button"
-                key={size}
-                className={formData.sizes.includes(size) ? 'selected' : ''}
-                onClick={() => toggleSize(size)}
+                className={formData.sizes.includes(sz) ? 'selected' : ''}
+                onClick={() => toggleSize(sz)}
               >
-                {size}
+                {sz}
               </button>
             ))}
           </div>
@@ -235,21 +229,19 @@ export default function AddProduct() {
         <div className="color-picker">
           <label>Available Colors</label>
           <div className="color-grid">
-            {allColors.map(color => (
+            {allColors.map(clr => (
               <div
-                key={color}
-                className={`color-box ${
-                  formData.colors.includes(color) ? 'selected' : ''
-                }`}
-                style={{ backgroundColor: color }}
-                onClick={() => toggleColor(color)}
+                key={clr}
+                className={`color-box ${formData.colors.includes(clr) ? 'selected' : ''}`}
+                style={{ backgroundColor: clr }}
+                onClick={() => toggleColor(clr)}
               />
             ))}
           </div>
         </div>
 
         <label>
-          Material<br />
+          Material<br/>
           <input
             name="material"
             value={formData.material}
@@ -258,8 +250,9 @@ export default function AddProduct() {
         </label>
 
         <label>
-          Photos<br />
+          Photos<br/>
           <input
+            name="photos"
             type="file"
             accept="image/*"
             multiple
