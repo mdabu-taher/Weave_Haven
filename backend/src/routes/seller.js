@@ -6,8 +6,6 @@ import {
 } from '../controllers/sellerController.js';
 
 const router = express.Router();
-
-// All routes here require a logged‑in user with role 'seller'
 router.use(protect, authorize('seller'));
 
 router.post('/products',     sellerAddProduct);
