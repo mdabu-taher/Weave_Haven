@@ -4,14 +4,11 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 
 dotenv.config();
 const router = express.Router();
-
-// ─── SMTP transporter ────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
@@ -24,7 +21,7 @@ const transporter = nodemailer.createTransport({
 const sendMail = opts =>
   transporter.sendMail({ from: process.env.SMTP_FROM, ...opts });
 
-// ─── REGISTER (with email confirmation) ─────────────────────────────────────
+//REGISTER (with email confirmation)
 router.post('/register', async (req, res) => {
   const { fullName, username, email, mobile, password, gender } = req.body;
   try {
@@ -68,7 +65,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ─── EMAIL CONFIRMATION ──────────────────────────────────────────────────────
+//EMAIL CONFIRMATION
 router.get('/confirm-email/:token', async (req, res) => {
   try {
     const tokenHash = crypto
@@ -91,7 +88,7 @@ router.get('/confirm-email/:token', async (req, res) => {
   }
 });
 
-// ─── LOGIN ───────────────────────────────────────────────────────────────────
+//LOGIN
 router.post('/login', async (req, res) => {
   const identifier = req.body.identifier || req.body.email;
   const { password } = req.body;
@@ -131,7 +128,7 @@ router.post('/login', async (req, res) => {
   });
 });
 
-// ─── LOGOUT ──────────────────────────────────────────────────────────────────
+//LOGOUT
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
@@ -141,7 +138,7 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
-// ─── FORGOT / RESET PASSWORD ─────────────────────────────────────────────────
+//FORGOT / RESET PASSWORD
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
@@ -192,7 +189,7 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── PROFILE ROUTES (protected) ──────────────────────────────────────────────
+// PROFILE ROUTES (protected)
 router.get('/profile', protect, (req, res) => {
   const { _id, fullName, username, email, phone, address, role, createdAt } = req.user;
   res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });

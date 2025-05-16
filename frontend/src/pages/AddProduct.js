@@ -1,5 +1,3 @@
-// src/pages/AddProduct.js
-
 import React, { useState } from 'react';
 import categories from '../utils/categories';
 import {

@@ -1,13 +1,10 @@
-// frontend/src/pages/AllProducts.jsx
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
-
   const location = useLocation();
   const categoryFromPath = location.pathname.replace('/', '');
-
   useEffect(() => {
     (async () => {
       try {
@@ -18,7 +15,7 @@ export default function AllProducts() {
         let filtered = data;
 
         if (categoryFromPath === 'new-arrivals') {
-          // Show only products created in the last 14 days
+          // Show only products created in the last 14 day
           const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
           const cutoff = Date.now() - TWO_WEEKS_MS;
           filtered = data.filter(
