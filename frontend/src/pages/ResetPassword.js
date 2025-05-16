@@ -1,8 +1,9 @@
 // src/pages/ResetPassword.js
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import '../styles/ResetPassword.css';
+import { verifyResetToken, resetPassword } from '../utils/api';
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -14,8 +15,7 @@ export default function ResetPassword() {
 
   // 1) Verify token on mount
   useEffect(() => {
-    axios
-      .get(`/api/auth/reset-password/${token}`)
+    verifyResetToken(token)
       .then(() => setStatus('valid'))
       .catch(() => setStatus('invalid'));
   }, [token]);
@@ -24,7 +24,7 @@ export default function ResetPassword() {
   if (status === 'invalid') return <p>Invalid or expired reset link.</p>;
 
   // 2) Handle form submission
-  const onSubmit = async (e) => {
+  const onSubmit = async e => {
     e.preventDefault();
     if (password !== confirm) {
       setMessage('Passwords do not match');
@@ -32,7 +32,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post(`/api/auth/reset-password/${token}`, { password });
+      await resetPassword(token, password);
       setMessage('Password reset successful!');
     } catch (err) {
       setMessage(err.response?.data?.message || 'Reset failed');
@@ -60,7 +60,7 @@ export default function ResetPassword() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
           </label>
@@ -70,7 +70,7 @@ export default function ResetPassword() {
             <input
               type="password"
               value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
+              onChange={e => setConfirm(e.target.value)}
               required
             />
           </label>

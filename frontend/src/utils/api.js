@@ -144,5 +144,21 @@ export async function fetchProductFeedback(productId) {
   return data;
 }
 
+// in src/utils/api.js
+export async function forgotPassword(email) {
+  const { data } = await api.post('/auth/forgot-password', { email });
+  return data;
+}
+// in src/utils/api.js (add these)
+export async function verifyResetToken(token) {
+  // GET /api/auth/reset-password/:token
+  return api.get(`/auth/reset-password/${token}`).then(res => res.data);
+}
+
+export async function resetPassword(token, password) {
+  // POST /api/auth/reset-password/:token
+  return api.post(`/auth/reset-password/${token}`, { password }).then(res => res.data);
+}
+
 /** ─────────── EXPORT AXIOS INSTANCE ─────────── **/
 export default api;

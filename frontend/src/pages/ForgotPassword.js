@@ -1,8 +1,7 @@
-// src/pages/ForgotPassword.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Modal.css'; // reuse your modal styles
+import '../styles/Modal.css';
+import { forgotPassword } from '../utils/api';  // ← import helper
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -15,17 +14,15 @@ export default function ForgotPassword() {
     setMessage('');
     setError('');
     try {
-      const res = await axios.post('/api/auth/forgot-password', { email });
-      setMessage(res.data.message);
+      // ← use the shared helper instead of axios.post
+      const res = await forgotPassword(email);
+      setMessage(res.message);
     } catch (err) {
       setError(err.response?.data?.message || 'Error sending reset link');
     }
   };
 
   const handleClose = () => {
-    setEmail('');
-    setMessage('');
-    setError('');
     navigate('/login');
   };
 
