@@ -1,5 +1,7 @@
+// src/components/ProductsList.js
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import api from '../utils/api';
 import '../styles/ProductsList.css';
 
 export default function ProductsList() {
@@ -8,7 +10,8 @@ export default function ProductsList() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL.replace('/api', '');
+  // strip the trailing '/api' so we can build image URLs
+  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,25 +19,23 @@ export default function ProductsList() {
       try {
         let data = [];
 
-        const baseUrl = `${process.env.REACT_APP_API_BASE_URL}/products`;
+        // Base endpoint: GET /api/products
+        const endpoint = '/products';
 
         if (slug === 'new-arrivals') {
-          const res = await fetch(baseUrl);
-          data = await res.json();
+          const res = await api.get(endpoint);
           const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
-          data = data.filter(p => new Date(p.createdAt).getTime() >= cutoff);
+          data = res.data.filter(p => new Date(p.createdAt).getTime() >= cutoff);
         } else if (slug === 'sale') {
-          const res = await fetch(baseUrl);
-          data = (await res.json()).filter(p => p.onSale);
+          const res = await api.get(endpoint);
+          data = res.data.filter(p => p.onSale);
         } else {
-          const params = new URLSearchParams();
-          if (category) params.append('category', category);
-          if (subCategory) params.append('subCategory', subCategory);
-          const url = params.toString()
-            ? `${baseUrl}?${params.toString()}`
-            : baseUrl;
-          const res = await fetch(url);
-          data = await res.json();
+          const params = {};
+          if (category)    params.category    = category;
+          if (subCategory) params.subCategory = subCategory;
+
+          const res = await api.get(endpoint, { params });
+          data = res.data;
         }
 
         setProducts(data);
@@ -51,9 +52,9 @@ export default function ProductsList() {
 
   const heading =
     slug === 'new-arrivals' ? 'New Arrivals' :
-    slug === 'sale' ? 'On Sale' :
-    category ? category.replace(/-/g, ' ') :
-    'All Products';
+    slug === 'sale'         ? 'On Sale'      :
+    category                ? category.replace(/-/g, ' ')
+                            : 'All Products';
 
   return (
     <div className="products-container">
@@ -68,7 +69,9 @@ export default function ProductsList() {
           {products.map(product => {
             const thumb = Array.isArray(product.photos) && product.photos[0];
             const thumbUrl =
-              thumb?.startsWith('http') ? thumb : `${imageBaseUrl}${thumb}`;
+              thumb?.startsWith('http')
+                ? thumb
+                : `${imageBaseUrl}${thumb}`;
 
             return (
               <div className="product-card" key={product._id}>
@@ -85,18 +88,23 @@ export default function ProductsList() {
                   )}
                 </Link>
                 <h3>{product.name}</h3>
-
                 <div className="price">
                   {product.salePrice != null ? (
                     <>
-                      <span className="orig-price">SEK {product.price.toFixed(2)}</span>
-                      <span className="sale-price">SEK {product.salePrice.toFixed(2)}</span>
+                      <span className="orig-price">
+                        SEK {product.price.toFixed(2)}
+                      </span>
+                      <span className="sale-price">
+                        SEK {product.salePrice.toFixed(2)}
+                      </span>
                       <span className="discount-badge">
                         {Math.round((1 - product.salePrice / product.price) * 100)}% off
                       </span>
                     </>
                   ) : (
-                    <span className="regular-price">SEK {product.price.toFixed(2)}</span>
+                    <span className="regular-price">
+                      SEK {product.price.toFixed(2)}
+                    </span>
                   )}
                 </div>
               </div>
