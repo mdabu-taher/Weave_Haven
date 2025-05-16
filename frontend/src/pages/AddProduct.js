@@ -9,9 +9,7 @@ const sizesByCategory = {
   default: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
 };
 
-// Generate inch sizes from 28 to 48
 const inchSizes = Array.from({ length: 48 - 28 + 1 }, (_, i) => `${28 + i}`);
-
 const allColors = [
   '#ffffff', '#000000', '#808080', '#c0c0c0', '#ff0000',
   '#ffa500', '#ffff00', '#008000', '#00ffff', '#0000ff',
