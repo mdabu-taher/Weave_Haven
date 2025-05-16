@@ -3,10 +3,8 @@ import { useLocation, Link } from 'react-router-dom';
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
-
   const location = useLocation();
   const categoryFromPath = location.pathname.replace('/', '');
-
   useEffect(() => {
     (async () => {
       try {
