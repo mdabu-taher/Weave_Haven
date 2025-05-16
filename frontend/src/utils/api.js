@@ -15,13 +15,14 @@ export async function fetchProfile() {
   return data;
 }
 
-export async function login({ email, password }) {
+export async function login({ identifier, password }) {
   const { data } = await api.post('/auth/login', {
-    identifier: email,
+    identifier,
     password
   });
   return data;
 }
+
 
 export async function register(details) {
   const { data } = await api.post('/auth/register', details);
