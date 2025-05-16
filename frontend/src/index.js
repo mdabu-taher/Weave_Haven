@@ -6,7 +6,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import './index.css';
 
-// ─── CHART.JS REGISTRATION ─────────────────────
+// CHART.JS REGISTRATION
 import {
   Chart,
   CategoryScale,
