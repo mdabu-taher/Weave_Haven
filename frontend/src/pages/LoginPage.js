@@ -1,4 +1,5 @@
 // src/pages/LoginPage.js
+
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -13,7 +14,8 @@ export default function LoginPage() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await login({ email, password });
+      // Pass email in as `identifier` so the API helper sends { identifier, password }
+      await login({ identifier: email, password });
       navigate('/admin');
     } catch {
       alert('Login failed');
@@ -23,7 +25,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card p-6 max-w-sm mx-auto">
-        <h1 className="WelcomeMessage">👋 Welcome to Admin Panel!.</h1>
+        <h1 className="WelcomeMessage">👋 Welcome to Admin Panel!</h1>
         <h2 className="WelcomeMessage">Admin Login</h2>
         <form onSubmit={handleSubmit} className="Email-Password">
           <div>
@@ -46,7 +48,10 @@ export default function LoginPage() {
               required
             />
           </div>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
             Login
           </button>
         </form>
