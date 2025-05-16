@@ -7,7 +7,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 import feedbackRoutes from './routes/feedback.js';
 import authRoutes     from './routes/auth.js';
 import productRoutes  from './routes/product.js';
