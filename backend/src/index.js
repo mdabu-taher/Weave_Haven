@@ -17,8 +17,8 @@ const app = express();
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  'https://weave-haven-m4qd.vercel.app',  // prod
-  'http://localhost:3000'                 // dev
+  'https://weave-haven-m4qd.vercel.app',
+  'http://localhost:3000'
 ];
 console.log('🛡 CORS whitelist is:', allowedOrigins);
 
@@ -27,12 +27,13 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error(`CORS origin "${origin}" not allowed`), false);
+    callback(new Error(`CORS origin "${origin}" not allowed`), false);
   },
   credentials: true,
   methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
   allowedHeaders: ['Content-Type','Authorization']
 };
+
 app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 

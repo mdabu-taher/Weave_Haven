@@ -1,5 +1,3 @@
-// backend/src/routes/auth.js
-
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -26,7 +24,7 @@ const transporter = nodemailer.createTransport({
 const sendMail = opts =>
   transporter.sendMail({ from: process.env.SMTP_FROM, ...opts });
 
-// ─── Register + Welcome Email ───────────────────────────────────────────────
+// ─── REGISTER (with email confirmation) ─────────────────────────────────────
 router.post('/register', async (req, res) => {
   const { fullName, username, email, mobile, password, gender } = req.body;
   try {
@@ -42,20 +40,14 @@ router.post('/register', async (req, res) => {
       passwordHash,
     });
 
-    // Email confirmation token
     const confirmToken = user.generateEmailConfirmToken();
     await user.save();
 
     const confirmUrl = `${process.env.FRONTEND_URL}/confirm-email/${confirmToken}`;
     await sendMail({
-      to: user.email,
+      to:      user.email,
       subject: `Welcome to Weave Haven, ${user.fullName}!`,
-      text:
-        `Hi ${user.fullName},\n\n` +
-        `Thanks for joining Weave Haven. Confirm your email here:\n` +
-        `${confirmUrl}\n\n` +
-        `If you didn't sign up, ignore this.\n\n` +
-        `— Team Weave Haven`
+      text:    `Hi ${user.fullName},\n\nConfirm your email: ${confirmUrl}\n\n— Team Weave Haven`
     });
 
     res.status(201).json({
@@ -70,13 +62,13 @@ router.post('/register', async (req, res) => {
       const field = Object.keys(err.keyValue)[0];
       return res
         .status(409)
-        .json({ message: `${field.charAt(0).toUpperCase()}${field.slice(1)} already in use` });
+        .json({ message: `${field.charAt(0).toUpperCase()+field.slice(1)} already in use` });
     }
     res.status(400).json({ message: err.message });
   }
 });
 
-// ─── Email Confirmation ──────────────────────────────────────────────────────
+// ─── EMAIL CONFIRMATION ──────────────────────────────────────────────────────
 router.get('/confirm-email/:token', async (req, res) => {
   try {
     const tokenHash = crypto
@@ -99,61 +91,47 @@ router.get('/confirm-email/:token', async (req, res) => {
   }
 });
 
-// ─── Login ───────────────────────────────────────────────────────────────────
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
-  // Accept either `identifier` or `email`
   const identifier = req.body.identifier || req.body.email;
   const { password } = req.body;
-
   console.log('Login attempt for:', identifier);
 
-  try {
-    const user = await User.findOne({
-      $or: [
-        { email: identifier },
-        { username: identifier },
-        { phone: identifier }
-      ]
-    });
-    if (!user) {
-      console.log('No matching user found for identifier:', identifier);
-      res.status(200).json({ ok: true, msg: 'ping /api/auth/login reached!' })
-    }
+  const user = await User.findOne({
+    $or: [
+      { email: identifier },
+      { username: identifier },
+      { phone: identifier }
+    ]
+  });
+  if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
-      console.log('Invalid password for user:', identifier);
-      return res.status(400).json({ message: 'Invalid password' });
-    }
+  const isMatch = await bcrypt.compare(password, user.passwordHash);
+  if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1d'
-    });
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '1d'
+  });
 
-    // Set JWT cookie for cross-site usage
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000
-    });
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 24 * 60 * 60 * 1000
+  });
 
-    res.json({
-      id:        user._id,
-      fullName:  user.fullName,
-      username:  user.username,
-      email:     user.email,
-      phone:     user.phone,
-      role:      user.role,
-      createdAt: user.createdAt,
-    });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: err.message });
-  }
+  res.json({
+    id:        user._id,
+    fullName:  user.fullName,
+    username:  user.username,
+    email:     user.email,
+    phone:     user.phone,
+    role:      user.role,
+    createdAt: user.createdAt,
+  });
 });
 
-// ─── Logout ──────────────────────────────────────────────────────────────────
+// ─── LOGOUT ──────────────────────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
@@ -163,30 +141,21 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
-// ─── Forgot Password ────────────────────────────────────────────────────────
+// ─── FORGOT / RESET PASSWORD ─────────────────────────────────────────────────
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // generate & save reset token
     const rawToken = user.generatePasswordResetToken();
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
     await sendMail({
-      to: user.email,
+      to:      user.email,
       subject: 'Weave Haven Password Reset',
-      html: `
-        <p>Hi ${user.username},</p>
-        <p>Click below to choose a new password:</p>
-        <p><a href="${resetUrl}" target="_blank">${resetUrl}</a></p>
-        <p>This link expires in 1 hour.</p>
-        <p>If you didn't request this, ignore.</p>
-        <br/>
-        <p>— Team Weave Haven</p>
-      `
+      html:    `<p>Hi ${user.username},</p>\n<p><a href="${resetUrl}">${resetUrl}</a></p>\n<p>Expires in 1h.</p>`
     });
 
     res.json({ message: 'Password reset link sent to your email' });
@@ -195,17 +164,10 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// ─── Verify Reset Token ──────────────────────────────────────────────────────
 router.get('/reset-password/:token', async (req, res) => {
   try {
-    const tokenHash = crypto
-      .createHash('sha256')
-      .update(req.params.token)
-      .digest('hex');
-    const user = await User.findOne({
-      resetToken:       tokenHash,
-      resetTokenExpiry: { $gt: Date.now() }
-    });
+    const tokenHash = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({ resetToken: tokenHash, resetTokenExpiry: { $gt: Date.now() }});
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
     res.json({ message: 'Token valid' });
   } catch (err) {
@@ -213,24 +175,13 @@ router.get('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── Reset Password ─────────────────────────────────────────────────────────
 router.post('/reset-password/:token', async (req, res) => {
   try {
-    const tokenHash = crypto
-      .createHash('sha256')
-      .update(req.params.token)
-      .digest('hex');
-
-    const user = await User.findOne({
-      resetToken:       tokenHash,
-      resetTokenExpiry: { $gt: Date.now() }
-    });
+    const tokenHash = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({ resetToken: tokenHash, resetTokenExpiry: { $gt: Date.now() }});
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
 
-    user.passwordHash = await bcrypt.hash(
-      req.body.password,
-      await bcrypt.genSalt(10)
-    );
+    user.passwordHash = await bcrypt.hash(req.body.password, await bcrypt.genSalt(10));
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
     await user.save();
@@ -241,48 +192,25 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── Profile Routes (protected) ──────────────────────────────────────────────
+// ─── PROFILE ROUTES (protected) ──────────────────────────────────────────────
 router.get('/profile', protect, (req, res) => {
-  const {
-    _id,
-    fullName,
-    username,
-    email,
-    phone,
-    address,
-    role,
-    createdAt
-  } = req.user;
-  res.json({
-    id:        _id,
-    fullName,
-    username,
-    email,
-    phone,
-    address,
-    role,
-    createdAt
-  });
+  const { _id, fullName, username, email, phone, address, role, createdAt } = req.user;
+  res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });
 });
 
 router.put('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    ['fullName','username','email','phone','address'].forEach(field => {
-      if (req.body[field]) user[field] = req.body[field];
+    ['fullName','username','email','phone','address'].forEach(f => {
+      if (req.body[f]) user[f] = req.body[f];
     });
     if (req.body.oldPassword && req.body.newPassword) {
       const ok = await bcrypt.compare(req.body.oldPassword, user.passwordHash);
       if (!ok) return res.status(400).json({ message: 'Old password incorrect' });
-      user.passwordHash = await bcrypt.hash(
-        req.body.newPassword,
-        await bcrypt.genSalt(10)
-      );
+      user.passwordHash = await bcrypt.hash(req.body.newPassword, await bcrypt.genSalt(10));
     }
-    const updated = await user.save();
-    const {
-      _id, fullName, username, email, phone, address, role, createdAt
-    } = updated;
+    const u = await user.save();
+    const { _id, fullName, username, email, phone, address, role, createdAt } = u;
     res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });
   } catch (err) {
     res.status(500).json({ message: err.message });
