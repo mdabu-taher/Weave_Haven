@@ -6,8 +6,6 @@ import { fileURLToPath } from 'url';
 import Product from '../models/Product.js';
 
 const router = express.Router();
-
-// Fix for __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
