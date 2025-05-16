@@ -1,5 +1,3 @@
-// backend/src/index.js
-
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -8,48 +6,34 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import feedbackRoutes from './routes/feedback.js';
 import authRoutes     from './routes/auth.js';
 import productRoutes  from './routes/product.js';
 import orderRoutes    from './routes/order.js';
 import adminRoutes    from './routes/admin.js';
+import feedbackRoutes from './routes/feedback.js';
 
 dotenv.config();
 const app = express();
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
-// Only allow your exact production URL + localhost:3000
 const allowedOrigins = [
-  'https://weave-haven-m4qd.vercel.app',
-  'http://localhost:3000'
+  'https://weave-haven-m4qd.vercel.app',  // prod
+  'http://localhost:3000'                 // dev
 ];
-
-// Log it so you can confirm in Render’s logs
 console.log('🛡 CORS whitelist is:', allowedOrigins);
 
 const corsOptions = {
-  origin: (incomingOrigin, callback) => {
-    // allow tools (curl, Postman) with no origin
-    if (!incomingOrigin) return callback(null, true);
-
-    if (allowedOrigins.includes(incomingOrigin)) {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-
-    return callback(
-      new Error(`CORS policy: origin "${incomingOrigin}" not allowed.`),
-      false
-    );
+    return callback(new Error(`CORS origin "${origin}" not allowed`), false);
   },
   credentials: true,
   methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
   allowedHeaders: ['Content-Type','Authorization']
 };
-
-// 1) Pre-flight handler for all routes
 app.options('*', cors(corsOptions));
-
-// 2) Apply to all real requests
 app.use(cors(corsOptions));
 
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
@@ -59,10 +43,7 @@ app.use(express.json());
 // ─── STATIC FILES ──────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, '..', 'uploads'))
-);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ─── ROUTES ────────────────────────────────────────────────────────────────────
 app.use('/api/auth',     authRoutes);

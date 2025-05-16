@@ -1,4 +1,5 @@
 // backend/src/routes/auth.js
+
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -75,7 +76,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ─── Email confirmation ──────────────────────────────────────────────────────
+// ─── Email Confirmation ──────────────────────────────────────────────────────
 router.get('/confirm-email/:token', async (req, res) => {
   try {
     const tokenHash = crypto
@@ -100,11 +101,11 @@ router.get('/confirm-email/:token', async (req, res) => {
 
 // ─── Login ───────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
-  // Accept either `identifier` or `email` from the client:
+  // Accept either `identifier` or `email`
   const identifier = req.body.identifier || req.body.email;
   const { password } = req.body;
 
-  console.log('Login payload:', { identifier, password: password ? '•••••' : null });
+  console.log('Login attempt for:', identifier);
 
   try {
     const user = await User.findOne({
@@ -114,7 +115,6 @@ router.post('/login', async (req, res) => {
         { phone: identifier }
       ]
     });
-
     if (!user) {
       console.log('No matching user found for identifier:', identifier);
       return res.status(404).json({ message: 'User not found' });
@@ -170,12 +170,13 @@ router.post('/forgot-password', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    // generate & save reset token
     const rawToken = user.generatePasswordResetToken();
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
     await sendMail({
-      to:      user.email,
+      to: user.email,
       subject: 'Weave Haven Password Reset',
       html: `
         <p>Hi ${user.username},</p>
@@ -189,6 +190,24 @@ router.post('/forgot-password', async (req, res) => {
     });
 
     res.json({ message: 'Password reset link sent to your email' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── Verify Reset Token ──────────────────────────────────────────────────────
+router.get('/reset-password/:token', async (req, res) => {
+  try {
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(req.params.token)
+      .digest('hex');
+    const user = await User.findOne({
+      resetToken:       tokenHash,
+      resetTokenExpiry: { $gt: Date.now() }
+    });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
+    res.json({ message: 'Token valid' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -222,31 +241,17 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── Verify Reset Token ──────────────────────────────────────────────────────
-router.get('/reset-password/:token', async (req, res) => {
-  try {
-    const tokenHash = crypto
-      .createHash('sha256')
-      .update(req.params.token)
-      .digest('hex');
-
-    const user = await User.findOne({
-      resetToken:       tokenHash,
-      resetTokenExpiry: { $gt: Date.now() }
-    });
-    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
-
-    res.json({ message: 'Token valid' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// ─── Profile routes (protected) ─────────────────────────────────────────────
+// ─── Profile Routes (protected) ──────────────────────────────────────────────
 router.get('/profile', protect, (req, res) => {
   const {
-    _id, fullName, username, email, phone,
-    address, role, createdAt
+    _id,
+    fullName,
+    username,
+    email,
+    phone,
+    address,
+    role,
+    createdAt
   } = req.user;
   res.json({
     id:        _id,
@@ -260,12 +265,11 @@ router.get('/profile', protect, (req, res) => {
   });
 });
 
-// ─── Update Profile ──────────────────────────────────────────────────────────
 router.put('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    ['fullName','username','email','phone','address'].forEach(f => {
-      if (req.body[f]) user[f] = req.body[f];
+    ['fullName','username','email','phone','address'].forEach(field => {
+      if (req.body[field]) user[field] = req.body[field];
     });
     if (req.body.oldPassword && req.body.newPassword) {
       const ok = await bcrypt.compare(req.body.oldPassword, user.passwordHash);
@@ -275,15 +279,16 @@ router.put('/profile', protect, async (req, res) => {
         await bcrypt.genSalt(10)
       );
     }
-    const u = await user.save();
-    const { _id, fullName, username, email, phone, address, role, createdAt } = u;
+    const updated = await user.save();
+    const {
+      _id, fullName, username, email, phone, address, role, createdAt
+    } = updated;
     res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ─── Delete Account ─────────────────────────────────────────────────────────
 router.delete('/delete-account', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
