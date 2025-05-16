@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  // optional sale price, must be less than regular price if set
+  // optional sale price must be less than regular price if set
   salePrice: {
     type: Number,
     min: 0,
