@@ -27,7 +27,7 @@ export default function AddProduct() {
     sizes: [],
     colors: [],
     material: '',
-    photos: [],         // array for multiple files
+    photos: [], 
   });
 
   const handleChange = (e) => {
