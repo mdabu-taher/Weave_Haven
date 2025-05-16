@@ -8,8 +8,6 @@ import Product from '../models/Product.js';
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Multer setup: accept up to 10 files under field name "photos"
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '..', '..', 'uploads'));
