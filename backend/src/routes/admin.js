@@ -1,5 +1,3 @@
-// backend/src/routes/admin.js
-
 import express from 'express';
 import { isAdmin } from '../middleware/auth.js';
 
