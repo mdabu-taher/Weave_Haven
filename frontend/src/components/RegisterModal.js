@@ -1,9 +1,10 @@
-// src/components/RegisterModal.js
+// src/components/RegisterModal.jsx
+
 import React, { useState } from 'react';
 import '../styles/RegisterModal.css';
-import axios from 'axios';
+import { register } from '../utils/api';
 
-export default function RegisterModal({ onClose, onSwitch }) {
+export default function RegisterModal({ onClose, onSwitch, onSuccess }) {
   const [form, setForm] = useState({
     fullName: '',
     username: '',
@@ -28,35 +29,40 @@ export default function RegisterModal({ onClose, onSwitch }) {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    if (!form.gender) return setError('Please select your gender');
-    if (form.password !== form.confirmPassword) return setError('Passwords do not match');
+    setSuccessMsg('');
+
+    if (!form.gender) {
+      return setError('Please select your gender');
+    }
+    if (form.password !== form.confirmPassword) {
+      return setError('Passwords do not match');
+    }
     if (!validatePassword(form.password)) {
-      return setError('Password must include upper, lower, number and be at least 8 characters');
+      return setError(
+        'Password must include upper, lower, number and be at least 8 characters'
+      );
     }
 
     try {
-      await axios.post(
-        '/api/auth/register',
-        {
-          fullName: form.fullName,
-          username: form.username,
-          email: form.email,
-          mobile: form.mobile,
-          gender: form.gender,
-          password: form.password
-        },
-        { withCredentials: true }
-      );
+      const user = await register({
+        fullName: form.fullName,
+        username: form.username,
+        email: form.email,
+        mobile: form.mobile,
+        gender: form.gender,
+        password: form.password
+      });
       setSuccessMsg('Registration successful! Please check your email to confirm.');
+      if (onSuccess) onSuccess(user);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
   };
 
   return (
-    <div className="Register-Form">
-      <div className="Form">
-        <h2>Register to Weave Haven</h2>
+    <div className="modal-overlay">
+      <div className="modal register-modal">
+        <h2>Create an Account</h2>
         {error && <div className="error">{error}</div>}
         {successMsg && <div className="success">{successMsg}</div>}
 
@@ -99,6 +105,7 @@ export default function RegisterModal({ onClose, onSwitch }) {
                 value="male"
                 checked={form.gender === 'male'}
                 onChange={handleChange}
+                required
               />{' '}
               Male
             </label>
@@ -109,8 +116,20 @@ export default function RegisterModal({ onClose, onSwitch }) {
                 value="female"
                 checked={form.gender === 'female'}
                 onChange={handleChange}
+                required
               />{' '}
               Female
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="other"
+                checked={form.gender === 'other'}
+                onChange={handleChange}
+                required
+              />{' '}
+              Other
             </label>
           </div>
 
@@ -131,7 +150,9 @@ export default function RegisterModal({ onClose, onSwitch }) {
             required
           />
 
-          <button type="submit">Create Account</button>
+          <button type="submit" className="registerbutton">
+            Create Account
+          </button>
         </form>
 
         <p className="link" onClick={onSwitch}>
@@ -142,5 +163,5 @@ export default function RegisterModal({ onClose, onSwitch }) {
         </p>
       </div>
     </div>
-  );
+);
 }
