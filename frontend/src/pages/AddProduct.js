@@ -21,7 +21,7 @@ export default function AddProduct() {
     name: '',
     description: '',
     price: '',
-    salePrice: '',      // ← NEW
+    salePrice: '', 
     category: '',
     subCategory: '',
     sizes: [],
