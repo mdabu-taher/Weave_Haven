@@ -10,8 +10,6 @@ import { protect } from '../middleware/auth.js';
 
 dotenv.config();
 const router = express.Router();
-
-// ─── SMTP transporter ────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
