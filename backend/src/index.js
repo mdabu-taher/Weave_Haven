@@ -37,7 +37,7 @@ const corsOptions = {
 app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
-// ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
+//MIDDLEWARE
 app.use(cookieParser());
 app.use(express.json());
 
