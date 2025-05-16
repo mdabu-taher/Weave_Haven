@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 const sendMail = opts =>
   transporter.sendMail({ from: process.env.SMTP_FROM, ...opts });
 
-// ─── REGISTER (with email confirmation) ─────────────────────────────────────
+//REGISTER (with email confirmation)
 router.post('/register', async (req, res) => {
   const { fullName, username, email, mobile, password, gender } = req.body;
   try {
