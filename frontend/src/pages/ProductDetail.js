@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+// src/components/ProductDetail.jsx
+
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import FeedbackList from '../components/FeedbackList';
+import api from '../utils/api';
 import '../styles/ProductDetail.css';
 
 export default function ProductDetail() {
@@ -16,18 +19,21 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL.replace('/api', '');
+  // strip off the '/api' suffix so we can prefix image paths
+  const imageBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/products/${id}`);
-        const data = await res.json();
+        // GET /api/products/:id
+        const { data } = await api.get(`/products/${id}`);
         setProduct(data);
         if (data.sizes?.length) setSelectedSize(data.sizes[0]);
         if (data.colors?.length) setSelectedColor(data.colors[0]);
       } catch (err) {
         console.error('Failed to load product', err);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
@@ -50,8 +56,12 @@ export default function ProductDetail() {
   } = product;
 
   const isOnSale = salePrice != null;
-  const discount = isOnSale ? Math.round((1 - salePrice / price) * 100) : 0;
-  const mainSrc = photos[mainIdx] ? `${imageBaseUrl}${photos[mainIdx]}` : '';
+  const discount = isOnSale
+    ? Math.round((1 - salePrice / price) * 100)
+    : 0;
+  const mainSrc = photos[mainIdx]
+    ? `${imageBaseUrl}${photos[mainIdx]}`
+    : '';
 
   const onSizeClick = sz => sizes.includes(sz) && setSelectedSize(sz);
   const onColorClick = clr => colors.includes(clr) && setSelectedColor(clr);
@@ -164,8 +174,12 @@ export default function ProductDetail() {
         </div>
 
         <div className="action-buttons">
-          <button className="cart-btn filled" onClick={onAddToCart}>Add to Cart</button>
-          <button className="wishlist-btn outlined" onClick={onWishlist}>Wishlist</button>
+          <button className="cart-btn filled" onClick={onAddToCart}>
+            Add to Cart
+          </button>
+          <button className="wishlist-btn outlined" onClick={onWishlist}>
+            Wishlist
+          </button>
         </div>
       </div>
 
