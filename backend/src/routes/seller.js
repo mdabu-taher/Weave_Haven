@@ -7,7 +7,6 @@ import {
 
 const router = express.Router();
 router.use(protect, authorize('seller'));
-
 router.post('/products',     sellerAddProduct);
 router.get('/products',      sellerGetProducts);
 
