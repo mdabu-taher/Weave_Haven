@@ -15,7 +15,7 @@ import feedbackRoutes from './routes/feedback.js';
 dotenv.config();
 const app = express();
 
-// ─── CORS ──────────────────────────────────────────────────────────────────────
+//CORS
 const allowedOrigins = [
   'https://weave-haven-m4qd.vercel.app',
   'http://localhost:3000'
