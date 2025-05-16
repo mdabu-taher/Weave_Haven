@@ -1,24 +1,38 @@
 // src/pages/admin/AdminProductsPage.js
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import {
+  fetchAdminProducts,
+  deleteAdminProduct
+} from '../../utils/api';
 import '../../styles/AdminProductsPage.css';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
+  // Load admin products on mount
   useEffect(() => {
-    fetch('/api/products')
-      .then(r => r.json())
-      .then(setProducts)
-      .catch(console.error);
+    async function load() {
+      try {
+        const prods = await fetchAdminProducts();
+        setProducts(prods);
+      } catch (err) {
+        console.error('Failed to load admin products', err);
+      }
+    }
+    load();
   }, []);
 
-  const handleDelete = id => {
+  const handleDelete = async id => {
     if (!window.confirm('Delete this product?')) return;
-    fetch(`/api/products/${id}`, { method: 'DELETE' })
-      .then(() => setProducts(ps => ps.filter(x => x._id !== id)))
-      .catch(console.error);
+    try {
+      await deleteAdminProduct(id);
+      setProducts(ps => ps.filter(x => x._id !== id));
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
   };
 
   return (
