@@ -26,7 +26,7 @@ export async function sellerAddProduct(req, res) {
       colors,
       price,
       countInStock,
-      seller: req.user._id   // assuming you added a `seller` field on Product
+      seller: req.user._id   // assuming you added a `seller` field 
     });
 
     const created = await product.save();
