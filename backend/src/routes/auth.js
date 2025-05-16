@@ -65,7 +65,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ─── EMAIL CONFIRMATION ──────────────────────────────────────────────────────
+//EMAIL CONFIRMATION
 router.get('/confirm-email/:token', async (req, res) => {
   try {
     const tokenHash = crypto
