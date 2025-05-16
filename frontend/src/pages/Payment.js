@@ -1,35 +1,49 @@
+// src/components/Payment.jsx
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Payment.css';
-import axios from 'axios';
-import { useCart } from '../context/CartContext'; // ✅ Import CartContext
+import { createOrder } from '../utils/api';
+import { useCart } from '../context/CartContext';
 
 export default function Payment() {
-  const location = useLocation();
+  const { state = {} } = useLocation();
+  const { selectedItems = [], address, shippingCompany, total } = state;
   const navigate = useNavigate();
-  const { selectedItems = [], address, shippingCompany, total } = location.state || {};
-
-  const { removeFromCart } = useCart(); // ✅ Use removeFromCart instead of clearCart
+  const { removeFromCart } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [cardDetails, setCardDetails] = useState({ name: '', number: '', expiry: '', cvv: '' });
+  const [cardDetails, setCardDetails] = useState({
+    name: '',
+    number: '',
+    expiry: '',
+    cvv: ''
+  });
   const [error, setError] = useState('');
 
   const shippingPrice = 25;
   const taxPrice = 0;
-  const itemsPrice = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const itemsPrice = selectedItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
-  const handleInput = (e) => {
+  const handleInput = e => {
     const { name, value } = e.target;
     setCardDetails(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePayment = async () => {
-    if (!paymentMethod) return setError('Please select a payment method.');
+    setError('');
+    if (!paymentMethod) {
+      setError('Please select a payment method.');
+      return;
+    }
     if (paymentMethod === 'card') {
       const { name, number, expiry, cvv } = cardDetails;
       if (!name || !number || !expiry || !cvv) {
-        return setError('Please fill in all card details.');
+        setError('Please fill in all card details.');
+        return;
       }
     }
 
@@ -54,19 +68,14 @@ export default function Payment() {
     };
 
     try {
-      await axios.post('http://localhost:5000/api/orders', orderPayload, { withCredentials: true });
+      // Use shared helper instead of localhost fetch/axios
+      await createOrder(orderPayload);
 
-      // ✅ Remove only the ordered items
+      // Remove each ordered item from cart
       selectedItems.forEach(item => removeFromCart(item.id));
 
       navigate('/payment-success', {
-        state: {
-          selectedItems,
-          address,
-          shippingCompany,
-          total,
-          paymentMethod
-        }
+        state: { selectedItems, address, shippingCompany, total, paymentMethod }
       });
     } catch (err) {
       console.error('Order creation failed:', err);
@@ -91,9 +100,11 @@ export default function Payment() {
               name="payment"
               value={method.id}
               checked={paymentMethod === method.id}
-              onChange={(e) => setPaymentMethod(e.target.value)}
+              onChange={e => setPaymentMethod(e.target.value)}
             />
-            {method.logo && <img src={method.logo} alt={method.label} className="payment-logo" />}
+            {method.logo && (
+              <img src={method.logo} alt={method.label} className="payment-logo" />
+            )}
             {method.label}
           </label>
         ))}
@@ -102,10 +113,34 @@ export default function Payment() {
       {paymentMethod === 'card' && (
         <div className="card-form">
           <h4>Card Details</h4>
-          <input type="text" name="name" placeholder="Cardholder Name" value={cardDetails.name} onChange={handleInput} />
-          <input type="text" name="number" placeholder="Card Number" value={cardDetails.number} onChange={handleInput} />
-          <input type="text" name="expiry" placeholder="MM/YY" value={cardDetails.expiry} onChange={handleInput} />
-          <input type="text" name="cvv" placeholder="CVV" value={cardDetails.cvv} onChange={handleInput} />
+          <input
+            type="text"
+            name="name"
+            placeholder="Cardholder Name"
+            value={cardDetails.name}
+            onChange={handleInput}
+          />
+          <input
+            type="text"
+            name="number"
+            placeholder="Card Number"
+            value={cardDetails.number}
+            onChange={handleInput}
+          />
+          <input
+            type="text"
+            name="expiry"
+            placeholder="MM/YY"
+            value={cardDetails.expiry}
+            onChange={handleInput}
+          />
+          <input
+            type="text"
+            name="cvv"
+            placeholder="CVV"
+            value={cardDetails.cvv}
+            onChange={handleInput}
+          />
         </div>
       )}
 
@@ -135,7 +170,9 @@ export default function Payment() {
 
       {error && <p className="payment-error">{error}</p>}
 
-      <button onClick={handlePayment} className="payment-btn">Confirm and Pay</button>
+      <button onClick={handlePayment} className="payment-btn">
+        Confirm and Pay
+      </button>
     </div>
   );
 }
