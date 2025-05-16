@@ -23,7 +23,7 @@ export default function ForgotPassword() {
   };
 
   const handleClose = () => {
-    navigate('/login');
+    navigate('/');
   };
 
   return (
