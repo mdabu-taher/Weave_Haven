@@ -22,7 +22,7 @@
   text-align: center;
   padding: 2rem;
 }
-/* only images _inside your product cards_ get 100% width */
+/* only images _inside your product cards get 100% width */
 .product-card img {
   width: 100%;
   height: auto;
