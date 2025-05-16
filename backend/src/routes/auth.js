@@ -117,7 +117,7 @@ router.post('/login', async (req, res) => {
     });
     if (!user) {
       console.log('No matching user found for identifier:', identifier);
-      return res.status(404).json({ message: 'User not found' });
+      res.status(200).json({ ok: true, msg: 'ping /api/auth/login reached!' })
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
