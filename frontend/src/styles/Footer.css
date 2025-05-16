@@ -6,7 +6,6 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* ───── top 4-column grid ───── */
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
