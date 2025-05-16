@@ -1,4 +1,3 @@
-// frontend/src/pages/AllProducts.jsx
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
