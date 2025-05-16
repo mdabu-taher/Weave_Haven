@@ -41,7 +41,7 @@ export default function Home() {
         showIndicators={true}
         interval={3000}
         transitionTime={400}
-        axis={isMobile ? 'horizontal' : 'vertical'}   // ← key change
+        axis={isMobile ? 'horizontal' : 'horizontal'}   // ← key change
         swipeable
         emulateTouch
       >
