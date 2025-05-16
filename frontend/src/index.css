@@ -35,7 +35,7 @@ header .logo img {
   object-fit: contain;
 }
 
-/* Authentication form messages */
+/* Authentication form messages  */
 .auth-form .error {
   color: red;
   margin-bottom: 1rem;
