@@ -7,10 +7,9 @@ import {
 
 const router = express.Router();
 
-// Leave fdback
+//Leave feedback
 router.post('/', protect, createFeedback);
-
-// List feedback for a products
+//List feedback for a products
 router.get('/product/:productId', getProductFeedback);
 
 export default router;
