@@ -1,4 +1,3 @@
-// frontend/src/pages/Seller.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
