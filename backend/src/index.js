@@ -7,6 +7,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 import feedbackRoutes from './routes/feedback.js';
 import authRoutes     from './routes/auth.js';
 import productRoutes  from './routes/product.js';
@@ -17,27 +18,37 @@ dotenv.config();
 const app = express();
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
-// Only whitelist your deployed Vercel URL and localhost:3000
+// Only allow your deployed front-end and localhost during dev
 const allowedOrigins = [
-  process.env.FRONTEND_URL,     // e.g. https://weave-haven-m4qd.vercel.app
+  process.env.FRONTEND_URL,    // e.g. https://weave-haven-m4qd.vercel.app
   'http://localhost:3000'
 ];
 
-app.use(
-  cors({
-    origin: (incomingOrigin, callback) => {
-      // allow requests with no origin (mobile apps, curl, Postman)
-      if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
-        return callback(null, true);
-      }
-      return callback(
-        new Error(`CORS policy: origin "${incomingOrigin}" not allowed.`),
-        false
-      );
-    },
-    credentials: true
-  })
-);
+// Log at startup to confirm your whitelist is picked up
+console.log('🛡 CORS whitelist is:', allowedOrigins);
+
+// Build a reusable options object
+const corsOptions = {
+  origin: (incomingOrigin, callback) => {
+    // allow requests with no origin (e.g. curl, mobile apps)
+    if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
+      return callback(null, true);
+    }
+    return callback(
+      new Error(`CORS policy: origin "${incomingOrigin}" not allowed.`),
+      false
+    );
+  },
+  credentials: true,
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
+  allowedHeaders: ['Content-Type','Authorization']
+};
+
+// 1) Handle CORS pre-flight for all routes
+app.options('*', cors(corsOptions));
+
+// 2) Apply CORS to every request
+app.use(cors(corsOptions));
 
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 app.use(cookieParser());
