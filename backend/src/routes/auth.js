@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 
