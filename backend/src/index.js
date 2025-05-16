@@ -18,22 +18,24 @@ dotenv.config();
 const app = express();
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
-// Only allow your deployed front-end and localhost during dev
+// Only allow your exact production URL + localhost:3000
 const allowedOrigins = [
-  process.env.FRONTEND_URL,    // e.g. https://weave-haven-m4qd.vercel.app
+  'https://weave-haven-m4qd.vercel.app',
   'http://localhost:3000'
 ];
 
-// Log at startup to confirm your whitelist is picked up
+// Log it so you can confirm in Render’s logs
 console.log('🛡 CORS whitelist is:', allowedOrigins);
 
-// Build a reusable options object
 const corsOptions = {
   origin: (incomingOrigin, callback) => {
-    // allow requests with no origin (e.g. curl, mobile apps)
-    if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
+    // allow tools (curl, Postman) with no origin
+    if (!incomingOrigin) return callback(null, true);
+
+    if (allowedOrigins.includes(incomingOrigin)) {
       return callback(null, true);
     }
+
     return callback(
       new Error(`CORS policy: origin "${incomingOrigin}" not allowed.`),
       false
@@ -44,10 +46,10 @@ const corsOptions = {
   allowedHeaders: ['Content-Type','Authorization']
 };
 
-// 1) Handle CORS pre-flight for all routes
+// 1) Pre-flight handler for all routes
 app.options('*', cors(corsOptions));
 
-// 2) Apply CORS to every request
+// 2) Apply to all real requests
 app.use(cors(corsOptions));
 
 // ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
