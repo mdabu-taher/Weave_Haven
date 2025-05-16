@@ -88,7 +88,7 @@ router.get('/confirm-email/:token', async (req, res) => {
   }
 });
 
-// ─── LOGIN ───────────────────────────────────────────────────────────────────
+//LOGIN
 router.post('/login', async (req, res) => {
   const identifier = req.body.identifier || req.body.email;
   const { password } = req.body;
@@ -128,7 +128,7 @@ router.post('/login', async (req, res) => {
   });
 });
 
-// ─── LOGOUT ──────────────────────────────────────────────────────────────────
+//LOGOUT
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
