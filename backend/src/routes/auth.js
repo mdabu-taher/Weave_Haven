@@ -138,7 +138,7 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
-// ─── FORGOT / RESET PASSWORD ─────────────────────────────────────────────────
+// ─── FORGOT / RESET PASSWORD ────────────
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
