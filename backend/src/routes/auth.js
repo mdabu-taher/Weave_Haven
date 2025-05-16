@@ -189,7 +189,7 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
-// ─── PROFILE ROUTES (protected) ──────────────────────────────────────────────
+//PROFILE ROUTES (protected)
 router.get('/profile', protect, (req, res) => {
   const { _id, fullName, username, email, phone, address, role, createdAt } = req.user;
   res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });
