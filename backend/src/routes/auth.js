@@ -58,11 +58,11 @@ router.post('/register', async (req, res) => {
     });
 
     res.status(201).json({
-      id: user._id,
+      id:       user._id,
       fullName: user.fullName,
       username: user.username,
-      email: user.email,
-      phone: user.phone,
+      email:    user.email,
+      phone:    user.phone,
     });
   } catch (err) {
     if (err.code === 11000) {
@@ -98,8 +98,14 @@ router.get('/confirm-email/:token', async (req, res) => {
   }
 });
 
+// ─── Login ───────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
-  const { identifier, password } = req.body;
+  // Accept either `identifier` or `email` from the client:
+  const identifier = req.body.identifier || req.body.email;
+  const { password } = req.body;
+
+  console.log('Login payload:', { identifier, password: password ? '•••••' : null });
+
   try {
     const user = await User.findOne({
       $or: [
@@ -108,25 +114,27 @@ router.post('/login', async (req, res) => {
         { phone: identifier }
       ]
     });
-    console.log('Login identifier received:', identifier);
 
     if (!user) {
-      console.log('No matching user found for:', identifier);
+      console.log('No matching user found for identifier:', identifier);
       return res.status(404).json({ message: 'User not found' });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
+    if (!isMatch) {
+      console.log('Invalid password for user:', identifier);
+      return res.status(400).json({ message: 'Invalid password' });
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || '1d'
     });
 
-    // ✅ FIXED cookie settings for cross-origin auth
+    // Set JWT cookie for cross-site usage
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none', // <-- KEY FIX
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000
     });
 
@@ -140,20 +148,19 @@ router.post('/login', async (req, res) => {
       createdAt: user.createdAt,
     });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ message: err.message });
   }
 });
-
 
 // ─── Logout ──────────────────────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: true,
-    sameSite: 'None'
+    sameSite: 'none'
   });
   res.json({ message: 'Logged out successfully' });
-
 });
 
 // ─── Forgot Password ────────────────────────────────────────────────────────
@@ -163,13 +170,12 @@ router.post('/forgot-password', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // generate & save reset token
     const rawToken = user.generatePasswordResetToken();
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
     await sendMail({
-      to: user.email,
+      to:      user.email,
       subject: 'Weave Haven Password Reset',
       html: `
         <p>Hi ${user.username},</p>
@@ -197,7 +203,7 @@ router.post('/reset-password/:token', async (req, res) => {
       .digest('hex');
 
     const user = await User.findOne({
-      resetToken: tokenHash,
+      resetToken:       tokenHash,
       resetTokenExpiry: { $gt: Date.now() }
     });
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
@@ -225,7 +231,7 @@ router.get('/reset-password/:token', async (req, res) => {
       .digest('hex');
 
     const user = await User.findOne({
-      resetToken: tokenHash,
+      resetToken:       tokenHash,
       resetTokenExpiry: { $gt: Date.now() }
     });
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
@@ -238,16 +244,9 @@ router.get('/reset-password/:token', async (req, res) => {
 
 // ─── Profile routes (protected) ─────────────────────────────────────────────
 router.get('/profile', protect, (req, res) => {
-  // include role and createdAt in the profile response:
   const {
-    _id,
-    fullName,
-    username,
-    email,
-    phone,
-    address,
-    role,
-    createdAt
+    _id, fullName, username, email, phone,
+    address, role, createdAt
   } = req.user;
   res.json({
     id:        _id,
@@ -256,16 +255,17 @@ router.get('/profile', protect, (req, res) => {
     email,
     phone,
     address,
-    role,      // <-- now exposed
-    createdAt  // <-- now exposed
+    role,
+    createdAt
   });
 });
 
+// ─── Update Profile ──────────────────────────────────────────────────────────
 router.put('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    ['fullName', 'username', 'email', 'phone', 'address'].forEach(field => {
-      if (req.body[field]) user[field] = req.body[field];
+    ['fullName','username','email','phone','address'].forEach(f => {
+      if (req.body[f]) user[f] = req.body[f];
     });
     if (req.body.oldPassword && req.body.newPassword) {
       const ok = await bcrypt.compare(req.body.oldPassword, user.passwordHash);
@@ -276,19 +276,8 @@ router.put('/profile', protect, async (req, res) => {
       );
     }
     const u = await user.save();
-    const {
-      _id, fullName, username, email, phone, address, role, createdAt
-    } = u;
-    res.json({
-      id:        _id,
-      fullName,
-      username,
-      email,
-      phone,
-      address,
-      role,
-      createdAt
-    });
+    const { _id, fullName, username, email, phone, address, role, createdAt } = u;
+    res.json({ id: _id, fullName, username, email, phone, address, role, createdAt });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
