@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
       message: props => `Sale price (${props.value}) must be below regular price`
     }
   },
-  // flag to mark a product as on sale
+  // flag to mark a product as on sale; we'll auto‐sync this in a pre-save hook
   onSale: {
     type: Boolean,
     default: false
@@ -58,7 +58,7 @@ const productSchema = new mongoose.Schema({
     default: []
   },
   photos: {
-    // array of image URLs
+    // array of image URLs, e.g. ['/uploads/xyz.jpg']
     type: [String],
     default: []
   },
@@ -75,6 +75,13 @@ const productSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true     // adds createdAt & updatedAt
+});
+
+// ─── Sync onSale with salePrice ─────────────────────────────────────────────
+productSchema.pre('save', function(next) {
+  // if a salePrice is set (non-null), mark onSale; otherwise clear it
+  this.onSale = (this.salePrice != null);
+  next();
 });
 
 export default mongoose.model('Product', productSchema);
