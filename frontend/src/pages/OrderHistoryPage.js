@@ -1,26 +1,21 @@
 // src/pages/OrderHistoryPage.js
 
 import React, { useEffect, useState } from 'react';
-import api from '../utils/api';               // your axios instance + interceptors
+import api from '../utils/api';               // axios instance
 import '../styles/AccountPages.css';
-
-// Feedback UI components
-import FeedbackForm from '../components/FeedbackForm';
-import FeedbackList from '../components/FeedbackList';
 
 export default function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
-  const [refresh, setRefresh] = useState(0);
+
+  // Build this so it works both locally and in prod
+  const API_ROOT = process.env.REACT_APP_API_BASE_URL.replace(/\/api\/?$/, '');
 
   useEffect(() => {
-    api.get('/orders')
+    api
+      .get('/orders')
       .then(res => setOrders(res.data))
       .catch(err => console.error('Failed to fetch orders:', err));
-  }, [refresh]);
-
-  const handleSubmitted = () => {
-    setRefresh(prev => prev + 1);
-  };
+  }, []);
 
   return (
     <div className="account-container">
@@ -43,18 +38,22 @@ export default function OrderHistoryPage() {
 
               <ul className="order-items">
                 {order.orderItems.map((item, idx) => {
-                  // Safely extract productId, handling possible null
-                  const product = item.product;
-                  const productId = product
-                    ? (product._id || product)
-                    : null;
+                  // build absolute URL to the photo
+                  const imgPath = item.image || '';
+                  const src = imgPath.startsWith('http')
+                    ? imgPath
+                    : `${API_ROOT}${imgPath}`;
 
                   return (
                     <li key={idx} className="order-item">
                       <img
-                        src={item.image || '/images/no-image.png'}
+                        src={src}
                         alt={item.name}
                         className="order-item-image"
+                        onError={e => {
+                          // fallback in case that URL still fails
+                          e.currentTarget.src = '/images/no-image.png';
+                        }}
                       />
                       <div className="order-item-info">
                         <p className="item-name">{item.name}</p>
@@ -62,22 +61,6 @@ export default function OrderHistoryPage() {
                           {item.qty} × SEK {item.price.toFixed(2)}
                         </p>
                       </div>
-
-                      {/* Only show feedback UI when delivered and productId exists */}
-                      {order.status === 'Delivered' && productId && (
-                        <div className="feedback-section">
-                          <h4>Your Review for {item.name}</h4>
-                          <FeedbackList
-                            productId={productId}
-                            key={`list-${refresh}-${productId}`}
-                          />
-                          <FeedbackForm
-                            orderId={order._id}
-                            productId={productId}
-                            onSubmitted={handleSubmitted}
-                          />
-                        </div>
-                      )}
                     </li>
                   );
                 })}

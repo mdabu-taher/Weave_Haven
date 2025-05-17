@@ -499,3 +499,65 @@
     color: #777;
   }
 }
+/* -------------------------------------------------------------------
+   MOBILE: under 768px
+------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  /* the wrapper around input + live suggestions */
+  .mobile-search-bar {
+    position: relative;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  /* ensure the input stretches full width */
+  .mobile-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 2.5rem; /* room for the 🔍 icon on left */
+  }
+
+  /* reposition suggestions list for mobile */
+  .mobile-search-bar .live-suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* list items layout */
+  .mobile-search-bar .live-suggestions li {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+  }
+
+  .mobile-search-bar .live-suggestions img.suggestion-thumb {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+  }
+
+  /* “no matches” text */
+  .mobile-search-bar .no-suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 999;
+    color: #777;
+  }
+}

@@ -1,11 +1,11 @@
-// backend/src/middleware/upload.js
 import multer from 'multer';
 import path from 'path';
 
 // where to store files and how to name them
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'uploads/');      // ensure this folder exists & is served statically
+    // ensure this folder exists at your repo root
+    cb(null, path.join(process.cwd(), 'uploads'));
   },
   filename(req, file, cb) {
     const ext = path.extname(file.originalname);

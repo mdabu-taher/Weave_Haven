@@ -1,5 +1,6 @@
 import express from 'express';
 import { isAdmin } from '../middleware/auth.js';
+import { upload } from '../middleware/upload.js';
 
 import {
   getStats,
@@ -20,50 +21,28 @@ const router = express.Router();
 // All /api/admin/** routes require an authenticated admin user
 router.use(isAdmin);
 
-/**
- * Dashboard Stats
- * GET /api/admin/stats
- */
+// Dashboard Stats
 router.get('/stats', getStats);
 
-/**
- * Basic Reports
- * GET /api/admin/reports/top-products
- */
+// Top-products report
 router.get('/reports/top-products', getTopProducts);
 
-/**
- * Order Management
- * GET    /api/admin/orders
- * PUT    /api/admin/orders/:id/status
- */
+// Order management
 router.get('/orders', getOrders);
 router.put('/orders/:id/status', updateOrderStatus);
 
-/**
- * User Management
- * GET    /api/admin/users
- * DELETE /api/admin/users/:id
- * PUT    /api/admin/users/:id/role
- */
+// User management
 router.get('/users', getUsers);
 router.delete('/users/:id', deleteUser);
 router.put('/users/:id/role', updateUserRole);
 
-/**
- * Product CRUD
- * GET    /api/admin/products
- * POST   /api/admin/products
- * PUT    /api/admin/products/:id
- * DELETE /api/admin/products/:id
- */
-router
-  .route('/products')
+// Product CRUD
+router.route('/products')
   .get(listProducts)
-  .post(createProduct);
+  // ← Multer will parse up to 5 files under fieldname="photos"
+  .post(upload.array('photos', 5), createProduct);
 
-router
-  .route('/products/:id')
+router.route('/products/:id')
   .put(updateProduct)
   .delete(deleteProduct);
 
