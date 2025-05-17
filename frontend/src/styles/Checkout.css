@@ -72,3 +72,43 @@
   .checkout-btn:hover:not(:disabled) {
      background-color: #297a18;
   }
+@media (max-width: 767px) {
+  /* Container full‐width with less padding */
+  .checkout-container {
+    margin: 1rem;
+    padding: 1rem;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Section spacing tighter */
+  .checkout-section {
+    margin-bottom: 1rem;
+  }
+
+  /* Inputs and textarea full width */
+  .checkout-section textarea {
+    font-size: 1rem;
+  }
+
+  /* Stack shipping options vertically */
+  .shipping-options {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Summary text slightly smaller */
+  .checkout-summary p {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+  }
+
+  /* Center and expand the button */
+  .checkout-btn {
+    width: 100%;
+    max-width: none;
+    margin: 1rem 0 0;
+    padding: 12px;
+    font-size: 1rem;
+  }
+}

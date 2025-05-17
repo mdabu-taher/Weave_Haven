@@ -65,12 +65,14 @@ form div label {
 .save-btn {
   background: #000;
   color: #fff;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
   border: none;
   font-weight: 600;
   cursor: pointer;
   margin-top: 1rem;
   letter-spacing: 0.5px;
+  max-width: 150px;
+  margin-left: 500px;
 }
 
 .save-btn:hover {
@@ -106,20 +108,24 @@ form div label {
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
+  max-width: 200px;
 }
 
 .logout-btn {
   margin-top: 2rem;
-  background: none;
+  background: rgb(18, 18, 18);
   border: none;
-  color: #000;
+  color:white;
   font-weight: bold;
   font-size: 0.95rem;
   cursor: pointer;
+  max-width: 150px;
+  margin-left: 500px;
 }
 
 .logout-btn:hover {
-  color: crimson;
+  
+  background-color: black;
 }
 .account-container {
   max-width: 900px;

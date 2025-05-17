@@ -171,3 +171,71 @@
   color: crimson;
   border: 1px solid crimson;
 }
+@media (max-width: 480px) {
+  .product-detail-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  /* Main image full-width, maintain square aspect */
+  .images-section {
+    width: 100%;
+    max-width: none;
+  }
+  .main-photo,
+  .no-photo-large {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+  }
+
+  /* Thumbnail strip scrollable */
+  .thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .thumbnail {
+    flex: 0 0 auto;
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Details panel full-width below images */
+  .product-details {
+    max-width: 100%;
+  }
+
+  /* Make size/color options wrap more tightly */
+  .size-options,
+  .color-options {
+    gap: 0.4rem;
+  }
+  .size-btn,
+  .color-swatch {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Action buttons full-width */
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .cart-btn,
+  .wishlist-btn {
+    width: 100%;
+    justify-content: center;
+    max-width: none;
+  }
+
+  /* Reduce text margins for mobile */
+  .description-section p,
+  .description-section h3 {
+    margin: 0.5rem 0;
+  }
+}

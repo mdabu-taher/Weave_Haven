@@ -173,3 +173,57 @@
 
   cursor: not-allowed;
 }
+@media (max-width: 480px) {
+  .cart-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem 0;
+    gap: 0.5rem;
+  }
+
+  /* Hide the checkbox column on mobile (if you don’t need it) */
+  .cart-item .item-select {
+    display: none;
+  }
+
+  /* Image + name/details row */
+  .cart-item .item-info {
+    flex: none;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .item-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .item-text {
+    flex: 1;
+  }
+
+  /* Price on its own line, right-aligned */
+  .cart-item .item-price {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 0.25rem;
+  }
+
+  /* Quantity controls on their own line, center it */
+  .quantity-controls {
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+
+  /* Remove button full-width */
+  .item-action {
+    text-align: center;
+  }
+  .remove-btn {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}

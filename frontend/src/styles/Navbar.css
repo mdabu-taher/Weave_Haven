@@ -172,7 +172,7 @@
 }
 
 .user-dropdown {
-  position: relative;
+  position: relative;;
 }
 
 .user-dropdown .nav-icon {
@@ -181,6 +181,7 @@
 
 .user-dropdown .dropdown-menu {
   top: 110%;
+  width: 200px;
   right: 0;
   left: auto;
 }
