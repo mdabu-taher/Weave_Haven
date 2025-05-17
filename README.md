@@ -159,13 +159,13 @@ App runs at https://weave-haven-m4qd.vercel.app` .
 Deployment
 1. Frontend Deployment (Vercel)
 
-Go to Vercel
-Connect your GitHub repository
-add the corresponding variables according to given above
+Go to Vercel.
+Connect your GitHub repository.
+Add the corresponding variables according to given above.
 
 2. Backend Deployment (Render)
 
-Go to Render
+Go to Render.
 Create a new Web Service:
 Root directory: backend
 Start command: npm start
