@@ -97,7 +97,7 @@ SMTP_FROM="Weave Haven <tawsiftaher@gmail.com>"
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/weave-haven.git
+git clone https://github.com/mdabu-taher/Weave_Haven.git
 cd weave-haven
 ```
 
@@ -167,9 +167,10 @@ Add the corresponding variables according to given above.
 
 Go to Render.
 Create a new Web Service:
+
 Root directory: backend
 Start command: npm start
-Add the corresponding environment variables:
+Add the corresponding environment variables.
 
 Enable static file hosting:
 
