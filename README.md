@@ -97,7 +97,7 @@ SMTP_FROM="Weave Haven <tawsiftaher@gmail.com>"
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/weave-haven.git
+git clone https://github.com/mdabu-taher/Weave_Haven.git
 cd weave-haven
 ```
 
