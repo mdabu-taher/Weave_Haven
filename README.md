@@ -2,9 +2,6 @@
 
 Premium fabrics, delivered online.
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/yourusername/weave-haven/actions)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-blue)](https://github.com/yourusername/weave-haven/coverage)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A full-stack e-commerce platform offering premium fabrics with a customer-facing storefront and an admin dashboard for managing products, orders, and users.
 
@@ -34,7 +31,6 @@ A full-stack e-commerce platform offering premium fabrics with a customer-facing
   * dotenv for environment variables
   * Jest for testing
   * Helmet & rate-limiting middleware for security
-  * JSDoc & Postman collection (available at `/docs`)
   * Sentry (or similar) for error monitoring
   * Automated daily backups
 
@@ -74,27 +70,27 @@ weave-haven/
 Create a `backend/.env` file with the following variables:
 
 ```ini
-# Database
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/weave-haven
+# MongoDB connection
+MONGO_URI=mongodb+srv://weave_haven:Weave_Haven11@taherdb.5kz8id0.mongodb.net/?retryWrites=true&w=majority&appName=taherDB
 
-# JSON Web Tokens\JWT_SECRET=your_jwt_secret
+# JSON Web Token settings (if used)
+JWT_SECRET=someVerySecretKey
 JWT_EXPIRES_IN=1d
 
-# Frontend URL (for email links)
-FRONTEND_URL=http://localhost:3000
+# Frontend URL for links in emails
 
-# SMTP (Gmail example)
+FRONTEND_URL=https://weave-haven-m4qd.vercel.app
+REACT_APP_API_BASE_URL=https://weave-haven-backend.onrender.com
+
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_email_password
-SMTP_FROM="Weave Haven <your_email@gmail.com>"
+SMTP_USER=tawsiftaher@gmail.com
+SMTP_PASS=nwkqxmxwprzjskyi
+SMTP_FROM="Weave Haven <tawsiftaher@gmail.com>"
+
 ```
 
-> **Note:** In production, set these in your host environment or secrets manager.
-
----
 
 ## 🚀 Getting Started
 
@@ -115,7 +111,7 @@ npm start        # production
 npm test         # run tests
 ```
 
-Server will be available at `http://localhost:5000`.
+Server will be available at `(https://weave-haven-backend.onrender.com)`.
 
 ### 3. Frontend
 
@@ -126,7 +122,7 @@ npm start        # development
 npm run build    # production build
 ```
 
-App runs at `http://localhost:3000` (proxy to `/api` → port 5000).
+App runs at https://weave-haven-m4qd.vercel.app` .
 
 ---
 
@@ -156,56 +152,63 @@ App runs at `http://localhost:3000` (proxy to `/api` → port 5000).
 | GET    | `/api/orders`                    | Get user order history             |
 | PUT    | `/api/orders/:id/status`         | Update order status (admin only)   |
 
-> For full request/response examples, see the Postman collection in `/docs`.
+
 
 ---
 
-## 🚢 Deployment
+Deployment
+1. Frontend Deployment (Vercel)
 
-1. Build frontend:
+Go to Vercel
+Connect your GitHub repository
+add the corresponding variables according to given above
 
-   ```bash
-   cd frontend
-   npm run build
-   ```
-2. Serve `frontend/build` statically from Express (production mode).
-3. Configure environment variables in your host (e.g., Heroku, Vercel, AWS).
-4. Use HTTPS with HSTS, set up CDN for images, and schedule daily backups.
+2. Backend Deployment (Render)
 
-*Example (Docker Compose)*:
+Go to Render
+Create a new Web Service:
+Root directory: backend
+Start command: npm start
+Add the corresponding environment variables:
 
-```yaml
-version: '3.8'
-services:
-  backend:
-    build: ./backend
-    env_file: ./backend/.env
-    ports:
-      - "5000:5000"
-  frontend:
-    build: ./frontend
-    env_file: ./frontend/.env
-    ports:
-      - "3000:3000"
-```
+Enable static file hosting:
 
----
+uploads/ folder must be served via:
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 
-## 🤝 Contributing
+Production Tips
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+Enable HTTPS (Render & Vercel use HTTPS by default).
+Use .env.production files locally for production testing.
+Schedule backups via MongoDB Atlas or your DB provider.
 
-* Code style and linting rules
-* Branch naming conventions
-* Pull request process
+🤝 Contributing
 
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit your changes: `git commit -m "feat: add your feature"`
-4. Push to your branch: `git push origin feat/your-feature`
-5. Open a pull request
 
----
+We welcome contributions to Weave Haven!
+
+Guidelines
+
+Fork this repository.
+
+Create a feature branch:
+git checkout -b feat/your-feature
+
+Commit your changes:
+git commit -m "feat: add your feature"
+
+Push your branch:
+git push origin feat/your-feature
+
+Open a pull request and describe what you’ve done.
+
+Code style & Linting:
+
+Use consistent formatting with ESLint + Prettier (if enabled).
+
+Keep backend and frontend logic modular and documented.
+
+
 
 ## 📄 License
 
