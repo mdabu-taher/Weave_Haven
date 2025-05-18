@@ -258,7 +258,53 @@ export async function getUsers(req, res) {
  */
 // src/controllers/adminController.js
 
-// Delete a product
+// PUT /api/admin/products/:id
+export async function updateProduct(req, res) {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    // update allowed fields
+    const {
+      name,
+      description,
+      category,
+      subCategory,
+      material,
+      price,
+      salePrice,
+      countInStock,
+      sizes: sizesJson,
+      colors: colorsJson,
+      isActive
+    } = req.body;
+
+    if (name !== undefined)         product.name         = name;
+    if (description !== undefined)  product.description  = description;
+    if (category !== undefined)     product.category     = category;
+    if (subCategory !== undefined)  product.subCategory  = subCategory;
+    if (material !== undefined)     product.material     = material;
+    if (price !== undefined)        product.price        = Number(price);
+    if (salePrice !== undefined)    product.salePrice    = salePrice != null ? Number(salePrice) : null;
+    if (countInStock !== undefined) product.countInStock = Number(countInStock);
+    if (sizesJson !== undefined)    product.sizes        = JSON.parse(sizesJson);
+    if (colorsJson !== undefined)   product.colors       = JSON.parse(colorsJson);
+    if (isActive !== undefined)     product.isActive     = Boolean(isActive);
+
+    // replace photos if new files were uploaded
+    if (req.files && req.files.length) {
+      product.photos = req.files.map(f => `/uploads/${f.filename}`);
+    }
+
+    const updated = await product.save();
+    return res.json({ message: 'Product updated', product: updated });
+  } catch (err) {
+    console.error('Error updating product:', err);
+    return res.status(500).json({ message: 'Server error updating product', detail: err.message });
+  }
+}
+
+// DELETE /api/admin/products/:id
 export async function deleteProduct(req, res) {
   const { id } = req.params;
   try {
@@ -273,22 +319,5 @@ export async function deleteProduct(req, res) {
       message: 'Server error deleting product',
       detail: err.message
     });
-  }
-}
-
-/**
- * PUT /api/admin/users/:id/role
- */
-export async function updateUserRole(req, res) {
-  try {
-    const { role } = req.body;
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    user.role = role;
-    await user.save();
-    return res.json({ message: 'User role updated', user });
-  } catch (err) {
-    console.error('Error updating user role:', err);
-    return res.status(500).json({ message: 'Server error updating user role' });
   }
 }
