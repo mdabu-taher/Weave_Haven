@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Order   from '../models/Order.js';
 import User    from '../models/User.js';
-
 /**
  * GET /api/admin/stats
  */
@@ -33,7 +32,6 @@ export async function getStats(req, res) {
     return res.status(500).json({ message: 'Server error retrieving stats' });
   }
 }
-
 /**
  * GET /api/admin/reports/top-products
  */
@@ -105,7 +103,6 @@ export async function getProduct(req, res) {
       .json({ message: 'Server error retrieving product', detail: err.message });
   }
 }
-
 /**
  * POST /api/admin/products
  */
@@ -149,7 +146,6 @@ export async function createProduct(req, res) {
     return res.status(500).json({ message: 'Server error creating product', detail: err.message });
   }
 }
-
 /**
  * PUT /api/admin/products/:id
  */
@@ -195,7 +191,6 @@ export async function updateProduct(req, res) {
     return res.status(500).json({ message: 'Server error updating product', detail: err.message });
   }
 }
-
 /**
  * DELETE /api/admin/products/:id
  */
@@ -209,7 +204,6 @@ export async function deleteProduct(req, res) {
     return res.status(500).json({ message: 'Server error deleting product', detail: err.message });
   }
 }
-
 /**
  * GET /api/admin/orders
  */
@@ -224,7 +218,6 @@ export async function getOrders(req, res) {
     return res.status(500).json({ message: 'Server error retrieving orders' });
   }
 }
-
 /**
  * PUT /api/admin/orders/:id/status
  */
@@ -241,7 +234,6 @@ export async function updateOrderStatus(req, res) {
     return res.status(500).json({ message: 'Server error updating order' });
   }
 }
-
 /**
  * GET /api/admin/users
  */
@@ -256,7 +248,6 @@ export async function getUsers(req, res) {
     return res.status(500).json({ message: 'Server error retrieving users' });
   }
 }
-
 /**
  * DELETE /api/admin/users/:id
  */
@@ -270,7 +261,6 @@ export async function deleteUser(req, res) {
     return res.status(500).json({ message: 'Server error deleting user', detail: err.message });
   }
 }
-
 /**
  * PUT /api/admin/users/:id/role
  */

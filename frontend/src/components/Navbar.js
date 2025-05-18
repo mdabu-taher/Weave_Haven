@@ -40,7 +40,6 @@ export default function Navbar() {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-
   // Close desktop search on outside click
   useEffect(() => {
     const onClick = e => {
@@ -51,7 +50,6 @@ export default function Navbar() {
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
-
   // Debounced live-search
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -68,7 +66,6 @@ export default function Navbar() {
     }, 300);
     return () => clearTimeout(handler);
   }, [searchTerm]);
-
   const doSearch = () => {
     if (!searchTerm.trim()) return;
     navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
@@ -76,20 +73,17 @@ export default function Navbar() {
     setSuggestions([]);
     setDesktopSearchOpen(false);
   };
-
   const handleSelectSuggestion = id => {
     navigate(`/product/${id}`);
     setSearchTerm('');
     setSuggestions([]);
     setDesktopSearchOpen(false);
   };
-
   const openLogin = () => setModal('login');
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
-
   return (
     <>
       <nav className="navbar">
@@ -105,7 +99,6 @@ export default function Navbar() {
             <span className="brand-text">Weave Haven</span>
           </Link>
         </div>
-
         {/* CENTER (main nav) */}
         <div className="navbar-center">
           <ul className="main-nav">
@@ -129,7 +122,6 @@ export default function Navbar() {
             })}
           </ul>
         </div>
-
         {/* RIGHT */}
         <div className="navbar-right">
           {/* Desktop Search */}
@@ -182,7 +174,6 @@ export default function Navbar() {
               )}
             </div>
           )}
-
           {/* Account / Login */}
           <div className="account-wrapper">
             {user ? (
@@ -203,7 +194,6 @@ export default function Navbar() {
               <FaUser className="nav-icon auth-icon" onClick={openLogin} />
             )}
           </div>
-
           {/* Wishlist */}
           <Link to="/favorites" className="wishlist-icon-wrapper">
             <FaHeart className="nav-icon heart-icon" />
@@ -211,7 +201,6 @@ export default function Navbar() {
               <span className="wishlist-count">{wishlistItems.length}</span>
             )}
           </Link>
-
           {/* Cart */}
           <Link to="/cart" className="cart-icon-wrapper">
             <FaShoppingBag className="nav-icon" />
@@ -221,7 +210,6 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
-
       {/* Mobile Search Bar + suggestions */}
       {!isAdmin && windowWidth <= 768 && !hideSearch && (
         <div className="mobile-search-bar">
@@ -260,7 +248,6 @@ export default function Navbar() {
           )}
         </div>
       )}
-
       {/* Sidebar for mobile categories */}
       {!isAdmin && (
         <>
@@ -284,7 +271,6 @@ export default function Navbar() {
           </div>
         </>
       )}
-
       {/* Auth Modals */}
       {!user && modal === 'login' && (
         <LoginModal

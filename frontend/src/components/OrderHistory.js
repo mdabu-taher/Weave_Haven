@@ -1,45 +1,80 @@
 // src/components/OrderHistory.js
 import React, { useState } from 'react';
-import FeedbackForm from '@/components/FeedbackForm';
-import FeedbackList from '@/components/FeedbackList';
+import FeedbackList from './FeedbackList';
+import FeedbackForm from './FeedbackForm';
+import '../styles/OrderHistory.css';
 
-export default function OrderHistory({ order }) {
+export default function OrderHistory({ order, apiRoot }) {
   const [refresh, setRefresh] = useState(0);
   const handleSubmitted = () => setRefresh(r => r + 1);
 
+  // Normalize status
+  const status = String(order.status || '').toLowerCase().trim();
+  const canReview = status === 'delivered';
+
   return (
-    <div className="space-y-4 p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-semibold">Order #{order._id}</h2>
-      <p>Status: {order.status}</p>
-      <ul className="divide-y">
-        {order.orderItems.map(item => (
-          <li key={item.product._id} className="py-3">
-            console.log(`Order ${order._id} status:`, order.status);
-            <div className="flex justify-between items-center">
-              <span>{item.name} × {item.qty}</span>
-              <span>SEK {item.price.toFixed(2)}</span>
-            </div>
+    <div className="order-card">
+      <div className="order-header">
+        <h3>Order #{order._id}</h3>
+        <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+        <p>Status: {order.status}</p>
+      </div>
 
-            {/* Feedback UI only for delivered orders */}
-            { /* inside your OrderHistoryPage (or OrderHistory) render */ }
-            { order.status?.toLowerCase() === 'delivered' && productId && (
-              <div className="mt-4 border-t pt-4">
-                <h3 className="font-bold">Your Review for {item.name}</h3>
-                <FeedbackList
-                  productId={productId}
-                  key={`list-${refresh}-${productId}`}
-                />
-                <FeedbackForm
-                  orderId={order._id}
-                  productId={productId}
-                  onSubmitted={handleSubmitted}
-                />
-              </div>
-            )}
+      <ul>
+        {order.orderItems
+          // skip any malformed entries
+          .filter(item => item && item.product)
+          .map((item, idx) => {
+            // productId may be an object or an ID string
+            const productId = item.product._id || item.product;
+            // build correct thumbnail URL
+            const imgPath = item.image || '';
+            const src = imgPath.startsWith('http')
+              ? imgPath
+              : `${apiRoot}${imgPath}`;
 
-          </li>
-        ))}
+            return (
+              <li key={idx} className="order-item">
+                <img
+                  src={src}
+                  alt={item.name}
+                  className="order-item-image"
+                  onError={e => (e.currentTarget.src = '/images/no-image.png')}
+                />
+
+                <div className="order-item-info">
+                  <p className="item-name">{item.name}</p>
+                  <p>
+                    {item.qty} × SEK {item.price.toFixed(2)}
+                  </p>
+                </div>
+
+                <p className="item-subtotal">
+                  SEK {(item.qty * item.price).toFixed(2)}
+                </p>
+
+                {canReview && (
+                  <div className="review-section">
+                    <h4>Your Review for {item.name}</h4>
+                    <FeedbackList
+                      productId={productId}
+                      key={`list-${order._id}-${productId}-${refresh}`}
+                    />
+                    <FeedbackForm
+                      orderId={order._id}
+                      productId={productId}
+                      onSubmitted={handleSubmitted}
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
       </ul>
+
+      <p className="order-total">
+        Total: SEK {order.totalPrice.toFixed(2)}
+      </p>
     </div>
   );
 }

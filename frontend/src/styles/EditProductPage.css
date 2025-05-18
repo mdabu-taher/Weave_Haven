@@ -1,0 +1,149 @@
+/* Form container */
+.edit-product-form {
+  max-width: 650px;
+  margin: 2rem auto;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: sans-serif;
+}
+
+/* Title */
+.edit-product-title {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Labels & inputs */
+.edit-product-label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #444;
+}
+.edit-product-input,
+.edit-product-textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.edit-product-input:focus,
+.edit-product-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.edit-product-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* Fieldset & legend */
+.edit-product-fieldset {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 4px;
+  background: #fafafa;
+}
+.edit-product-legend {
+  padding: 0 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Array item rows */
+.edit-product-item-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.edit-product-array-input {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.edit-product-remove-btn {
+  margin-left: 0.5rem;
+  background: #6c757d;
+  border: none;
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  max-width: 40px;
+}
+.edit-product-remove-btn:hover {
+  background: #5a6268;
+}
+
+/* Add button */
+.edit-product-add-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: #007bff;
+  border: 1px solid #007bff;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.edit-product-add-btn:hover {
+  background: #0056b3;
+}
+
+/* File input */
+.edit-product-file {
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Submit */
+.edit-product-submit-btn {
+  display: block;
+  width: 100%;
+  background: #28a745;
+  color: #fff;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background 0.2s;
+}
+.edit-product-submit-btn:hover {
+  background: #218838;
+}
+
+/* Loading / error */
+.edit-product-loading,
+.edit-product-error {
+  text-align: center;
+  margin: 2rem;
+  font-size: 1.2rem;
+}
+.edit-product-error {
+  color: #d33;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .edit-product-form {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}

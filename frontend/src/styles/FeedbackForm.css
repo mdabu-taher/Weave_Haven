@@ -1,6 +1,6 @@
 /* Container */
 .feedback-form {
-  max-width: 480px;
+  max-width: 400px;
 
   padding: 1.25rem;
   background: #fff;
@@ -102,11 +102,12 @@
   background-color: #1e40af;
 }
 /* Responsive tweaks for small screens */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .feedback-form {
     max-width: 100%;       /* allow full width */
     margin: 1rem;          /* add breathing room */
-    padding: 1rem;         /* slightly smaller padding */
+    padding: 1rem; 
+    margin-right: 200px;       /* slightly smaller padding */
   }
 
   .form-heading {
