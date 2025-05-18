@@ -1,12 +1,13 @@
-// src/components/LoginModal.jsx
-
 import React, { useState } from 'react';
 import '../styles/Modal.css';
-import { login, fetchProfile } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function LoginModal({ onClose, onSwitch, onSuccess }) {
+export default function LoginModal({ onClose, onSwitch }) {
   const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,9 +16,14 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
     e.preventDefault();
     setError('');
     try {
-      await login(form); // <- Cookie will be set
-      const profile = await fetchProfile(); // <- Get logged-in user
-      onSuccess(profile);
+      // Perform login and populate AuthContext.user
+      await login(form);
+
+      // Close this modal
+      onClose();
+
+      // Redirect to orders page
+      navigate('/orders');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -48,16 +54,16 @@ export default function LoginModal({ onClose, onSwitch, onSuccess }) {
           />
           <p
             className="link"
-            style={{ margin: '5px 0', fontSize: '0.9rem' }}
             onClick={() => {
               onClose();
-              window.location.href = '/forgot-password';
+              navigate('/forgot-password');
             }}
           >
             Forgot Password?
           </p>
-
-          <button type="submit" className="loginbutton">Login</button>
+          <button type="submit" className="loginbutton">
+            Login
+          </button>
         </form>
 
         <p className="link" onClick={onSwitch}>

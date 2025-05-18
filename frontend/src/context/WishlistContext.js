@@ -1,15 +1,19 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
 /**
  * Provides wishlist state and handlers.
- * Persists to localStorage under "wishlist".
+ * Persists to localStorage under a per-user key.
  */
 export function WishlistProvider({ children }) {
-  // Initialize from localStorage
+  const { user } = useAuth();
+  const storageKey = user ? `wishlist_${user.id}` : 'wishlist_guest';
+
+  // Initialize from localStorage (per-user)
   const [wishlistItems, setWishlistItems] = useState(() => {
-    const stored = localStorage.getItem('wishlist');
+    const stored = localStorage.getItem(storageKey);
     return stored ? JSON.parse(stored) : [];
   });
 
@@ -28,12 +32,13 @@ export function WishlistProvider({ children }) {
     setWishlistItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  /** Clear the entire wishlist */
   const clearWishlist = () => setWishlistItems([]);
 
-  // Persist changes
+  // Persist changes to localStorage
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-  }, [wishlistItems]);
+    localStorage.setItem(storageKey, JSON.stringify(wishlistItems));
+  }, [wishlistItems, storageKey]);
 
   // Listen for logout event and clear in-memory state
   useEffect(() => {

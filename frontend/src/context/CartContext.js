@@ -1,120 +1,97 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
+/**
+ * Provides cart state and handlers.
+ * Persists to localStorage under a per-user key.
+ */
 export function CartProvider({ children }) {
-  // --- Cart State & Persistence ---
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const { user } = useAuth();
+  const storageKey = user ? `cart_${user.id}` : 'cart_guest';
 
-  // --- Wishlist State & Persistence (moved here for cohesion) ---
-  const [wishlistItems, setWishlistItems] = useState(() => {
-    const saved = localStorage.getItem('wishlist');
+  // Initialize cart from localStorage
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Rehydrate when user changes
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    setCartItems(saved ? JSON.parse(saved) : []);
+  }, [storageKey]);
+
+  // Persist cart to localStorage per user
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(cartItems));
+  }, [cartItems, storageKey]);
+
   // --- Cart Methods ---
+
+  /** Add a product or increment quantity if exists */
   const addToCart = (product) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+    setCartItems(prev => {
+      const existing = prev.find(i => i.id === product.id);
       if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+        return prev.map(i =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
         );
-      } else {
-        return [...prev, { ...product, quantity: 1 }];
       }
+      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
+  /** Decrease quantity or remove if zero */
   const decreaseQuantity = (id) => {
-    setCartItems((prev) =>
+    setCartItems(prev =>
       prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0)
+        .map(i => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .filter(i => i.quantity > 0)
     );
   };
 
+  /** Update specific quantity */
   const updateQuantity = (id, quantity) => {
-    if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((item) => item.id !== id));
-    } else {
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, quantity } : item
-        )
-      );
-    }
+    setCartItems(prev =>
+      quantity <= 0
+        ? prev.filter(i => i.id !== id)
+        : prev.map(i => (i.id === id ? { ...i, quantity } : i))
+    );
   };
 
+  /** Remove product entirely */
   const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    setCartItems(prev => prev.filter(i => i.id !== id));
   };
 
+  /** Clear all items in cart */
   const clearCart = () => setCartItems([]);
 
+  /** Compute subtotal */
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + Number(item.price) * item.quantity,
+    (sum, i) => sum + Number(i.price) * i.quantity,
     0
   );
 
-  // --- Wishlist Methods ---
-  const addToWishlist = (product) => {
-    setWishlistItems((prev) =>
-      prev.some((item) => item.id === product.id) ? prev : [...prev, product]
-    );
-  };
-
-  const removeFromWishlist = (id) => {
-    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const clearWishlist = () => setWishlistItems([]);
-
-  // --- Persist to localStorage ---
+  // Clear cart on logout
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-  }, [wishlistItems]);
-
-  // --- Listen for logout event and clear in-memory state ---
-  useEffect(() => {
-    function handleLogout() {
-      setCartItems([]);
-      setWishlistItems([]);
-    }
-
+    const handleLogout = () => setCartItems([]);
     window.addEventListener('logout', handleLogout);
-    return () => {
-      window.removeEventListener('logout', handleLogout);
-    };
+    return () => window.removeEventListener('logout', handleLogout);
   }, []);
 
   return (
     <CartContext.Provider
       value={{
-        // Cart
         cartItems,
         addToCart,
         decreaseQuantity,
         updateQuantity,
         removeFromCart,
         clearCart,
-        subtotal,
-        // Wishlist
-        wishlistItems,
-        addToWishlist,
-        removeFromWishlist,
-        clearWishlist,
+        subtotal
       }}
     >
       {children}
@@ -122,6 +99,7 @@ export function CartProvider({ children }) {
   );
 }
 
+/** Hook to access cart state & actions */
 export function useCart() {
   return useContext(CartContext);
 }

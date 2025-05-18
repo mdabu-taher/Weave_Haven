@@ -1,9 +1,11 @@
 // src/components/Navbar.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaSearch, FaUser, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
-
+import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import logo from '../assets/LOGO.png';
 import categories from '../utils/categories';
@@ -12,36 +14,34 @@ import RegisterModal from './RegisterModal';
 import '../styles/Navbar.css';
 
 export default function Navbar() {
-  const { cartItems, wishlistItems } = useCart();
-  const [user, setUser] = useState(null);
-  const [modal, setModal] = useState('none');
+  const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
+  const { user, login, logout } = useAuth();
+
+  const [modal, setModal] = useState('none');           // 'none' | 'login' | 'register'
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isAdmin = pathname.startsWith('/admin');
+  const isAdmin    = pathname.startsWith('/admin');
   const hideSearch = /^\/(account|orders|membership|bonus|settings)/.test(pathname);
   const searchBoxRef = useRef(null);
-  // === API root (strip off any trailing /api) ===
-  const API_ROOT = (process.env.REACT_APP_API_BASE_URL || '')
-    .replace(/\/api\/?$/, '');
-  // Fetch current user on mount
-  useEffect(() => {
-    api.get('/auth/profile')
-      .then(({ data }) => setUser(data))
-      .catch(() => setUser(null));
-  }, []);
+
+  // Build API_ROOT for images (strip any trailing /api)
+  const API_ROOT = (process.env.REACT_APP_API_BASE_URL || '').replace(/\/api\/?$/, '');
+
   // Track window width for responsive behavior
   useEffect(() => {
     const onResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-  // Close desktop search when clicking outside
+
+  // Close desktop search on outside click
   useEffect(() => {
     const onClick = e => {
       if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
@@ -51,7 +51,8 @@ export default function Navbar() {
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
-  // Live‐search debounce
+
+  // Debounced live-search
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSuggestions([]);
@@ -59,16 +60,15 @@ export default function Navbar() {
     }
     const handler = setTimeout(async () => {
       try {
-        const res = await api.get(
-          `/products/search?q=${encodeURIComponent(searchTerm)}`
-        );
+        const res = await api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
         setSuggestions(res.data.slice(0, 5));
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // ignore
       }
     }, 300);
     return () => clearTimeout(handler);
   }, [searchTerm]);
+
   const doSearch = () => {
     if (!searchTerm.trim()) return;
     navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
@@ -76,22 +76,20 @@ export default function Navbar() {
     setSuggestions([]);
     setDesktopSearchOpen(false);
   };
+
   const handleSelectSuggestion = id => {
     navigate(`/product/${id}`);
     setSearchTerm('');
     setSuggestions([]);
     setDesktopSearchOpen(false);
   };
+
   const openLogin = () => setModal('login');
   const handleLogout = async () => {
-    try {
-      await api.post('/auth/logout');
-
-      setUser(null);
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
+    await logout();
+    navigate('/');
   };
+
   return (
     <>
       <nav className="navbar">
@@ -107,6 +105,7 @@ export default function Navbar() {
             <span className="brand-text">Weave Haven</span>
           </Link>
         </div>
+
         {/* CENTER (main nav) */}
         <div className="navbar-center">
           <ul className="main-nav">
@@ -119,7 +118,9 @@ export default function Navbar() {
                     {cat.subcategories.map(sub => {
                       const subSlug = sub.toLowerCase().replace(/\s+/g, '-');
                       return (
-                        <li key={sub}><Link to={`/products/${slug}/${subSlug}`}>{sub}</Link></li>
+                        <li key={sub}>
+                          <Link to={`/products/${slug}/${subSlug}`}>{sub}</Link>
+                        </li>
                       );
                     })}
                   </ul>
@@ -128,6 +129,7 @@ export default function Navbar() {
             })}
           </ul>
         </div>
+
         {/* RIGHT */}
         <div className="navbar-right">
           {/* Desktop Search */}
@@ -153,7 +155,7 @@ export default function Navbar() {
                   {suggestions.length > 0 ? (
                     <ul className="live-suggestions">
                       {suggestions.map(p => {
-                        const thumb = p.photos?.[0];
+                        const thumb = p.photos?.[0] || null;
                         const src = thumb
                           ? (thumb.startsWith('http') ? thumb : `${API_ROOT}${thumb}`)
                           : '/placeholder.png';
@@ -162,7 +164,8 @@ export default function Navbar() {
                             key={p._id}
                             onClick={() => handleSelectSuggestion(p._id)}
                           >
-                            <img src={src}
+                            <img
+                              src={src}
                               alt={p.name}
                               className="suggestion-thumb"
                               onError={e => e.currentTarget.src = '/placeholder.png'}
@@ -173,14 +176,13 @@ export default function Navbar() {
                       })}
                     </ul>
                   ) : (
-                    searchTerm.trim() && (
-                      <div className="no-suggestions">No matches</div>
-                    )
+                    searchTerm.trim() && <div className="no-suggestions">No matches</div>
                   )}
                 </div>
               )}
             </div>
           )}
+
           {/* Account / Login */}
           <div className="account-wrapper">
             {user ? (
@@ -192,13 +194,16 @@ export default function Navbar() {
                   <Link to="/membership">My membership</Link>
                   <Link to="/bonus">Bonus overview</Link>
                   <Link to="/settings">My settings</Link>
-                  <button className="logout-btn" onClick={handleLogout}>Log out</button>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    Log out
+                  </button>
                 </div>
               </div>
             ) : (
               <FaUser className="nav-icon auth-icon" onClick={openLogin} />
             )}
           </div>
+
           {/* Wishlist */}
           <Link to="/favorites" className="wishlist-icon-wrapper">
             <FaHeart className="nav-icon heart-icon" />
@@ -206,6 +211,7 @@ export default function Navbar() {
               <span className="wishlist-count">{wishlistItems.length}</span>
             )}
           </Link>
+
           {/* Cart */}
           <Link to="/cart" className="cart-icon-wrapper">
             <FaShoppingBag className="nav-icon" />
@@ -215,6 +221,7 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
+
       {/* Mobile Search Bar + suggestions */}
       {!isAdmin && windowWidth <= 768 && !hideSearch && (
         <div className="mobile-search-bar">
@@ -230,7 +237,7 @@ export default function Navbar() {
           {suggestions.length > 0 && (
             <ul className="live-suggestions">
               {suggestions.map(p => {
-                const thumb = p.photos?.[0];
+                const thumb = p.photos?.[0] || null;
                 const src = thumb
                   ? (thumb.startsWith('http') ? thumb : `${API_ROOT}${thumb}`)
                   : '/placeholder.png';
@@ -253,6 +260,8 @@ export default function Navbar() {
           )}
         </div>
       )}
+
+      {/* Sidebar for mobile categories */}
       {!isAdmin && (
         <>
           <div
@@ -260,30 +269,30 @@ export default function Navbar() {
             onClick={() => setSidebarOpen(false)}
           />
           <div className={`sidebar-menu ${sidebarOpen ? 'open' : ''}`}>
-            <button
-              className="close-btn"
-              onClick={() => setSidebarOpen(false)}
-            > ×</button>
-            <Link to="/products/men" onClick={() => setSidebarOpen(false)}>Men</Link>
-            <Link to="/products/women" onClick={() => setSidebarOpen(false)}>Women</Link>
-            <Link to="/products/kids" onClick={() => setSidebarOpen(false)}>Kids</Link>
-            <Link to="/products/newborn" onClick={() => setSidebarOpen(false)}>Newborn</Link>
-            <Link to="/products/new-arrivals" onClick={() => setSidebarOpen(false)}>New Arrivals</Link>
-            <Link to="/products/sale" onClick={() => setSidebarOpen(false)}>Sale</Link>
+            <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+              ×
+            </button>
+            {categories.map(cat => (
+              <Link
+                key={cat.name}
+                to={`/products/${cat.name.toLowerCase()}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                {cat.name}
+              </Link>
+            ))}
           </div>
         </>
       )}
-      {modal === 'login' && (
+
+      {/* Auth Modals */}
+      {!user && modal === 'login' && (
         <LoginModal
           onClose={() => setModal('none')}
           onSwitch={() => setModal('register')}
-          onSuccess={ud => {
-            setUser(ud);
-            setModal('none');
-          }}
         />
       )}
-      {modal === 'register' && (
+      {!user && modal === 'register' && (
         <RegisterModal
           onClose={() => setModal('none')}
           onSwitch={() => setModal('login')}

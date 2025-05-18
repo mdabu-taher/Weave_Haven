@@ -1,7 +1,4 @@
-// src/context/AuthContext.js
-
-import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import {
   fetchProfile,
   login as apiLogin,
@@ -18,11 +15,10 @@ export const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 1) On mount, fetch the current profile
+  // On mount, fetch the current user's profile
   useEffect(() => {
     (async () => {
       try {
@@ -37,45 +33,47 @@ export function AuthProvider({ children }) {
     })();
   }, []);
 
-  // 2) LOGIN
+  // LOGIN
   const login = async (credentials) => {
     const loggedInUser = await apiLogin(credentials);
     setUser(loggedInUser);
     return loggedInUser;
   };
 
-  // 3) REGISTER
+  // REGISTER
   const register = async (details) => {
     const newUser = await apiRegister(details);
     setUser(newUser);
     return newUser;
   };
 
-  // 4) LOGOUT + redirect
+  // LOGOUT
   const logout = async () => {
     try {
       await apiLogout();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      // clear user state
       setUser(null);
-      // clear persisted data
       localStorage.removeItem('cart');
       localStorage.removeItem('wishlist');
-      // redirect home
-      navigate('/');
+      window.dispatchEvent(new Event('logout'));
     }
   };
 
-  // While loading, don’t render children
+  // While loading, don't render children
   if (loading) {
     return null;
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
+}
+
+// Custom hook for consuming auth context
+export function useAuth() {
+  return useContext(AuthContext);
 }

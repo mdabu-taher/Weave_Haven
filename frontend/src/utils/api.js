@@ -4,25 +4,26 @@ import axios from 'axios';
 
 // Axios instance
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL+ '/api', // Make sure ends with `/api`
-  withCredentials: true // ⬅️ Enables cookie-based auth
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/api', // Make sure ends with `/api`
+  withCredentials: true,                                // ⬅️ Enables cookie-based auth
 });
 
 /** ───────────── AUTH HELPERS ───────────── **/
 
 export async function fetchProfile() {
+  // Your back-end defines GET /api/auth/profile
   const { data } = await api.get('/auth/profile');
   return data;
 }
 
 export async function login({ identifier, password }) {
+  // Your back-end login handler reads `req.body.email`, not `req.body.identifier`
   const { data } = await api.post('/auth/login', {
-    identifier,
-    password
+    email: identifier,
+    password,
   });
   return data;
 }
-
 
 export async function register(details) {
   const { data } = await api.post('/auth/register', details);
@@ -134,7 +135,7 @@ export async function createFeedback({ orderId, productId, rating, comment }) {
     orderId,
     productId,
     rating,
-    comment
+    comment,
   });
   return data;
 }
@@ -144,20 +145,23 @@ export async function fetchProductFeedback(productId) {
   return data;
 }
 
-// in src/utils/api.js
+/** ─────────── PASSWORD HELPERS ─────────── **/
+
 export async function forgotPassword(email) {
   const { data } = await api.post('/auth/forgot-password', { email });
   return data;
 }
-// in src/utils/api.js (add these)
+
 export async function verifyResetToken(token) {
   // GET /api/auth/reset-password/:token
-  return api.get(`/auth/reset-password/${token}`).then(res => res.data);
+  const { data } = await api.get(`/auth/reset-password/${token}`);
+  return data;
 }
 
 export async function resetPassword(token, password) {
   // POST /api/auth/reset-password/:token
-  return api.post(`/auth/reset-password/${token}`, { password }).then(res => res.data);
+  const { data } = await api.post(`/auth/reset-password/${token}`, { password });
+  return data;
 }
 
 /** ─────────── EXPORT AXIOS INSTANCE ─────────── **/

@@ -1,11 +1,11 @@
 // src/pages/FavoritesPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import '../styles/FavoritesPage.css';
 
 export default function FavoritesPage() {
-  const { wishlistItems, removeFromWishlist } = useCart();
+  const { wishlistItems, removeFromWishlist } = useWishlist();
 
   if (wishlistItems.length === 0) {
     return (
