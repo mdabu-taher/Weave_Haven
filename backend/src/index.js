@@ -1,3 +1,5 @@
+// server.js
+
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -15,45 +17,45 @@ import feedbackRoutes from './routes/feedback.js';
 dotenv.config();
 const app = express();
 
-//CORS
+// ───────── CORS ─────────
 const allowedOrigins = [
   'https://weave-haven-m4qd.vercel.app',
   'http://localhost:3000'
 ];
-console.log('🛡 CORS whitelist is:', allowedOrigins);
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    callback(new Error(`CORS origin "${origin}" not allowed`), false);
-  },
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
   allowedHeaders: ['Content-Type','Authorization']
 };
 
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-//MIDDLEWARE
+// ───────── MIDDLEWARE ─────────
 app.use(cookieParser());
 app.use(express.json());
 
-//STATIC FILES
+// ───────── STATIC FILES ─────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-//ROUTES
+// ───────── ROUTES ─────────
 app.use('/api/auth',     authRoutes);
 app.use('/api/products',  productRoutes);
 app.use('/api/orders',    orderRoutes);
 app.use('/api/admin',     adminRoutes);
 app.use('/api/feedback',  feedbackRoutes);
 
-//START SERVER
+// ───────── ERROR HANDLER ─────────
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ message: 'Unexpected server error' });
+});
+
+// ───────── START SERVER ─────────
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(process.env.MONGO_URI, {
