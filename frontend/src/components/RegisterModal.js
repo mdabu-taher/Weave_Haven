@@ -120,17 +120,7 @@ export default function RegisterModal({ onClose, onSwitch, onSuccess }) {
               />{' '}
               Female
             </label>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="other"
-                checked={form.gender === 'other'}
-                onChange={handleChange}
-                required
-              />{' '}
-              Other
-            </label>
+            
           </div>
 
           <input

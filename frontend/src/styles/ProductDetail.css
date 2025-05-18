@@ -92,8 +92,8 @@
 }
 
 .size-btn {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 4px;
   border: 1px solid #ccc;
   cursor: pointer;
@@ -217,8 +217,8 @@
   }
   .size-btn,
   .color-swatch {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   /* Action buttons full-width */

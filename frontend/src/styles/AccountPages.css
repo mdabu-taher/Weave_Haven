@@ -120,7 +120,7 @@ form div label {
   font-size: 0.95rem;
   cursor: pointer;
   max-width: 150px;
-  margin-left: 500px;
+  margin-left: 10px;
 }
 
 .logout-btn:hover {

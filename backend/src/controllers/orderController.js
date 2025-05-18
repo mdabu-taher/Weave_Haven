@@ -70,9 +70,15 @@ export async function createOrder(req, res) {
  */
 export async function getOrders(req, res) {
   try {
-    const orders = await Order.find({ user: req.user.id })
+    // Admins get all orders; others only their own
+    const filter = req.user.role === 'admin'
+      ? {}
+      : { user: req.user.id };
+
+    const orders = await Order.find(filter)
       .sort({ createdAt: -1 })
       .populate('orderItems.product', 'name image price');
+
     return res.json(orders);
   } catch (err) {
     console.error('Error fetching orders:', err);

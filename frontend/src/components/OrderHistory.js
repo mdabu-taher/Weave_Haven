@@ -14,26 +14,29 @@ export default function OrderHistory({ order }) {
       <ul className="divide-y">
         {order.orderItems.map(item => (
           <li key={item.product._id} className="py-3">
+            console.log(`Order ${order._id} status:`, order.status);
             <div className="flex justify-between items-center">
               <span>{item.name} × {item.qty}</span>
               <span>SEK {item.price.toFixed(2)}</span>
             </div>
 
             {/* Feedback UI only for delivered orders */}
-            {order.status === 'Delivered' && (
+            { /* inside your OrderHistoryPage (or OrderHistory) render */ }
+            { order.status?.toLowerCase() === 'delivered' && productId && (
               <div className="mt-4 border-t pt-4">
                 <h3 className="font-bold">Your Review for {item.name}</h3>
                 <FeedbackList
-                  productId={item.product._id}
-                  key={`list-${refresh}-${item.product._id}`}
+                  productId={productId}
+                  key={`list-${refresh}-${productId}`}
                 />
                 <FeedbackForm
                   orderId={order._id}
-                  productId={item.product._id}
+                  productId={productId}
                   onSubmitted={handleSubmitted}
                 />
               </div>
             )}
+
           </li>
         ))}
       </ul>

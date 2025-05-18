@@ -1,4 +1,3 @@
-// src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import {
   fetchProfile,
@@ -56,13 +55,18 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
+      // 1) Clear the user
       setUser(null);
+      // 2) Clear persisted cart & wishlist
+      localStorage.removeItem('cart');
+      localStorage.removeItem('wishlist');
+      // (Optional) you could also dispatch events or call context methods
+      // to reset in-memory CartContext/WishlistContext if needed.
     }
   };
 
-  // While auth is loading, render nothing (or a spinner)
   if (loading) {
-    return null;
+    return null; // or a spinner
   }
 
   return (
