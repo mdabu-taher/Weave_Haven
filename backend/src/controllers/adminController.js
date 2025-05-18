@@ -256,15 +256,23 @@ export async function getUsers(req, res) {
 /**
  * DELETE /api/admin/users/:id
  */
-export async function deleteUser(req, res) {
+// src/controllers/adminController.js
+
+// Delete a product
+export async function deleteProduct(req, res) {
+  const { id } = req.params;
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    await user.remove();
-    return res.json({ message: 'User deleted' });
+    const removed = await Product.findByIdAndDelete(id);
+    if (!removed) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    return res.status(204).end();
   } catch (err) {
-    console.error('Error deleting user:', err);
-    return res.status(500).json({ message: 'Server error deleting user' });
+    console.error(`Error deleting product ${id}:`, err);
+    return res.status(500).json({
+      message: 'Server error deleting product',
+      detail: err.message
+    });
   }
 }
 
