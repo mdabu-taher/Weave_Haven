@@ -46,7 +46,7 @@ import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
-
+import EditProductPage from "./pages/admin/EditProductPage";
 
 function AppContent() {
   const { pathname } = useLocation();
@@ -100,6 +100,7 @@ function AppContent() {
               <Route path="products">
                 <Route index element={<AdminProductsPage />} />
                 <Route path="new" element={<AddProduct />} />
+                <Route path=":id/edit" element={<EditProductPage />} />
 
               </Route>
               <Route path="orders" element={<AdminOrders />} />

@@ -6,6 +6,7 @@ import {
   getStats,
   getTopProducts,
   listProducts,
+  getProduct,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -41,7 +42,7 @@ router.route('/products')
   .get(listProducts)
   // ← Multer will parse up to 5 files under fieldname="photos"
   .post(upload.array('photos', 5), createProduct);
-
+router.get('/products/:id',    getProduct); 
 router.route('/products/:id')
   .put(updateProduct)
   .delete(deleteProduct);

@@ -88,6 +88,23 @@ export async function listProducts(req, res) {
     return res.status(500).json({ message: 'Server error retrieving products' });
   }
 }
+/**
+ * GET /api/admin/products/:id
+ */
+export async function getProduct(req, res) {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    return res.json(product);
+  } catch (err) {
+    console.error(`Error fetching product ${req.params.id}:`, err);
+    return res
+      .status(500)
+      .json({ message: 'Server error retrieving product', detail: err.message });
+  }
+}
 
 /**
  * POST /api/admin/products
