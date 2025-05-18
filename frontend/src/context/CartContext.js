@@ -9,7 +9,7 @@ export function CartProvider({ children }) {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // --- Wishlist State & Persistence ---
+  // --- Wishlist State & Persistence (moved here for cohesion) ---
   const [wishlistItems, setWishlistItems] = useState(() => {
     const saved = localStorage.getItem('wishlist');
     return saved ? JSON.parse(saved) : [];
@@ -66,13 +66,9 @@ export function CartProvider({ children }) {
 
   // --- Wishlist Methods ---
   const addToWishlist = (product) => {
-    setWishlistItems((prev) => {
-      // avoid duplicates
-      if (prev.find((item) => item.id === product.id)) {
-        return prev;
-      }
-      return [...prev, product];
-    });
+    setWishlistItems((prev) =>
+      prev.some((item) => item.id === product.id) ? prev : [...prev, product]
+    );
   };
 
   const removeFromWishlist = (id) => {
@@ -89,6 +85,19 @@ export function CartProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
   }, [wishlistItems]);
+
+  // --- Listen for logout event and clear in-memory state ---
+  useEffect(() => {
+    function handleLogout() {
+      setCartItems([]);
+      setWishlistItems([]);
+    }
+
+    window.addEventListener('logout', handleLogout);
+    return () => {
+      window.removeEventListener('logout', handleLogout);
+    };
+  }, []);
 
   return (
     <CartContext.Provider
