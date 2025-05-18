@@ -1,4 +1,7 @@
+// src/context/AuthContext.js
+
 import React, { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   fetchProfile,
   login as apiLogin,
@@ -15,15 +18,15 @@ export const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, load the current user's profile (or clear if it fails)
+  // 1) On mount, fetch the current profile
   useEffect(() => {
     (async () => {
       try {
         const profile = await fetchProfile();
-        console.log('👤 fetched profile:', profile);
         setUser(profile || null);
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -34,39 +37,40 @@ export function AuthProvider({ children }) {
     })();
   }, []);
 
-  // LOGIN
+  // 2) LOGIN
   const login = async (credentials) => {
     const loggedInUser = await apiLogin(credentials);
     setUser(loggedInUser);
     return loggedInUser;
   };
 
-  // REGISTER
+  // 3) REGISTER
   const register = async (details) => {
     const newUser = await apiRegister(details);
     setUser(newUser);
     return newUser;
   };
 
-  // LOGOUT
+  // 4) LOGOUT + redirect
   const logout = async () => {
     try {
       await apiLogout();
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      // 1) Clear the user
+      // clear user state
       setUser(null);
-      // 2) Clear persisted cart & wishlist
+      // clear persisted data
       localStorage.removeItem('cart');
       localStorage.removeItem('wishlist');
-      // (Optional) you could also dispatch events or call context methods
-      // to reset in-memory CartContext/WishlistContext if needed.
+      // redirect home
+      navigate('/');
     }
   };
 
+  // While loading, don’t render children
   if (loading) {
-    return null; // or a spinner
+    return null;
   }
 
   return (
