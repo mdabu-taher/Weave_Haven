@@ -1,5 +1,3 @@
-// backend/src/controllers/adminController.js
-
 import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Order   from '../models/Order.js';
@@ -96,7 +94,6 @@ export async function listProducts(req, res) {
  */
 export async function createProduct(req, res) {
   try {
-    // 1) extract the form fields, including salePrice
     const {
       name,
       description = '',
@@ -110,14 +107,10 @@ export async function createProduct(req, res) {
       colors: colorsJson = '[]'
     } = req.body;
 
-    // 2) parse JSON-encoded arrays
     const sizes  = JSON.parse(sizesJson);
     const colors = JSON.parse(colorsJson);
-
-    // 3) build file URLs from multer
     const photos = (req.files || []).map(f => `/uploads/${f.filename}`);
 
-    // 4) assemble and save
     const product = new Product({
       name,
       description,
@@ -126,7 +119,6 @@ export async function createProduct(req, res) {
       material,
       price:       Number(price),
       salePrice:   salePrice != null ? Number(salePrice) : null,
-      // onSale will auto-sync via Product.pre('save') hook
       countInStock: Number(countInStock),
       sizes,
       colors,
@@ -137,9 +129,7 @@ export async function createProduct(req, res) {
     return res.status(201).json({ message: 'Product created', product: created });
   } catch (err) {
     console.error('Error creating product:', err);
-    return res
-      .status(500)
-      .json({ message: 'Server error creating product', error: err.message });
+    return res.status(500).json({ message: 'Server error creating product', detail: err.message });
   }
 }
 
@@ -151,7 +141,6 @@ export async function updateProduct(req, res) {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // update allowed fields
     const {
       name,
       description,
@@ -178,7 +167,6 @@ export async function updateProduct(req, res) {
     if (colorsJson !== undefined)   product.colors       = JSON.parse(colorsJson);
     if (isActive !== undefined)     product.isActive     = Boolean(isActive);
 
-    // replace photos if new files were uploaded
     if (req.files && req.files.length) {
       product.photos = req.files.map(f => `/uploads/${f.filename}`);
     }
@@ -187,7 +175,7 @@ export async function updateProduct(req, res) {
     return res.json({ message: 'Product updated', product: updated });
   } catch (err) {
     console.error('Error updating product:', err);
-    return res.status(500).json({ message: 'Server error updating product' });
+    return res.status(500).json({ message: 'Server error updating product', detail: err.message });
   }
 }
 
@@ -196,13 +184,12 @@ export async function updateProduct(req, res) {
  */
 export async function deleteProduct(req, res) {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-    await product.remove();
-    return res.json({ message: 'Product removed' });
+    const removed = await Product.findByIdAndDelete(req.params.id);
+    if (!removed) return res.status(404).json({ message: 'Product not found' });
+    return res.status(204).end();
   } catch (err) {
-    console.error('Error deleting product:', err);
-    return res.status(500).json({ message: 'Server error deleting product' });
+    console.error(`Error deleting product ${req.params.id}:`, err);
+    return res.status(500).json({ message: 'Server error deleting product', detail: err.message });
   }
 }
 
@@ -256,68 +243,30 @@ export async function getUsers(req, res) {
 /**
  * DELETE /api/admin/users/:id
  */
-// src/controllers/adminController.js
-
-// PUT /api/admin/products/:id
-export async function updateProduct(req, res) {
+export async function deleteUser(req, res) {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    // update allowed fields
-    const {
-      name,
-      description,
-      category,
-      subCategory,
-      material,
-      price,
-      salePrice,
-      countInStock,
-      sizes: sizesJson,
-      colors: colorsJson,
-      isActive
-    } = req.body;
-
-    if (name !== undefined)         product.name         = name;
-    if (description !== undefined)  product.description  = description;
-    if (category !== undefined)     product.category     = category;
-    if (subCategory !== undefined)  product.subCategory  = subCategory;
-    if (material !== undefined)     product.material     = material;
-    if (price !== undefined)        product.price        = Number(price);
-    if (salePrice !== undefined)    product.salePrice    = salePrice != null ? Number(salePrice) : null;
-    if (countInStock !== undefined) product.countInStock = Number(countInStock);
-    if (sizesJson !== undefined)    product.sizes        = JSON.parse(sizesJson);
-    if (colorsJson !== undefined)   product.colors       = JSON.parse(colorsJson);
-    if (isActive !== undefined)     product.isActive     = Boolean(isActive);
-
-    // replace photos if new files were uploaded
-    if (req.files && req.files.length) {
-      product.photos = req.files.map(f => `/uploads/${f.filename}`);
-    }
-
-    const updated = await product.save();
-    return res.json({ message: 'Product updated', product: updated });
+    const removed = await User.findByIdAndDelete(req.params.id);
+    if (!removed) return res.status(404).json({ message: 'User not found' });
+    return res.status(204).end();
   } catch (err) {
-    console.error('Error updating product:', err);
-    return res.status(500).json({ message: 'Server error updating product', detail: err.message });
+    console.error(`Error deleting user ${req.params.id}:`, err);
+    return res.status(500).json({ message: 'Server error deleting user', detail: err.message });
   }
 }
 
-// DELETE /api/admin/products/:id
-export async function deleteProduct(req, res) {
-  const { id } = req.params;
+/**
+ * PUT /api/admin/users/:id/role
+ */
+export async function updateUserRole(req, res) {
   try {
-    const removed = await Product.findByIdAndDelete(id);
-    if (!removed) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    return res.status(204).end();
+    const { role } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    user.role = role;
+    await user.save();
+    return res.json({ message: 'User role updated', user });
   } catch (err) {
-    console.error(`Error deleting product ${id}:`, err);
-    return res.status(500).json({
-      message: 'Server error deleting product',
-      detail: err.message
-    });
+    console.error('Error updating user role:', err);
+    return res.status(500).json({ message: 'Server error updating user role' });
   }
 }
