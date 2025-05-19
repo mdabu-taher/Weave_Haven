@@ -41,11 +41,56 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const confirmUrl = `${process.env.FRONTEND_URL}/confirm-email/${confirmToken}`;
+
+    const textBody = 
+      `Hi ${user.fullName},\n\n` +
+      `Welcome to Weave Haven! Thank you for creating an account with us.\n\n` +
+      `Please confirm your email address by clicking the link below:\n` +
+      `${confirmUrl}\n\n` +
+      `If you did not register for a Weave Haven account, simply ignore this message.\n\n` +
+      `Happy weaving,\n` +
+      `The Weave Haven Team`;
+
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5;">
+        <h2 style="color: #444;">Welcome to Weave Haven, ${user.fullName}!</h2>
+        <p>Thank you for joining our community of makers and creators.</p>
+        <p>To get started, please confirm your email address by clicking the button below:</p>
+        <p style="text-align: center; margin: 20px 0;">
+          <a
+            href="${confirmUrl}"
+            style="
+              background-color: #007bff;
+              color: #fff;
+              text-decoration: none;
+              padding: 12px 24px;
+              border-radius: 4px;
+              display: inline-block;
+            "
+          >
+            Confirm Your Email
+          </a>
+        </p>
+        <p>If the button above doesn’t work, copy and paste this link into your browser:</p>
+        <p style="word-break: break-all;">
+          <a href="${confirmUrl}" style="color: #0066cc;">${confirmUrl}</a>
+        </p>
+        <p style="margin-top: 30px; color: #777; font-size: 0.9em;">
+          If you didn’t create an account with us, please disregard this email.
+        </p>
+        <p style="color: #777; font-size: 0.9em;">
+          — The Weave Haven Team
+        </p>
+      </div>
+    `;
+
     await sendMail({
       to:      user.email,
       subject: `Welcome to Weave Haven, ${user.fullName}!`,
-      text:    `Hi ${user.fullName},\n\nConfirm your email: ${confirmUrl}\n\n— Team Weave Haven`
+      message: textBody,
+      html:    htmlBody
     });
+
 
     res.status(201).json({
       id:       user._id,
