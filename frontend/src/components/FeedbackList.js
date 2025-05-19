@@ -28,7 +28,11 @@ export default function FeedbackList({ productId }) {
   }
 
   if (reviews.length === 0) {
-    return <p className="feedback-no-reviews">No reviews yet. Be the first to review this product!</p>;
+    return (
+      <p className="feedback-no-reviews">
+        No reviews yet. Be the first to review this product!
+      </p>
+    );
   }
 
   return (
@@ -45,13 +49,20 @@ export default function FeedbackList({ productId }) {
       {reviews.map(fb => (
         <div key={fb._id} className="review-item">
           <div className="review-header">
-            <span className="review-user">{fb.user.Fullname || 'Anonymous'}</span>
-            <span className="review-date">{new Date(fb.createdAt).toLocaleDateString()}</span>
+            <span className="review-user">
+              {/* Optional chaining to avoid null errors */}
+              {fb.user?.Fullname || 'Anonymous'}
+            </span>
+            <span className="review-date">
+              {new Date(fb.createdAt).toLocaleDateString()}
+            </span>
           </div>
           <div className="review-stars">
             {'★'.repeat(fb.rating)}{'☆'.repeat(5 - fb.rating)}
           </div>
-          {fb.comment && <div className="review-comment">{fb.comment}</div>}
+          {fb.comment && (
+            <div className="review-comment">{fb.comment}</div>
+          )}
         </div>
       ))}
     </div>

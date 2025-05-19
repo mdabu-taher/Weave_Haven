@@ -107,7 +107,7 @@
     max-width: 100%;       /* allow full width */
     margin: 1rem;          /* add breathing room */
     padding: 1rem; 
-    margin-right: 200px;       /* slightly smaller padding */
+       /* slightly smaller padding */
   }
 
   .form-heading {
@@ -127,5 +127,56 @@
   .submit-feedback-btn {
     padding: 0.6rem;       /* reduce button padding */
     font-size: 0.95rem;    /* slightly smaller text */
+  }
+}
+/* ─── Phone‐only overrides (≤400px) ─── */
+@media (max-width: 400px) {
+  /* Container: full width, centered, no left margin */
+  .feedback-form {
+    width: 100%;
+    max-width: none;
+    margin: 0.5rem auto;      /* top/bottom 0.5rem, auto left/right */
+    padding: 0.75rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+  }
+
+  /* Heading: smaller and tighter */
+  .form-heading {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Error text: full-width and smaller */
+  .error-text {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Star rating: smaller stars */
+  .rating-stars {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .rating-stars label {
+    padding: 0 0.05rem;
+    font-size: 24px;
+  }
+
+  /* Labels & textarea */
+  .feedback-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+  .feedback-textarea {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+    min-height: 80px;
+  }
+
+  /* Submit button: full width, compact */
+  .submit-feedback-btn {
+    padding: 0.5rem;
+    font-size: 0.9rem;
   }
 }
