@@ -149,11 +149,51 @@ router.post('/forgot-password', async (req, res) => {
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
+
+    const resetEmailHtml = `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5;">
+        <h2 style="color: #444;">Weave Haven Password Reset</h2>
+        <p>Hi ${user.fullName},</p>
+        <p>We received a request to reset the password for your Weave Haven account. Click the button below to set a new password:</p>
+        <p style="text-align: center; margin: 20px 0;">
+          <a
+            href="${resetUrl}"
+            style="
+              background-color: #28a745;
+              color: #fff;
+              text-decoration: none;
+              padding: 12px 24px;
+              border-radius: 4px;
+              display: inline-block;
+            "
+          >
+            Reset Your Password
+          </a>
+        </p>
+        <p>If the button above doesn’t work, copy and paste this link into your browser:</p>
+        <p style="word-break: break-all;">
+          <a href="${resetUrl}" style="color: #0066cc;">${resetUrl}</a>
+        </p>
+        <p>This link will expire in 1 hour.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+        <p style="font-size: 0.9em; color: #777;">
+          If you didn’t request a password reset, you can safely ignore this email.  
+          For further assistance, reply to this email or contact our support team at  
+          <a href="mailto:support@weavehaven.com">support@weavehaven.com</a>.
+        </p>
+        <p style="font-size: 0.9em; color: #777;">
+          Thanks,<br/>
+          The Weave Haven Team
+        </p>
+      </div>
+    `;
+
     await sendMail({
       to:      user.email,
       subject: 'Weave Haven Password Reset',
-      html:    `<p>Hi ${user.username},</p>\n<p><a href="${resetUrl}">${resetUrl}</a></p>\n<p>Expires in 1h.</p>`
+      html:    resetEmailHtml
     });
+
 
     res.json({ message: 'Password reset link sent to your email' });
   } catch (err) {
